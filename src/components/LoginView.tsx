@@ -99,7 +99,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
 
         <div className="mt-6 text-center">
           <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <button
               onClick={onSwitchToSignup}
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
