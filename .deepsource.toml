@@ -10,6 +10,10 @@ enabled = true
     "browser"
   ]
   plugins = ["react"]
+  skip_doc_coverage = ["file-docstring"]
+
+  [[analyzers.meta.exclude_rules]]
+  code = "JS-0417"
 
 [[analyzers]]
 name = "test-coverage"

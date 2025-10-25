@@ -446,7 +446,9 @@ app.get("/api/statistics/rank/:userId/:metric", authenticateToken, async (req, r
   }
 
   try {
-    let column, table, whereClause;
+    let column = "";
+    let table = "";
+    let whereClause = "";
 
     if (metric === "total_cards") {
       column = "total_cards_studied";
@@ -485,14 +487,14 @@ app.get("/api/statistics/rank/:userId/:metric", authenticateToken, async (req, r
       return res.json({ rank: null, value: 0 });
     }
 
-    res.json({
+    return res.json({
       metric,
       rank: result.rows[0].rank,
       value: result.rows[0].value,
     });
   } catch (error) {
     console.error("Get rank error:", error);
-    res.status(500).json({ error: "Failed to get rank" });
+    return res.status(500).json({ error: "Failed to get rank" });
   }
 });
 
