@@ -1,18 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowLeft,
-  Upload,
-  CheckCircle,
-  Loader2,
-  Plus,
-  Library,
-  BarChart3,
-  Settings,
-} from "lucide-react";
 import { Card, Deck } from "../lib/srs-engine";
 import { db } from "../storage/database";
 import StudyCard from "./StudyCard";
+import { api } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 interface StudyViewProps {
   onBack: () => void;
@@ -20,6 +12,7 @@ interface StudyViewProps {
 }
 
 export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
+  const { user } = useAuth();
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [dueCards, setDueCards] = useState<Card[]>([]);
   const [allCards, setAllCards] = useState<Card[]>([]);
@@ -33,6 +26,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
     correct: 0,
     streak: 0,
   });
+  const [cardStartTime, setCardStartTime] = useState<number>(Date.now());
 
   const loadStats = () => {
     // Load saved stats from localStorage
@@ -77,6 +71,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
       setAllCards(allCardsArray);
       setDueCards(cardsForReview);
       setCurrentCard(cardsForReview[0] || null);
+      setCardStartTime(Date.now()); // Start timer for first card
     } catch (error) {
       console.error("Failed to load cards:", error);
     } finally {
@@ -123,14 +118,33 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
       if (!currentCard) return;
 
       try {
-        const startTime = Date.now();
-        const duration = Date.now() - startTime;
+        const duration = Date.now() - cardStartTime;
 
-        // Record review in database
+        // Record review in local database
         const result = await db.recordReview(currentCard.id, rating, duration);
         console.log(
           `Card reviewed: ${rating}, next review in ${result.interval} days`,
         );
+
+        // Sync with backend (non-blocking - app continues even if this fails)
+        if (user) {
+          api
+            .recordStudySession({
+              cardId: currentCard.id,
+              timeSpentMs: duration,
+              rating,
+            })
+            .then((response) => {
+              if (response.error) {
+                console.warn("Failed to sync with backend:", response.error);
+              } else {
+                console.log("Study session synced with backend");
+              }
+            })
+            .catch((error) => {
+              console.warn("Backend sync error:", error);
+            });
+        }
 
         // Update session stats
         const newStats = {
@@ -154,6 +168,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
         if (remainingDue.length > 0) {
           setTimeout(() => {
             setCurrentCard(remainingDue[0]);
+            setCardStartTime(Date.now()); // Reset timer for next card
           }, 500);
         } else {
           // Session complete!
@@ -165,7 +180,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
         console.error("Failed to record review:", error);
       }
     },
-    [currentCard, dueCards, sessionStats],
+    [currentCard, dueCards, sessionStats, cardStartTime, user],
   );
 
   const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,8 +243,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             onClick={onBack}
             className="mb-8 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors border border-border rounded px-4 py-2"
           >
-            <ArrowLeft size={20} />
-            Back
+            ← Back
           </button>
 
           {/* Header */}
@@ -283,7 +297,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.2 }}
                 >
-                  <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
+                  <div className="w-20 h-20 text-green-500 mx-auto mb-6 text-7xl">✓</div>
                 </motion.div>
                 <h2 className="text-3xl font-medium mb-4">Session Complete</h2>
                 <div className="space-y-3 mb-8">
@@ -303,7 +317,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               </>
             ) : (
               <>
-                <CheckCircle className="w-20 h-20 text-primary mx-auto mb-6" />
+                <div className="w-20 h-20 text-primary mx-auto mb-6 text-7xl">✓</div>
                 <h2 className="text-3xl font-medium mb-4">No cards due</h2>
                 <p className="text-xl text-muted-foreground mb-8">
                   Great job keeping up with your reviews
@@ -316,7 +330,6 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                 onClick={handleShowImport}
                 className="px-6 py-3 bg-primary text-primary-foreground rounded font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-all"
               >
-                <Upload className="w-5 h-5" />
                 Import Deck
               </button>
 
@@ -324,7 +337,6 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                 onClick={handleBackClick}
                 className="px-6 py-3 bg-card border-2 border-border rounded font-medium flex items-center justify-center gap-2 hover:border-foreground transition-all"
               >
-                <Plus className="w-5 h-5" />
                 Browse Decks
               </button>
             </div>
@@ -338,7 +350,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8"
           >
             <div className="glass rounded-2xl p-6 text-center">
-              <Library className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
+              <p className="text-3xl mb-2">📚</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {allCards.length}
               </p>
@@ -346,7 +358,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             </div>
 
             <div className="glass rounded-2xl p-6 text-center">
-              <BarChart3 className="w-8 h-8 text-green-500 mx-auto mb-2" />
+              <p className="text-3xl mb-2">🔥</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {sessionStats.streak}
               </p>
@@ -354,7 +366,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             </div>
 
             <div className="glass rounded-2xl p-6 text-center">
-              <Settings className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+              <p className="text-3xl mb-2">🎯</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 20
               </p>
@@ -397,9 +409,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   />
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 text-center cursor-pointer hover:border-emerald-600 transition-colors">
                     {isLoading ? (
-                      <Loader2 className="w-12 h-12 text-emerald-600 mx-auto animate-spin" />
+                      <div className="w-12 h-12 text-emerald-600 mx-auto text-5xl animate-spin">⟳</div>
                     ) : (
-                      <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <div className="w-12 h-12 text-gray-400 mx-auto mb-3 text-5xl">↑</div>
                     )}
                     <p className="text-gray-600 dark:text-gray-300">
                       {isLoading ? "Importing..." : "Click to select file"}
@@ -434,8 +446,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   onClick={onBack}
                   className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
                 >
-                  <ArrowLeft size={20} />
-                  Back to Decks
+                  ← Back to Decks
                 </button>
                 <div className="text-center">
                   {decks.length > 0 && (
@@ -513,7 +524,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 0.5 }}
             >
-              <CheckCircle className="w-32 h-32 text-green-500" />
+              <div className="text-green-500 text-9xl">✓</div>
             </motion.div>
           </motion.div>
         )}

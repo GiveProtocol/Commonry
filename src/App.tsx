@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Play, Settings, BarChart3, Moon, Sun } from "lucide-react";
 import { StudyView } from "./components/StudyView";
 import { DeckBrowser } from "./components/DeckBrowser";
 import { StatsView } from "./components/StatsView";
 import { Footer } from "./components/Footer";
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
+import { useAuth } from "./contexts/AuthContext";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
@@ -80,13 +80,7 @@ function App() {
           />
         );
       case "profile":
-        return (
-          <PlaceholderView
-            title="Profile"
-            subtitle="User profile page coming soon"
-            onBack={navigateToHome}
-          />
-        );
+        return <ProfileView onBack={navigateToHome} />;
       default:
         return <HomeView onNavigate={setCurrentView} />;
     }
@@ -154,16 +148,12 @@ function App() {
       {/* Theme Toggle Button */}
       <button
         onClick={toggleTheme}
-        className="fixed top-1.5 right-4 z-50 p-3 rounded-full bg-gray-100 dark:bg-white/10 backdrop-blur-lg border border-gray-200 dark:border-white/20 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+        className="fixed top-1.5 right-4 z-50 px-4 py-2 rounded-full bg-gray-100 dark:bg-white/10 backdrop-blur-lg border border-gray-200 dark:border-white/20 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors text-sm font-medium"
         title={
           theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
         }
       >
-        {theme === "dark" ? (
-          <Sun className="w-5 h-5 text-yellow-400" />
-        ) : (
-          <Moon className="w-5 h-5 text-gray-700" />
-        )}
+        {theme === "dark" ? "☀️" : "🌙"}
       </button>
 
       <div className="flex-1 flex flex-col">{renderView()}</div>
@@ -233,7 +223,6 @@ function HomeView({ onNavigate }: HomeViewProps) {
             onClick={handleNavigateStudy}
             className="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground py-4 px-6 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            <Play size={20} />
             Start Studying
           </motion.button>
 
@@ -243,7 +232,6 @@ function HomeView({ onNavigate }: HomeViewProps) {
             onClick={handleNavigateBrowse}
             className="w-full flex items-center justify-center gap-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-4 px-6 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
           >
-            <Settings size={20} />
             Browse Decks
           </motion.button>
 
@@ -253,7 +241,6 @@ function HomeView({ onNavigate }: HomeViewProps) {
             onClick={handleNavigateStats}
             className="w-full flex items-center justify-center gap-3 bg-muted hover:bg-muted/80 text-muted-foreground py-4 px-6 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-muted focus-visible:ring-offset-2"
           >
-            <BarChart3 size={20} />
             Statistics
           </motion.button>
         </div>
@@ -286,6 +273,68 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
         >
           Back to Home
         </motion.button>
+      </motion.div>
+    </div>
+  );
+}
+
+interface ProfileViewProps {
+  onBack: () => void;
+}
+
+function ProfileView({ onBack }: ProfileViewProps) {
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    onBack();
+  };
+
+  return (
+    <div className="flex items-center justify-center flex-1 px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass rounded-2xl p-8 shadow-2xl max-w-md w-full"
+      >
+        <h1 className="text-3xl font-bold text-foreground mb-6 text-center">Profile</h1>
+
+        <div className="space-y-4 mb-8">
+          <div className="border-b border-border pb-3">
+            <p className="text-sm text-muted-foreground">Username</p>
+            <p className="text-lg font-medium text-foreground">{user?.username}</p>
+          </div>
+
+          <div className="border-b border-border pb-3">
+            <p className="text-sm text-muted-foreground">Display Name</p>
+            <p className="text-lg font-medium text-foreground">{user?.displayName}</p>
+          </div>
+
+          <div className="border-b border-border pb-3">
+            <p className="text-sm text-muted-foreground">Email</p>
+            <p className="text-lg font-medium text-foreground">{user?.email}</p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg transition-all"
+          >
+            Sign Out
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onBack}
+            className="w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground py-3 px-6 rounded-lg transition-all"
+          >
+            Back to Home
+          </motion.button>
+        </div>
       </motion.div>
     </div>
   );
