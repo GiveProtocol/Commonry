@@ -184,7 +184,17 @@ export function StatsView({ onBack }: StatsViewProps) {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6"
               >
-                <div className="text-center mb-3">
+                <div className="flex flex-col items-center mb-3">
+                  <img
+                    src="/icons/target_white.png"
+                    alt="Target"
+                    className="w-12 h-12 mb-2 dark:hidden"
+                  />
+                  <img
+                    src="/icons/target_black.png"
+                    alt="Target"
+                    className="w-12 h-12 mb-2 hidden dark:block"
+                  />
                   <span className="text-blue-900 dark:text-blue-300 text-sm font-medium">
                     {period === "all" ? "Total Cards" : "Cards Studied"}
                   </span>
@@ -200,7 +210,17 @@ export function StatsView({ onBack }: StatsViewProps) {
                 transition={{ delay: 0.1 }}
                 className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-800 rounded-xl p-6"
               >
-                <div className="text-center mb-3">
+                <div className="flex flex-col items-center mb-3">
+                  <img
+                    src="/icons/sundial_white.png"
+                    alt="Sundial"
+                    className="w-12 h-12 mb-2 dark:hidden"
+                  />
+                  <img
+                    src="/icons/sundial_black.png"
+                    alt="Sundial"
+                    className="w-12 h-12 mb-2 hidden dark:block"
+                  />
                   <span className="text-purple-900 dark:text-purple-300 text-sm font-medium">
                     Time Spent
                   </span>
@@ -216,7 +236,17 @@ export function StatsView({ onBack }: StatsViewProps) {
                 transition={{ delay: 0.2 }}
                 className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-xl p-6"
               >
-                <div className="text-center mb-3">
+                <div className="flex flex-col items-center mb-3">
+                  <img
+                    src="/icons/chart_white.png"
+                    alt="Chart"
+                    className="w-12 h-12 mb-2 dark:hidden"
+                  />
+                  <img
+                    src="/icons/chart_black.png"
+                    alt="Chart"
+                    className="w-12 h-12 mb-2 hidden dark:block"
+                  />
                   <span className="text-green-900 dark:text-green-300 text-sm font-medium">
                     Retention Rate
                   </span>
@@ -226,24 +256,32 @@ export function StatsView({ onBack }: StatsViewProps) {
                 </div>
               </motion.div>
 
-              {period === "all" && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border border-orange-200 dark:border-orange-800 rounded-xl p-6"
-                >
-                  <div className="text-center mb-3">
-                    <span className="text-orange-900 dark:text-orange-300 text-sm font-medium">
-                      Current Streak
-                    </span>
-                  </div>
-                  <div className="text-4xl font-bold text-orange-900 dark:text-orange-100 text-center">
-                    {currentStreak}
-                    <span className="text-lg ml-1">days</span>
-                  </div>
-                </motion.div>
-              )}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border border-orange-200 dark:border-orange-800 rounded-xl p-6"
+              >
+                <div className="flex flex-col items-center mb-3">
+                  <img
+                    src="/icons/fire_white.png"
+                    alt="Fire"
+                    className="w-12 h-12 mb-2 dark:hidden"
+                  />
+                  <img
+                    src="/icons/fire_black.png"
+                    alt="Fire"
+                    className="w-12 h-12 mb-2 hidden dark:block"
+                  />
+                  <span className="text-orange-900 dark:text-orange-300 text-sm font-medium">
+                    Current Streak
+                  </span>
+                </div>
+                <div className="text-4xl font-bold text-orange-900 dark:text-orange-100 text-center">
+                  {currentStreak}
+                  <span className="text-lg ml-1">days</span>
+                </div>
+              </motion.div>
             </div>
 
             {/* Leaderboard Section */}
