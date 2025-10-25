@@ -259,7 +259,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                 </div>
 
                 {/* User Rank Badge */}
-                {userRank && userRank.rank && (
+                {userRank?.rank && (
                   <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2">
                     <div className="text-xs text-muted-foreground mb-1">Your Rank</div>
                     <div className="text-xl font-bold text-yellow-700 dark:text-yellow-400">
