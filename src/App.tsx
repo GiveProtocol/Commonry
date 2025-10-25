@@ -297,17 +297,23 @@ function ProfileView({ onBack }: ProfileViewProps) {
         animate={{ opacity: 1, y: 0 }}
         className="glass rounded-2xl p-8 shadow-2xl max-w-md w-full"
       >
-        <h1 className="text-3xl font-bold text-foreground mb-6 text-center">Profile</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-6 text-center">
+          Profile
+        </h1>
 
         <div className="space-y-4 mb-8">
           <div className="border-b border-border pb-3">
             <p className="text-sm text-muted-foreground">Username</p>
-            <p className="text-lg font-medium text-foreground">{user?.username}</p>
+            <p className="text-lg font-medium text-foreground">
+              {user?.username}
+            </p>
           </div>
 
           <div className="border-b border-border pb-3">
             <p className="text-sm text-muted-foreground">Display Name</p>
-            <p className="text-lg font-medium text-foreground">{user?.displayName}</p>
+            <p className="text-lg font-medium text-foreground">
+              {user?.displayName}
+            </p>
           </div>
 
           <div className="border-b border-border pb-3">

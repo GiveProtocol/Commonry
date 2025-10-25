@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { api, LeaderboardMetric, UserStatistics, LeaderboardEntry } from "../services/api";
+import {
+  api,
+  LeaderboardMetric,
+  UserStatistics,
+  LeaderboardEntry,
+} from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 interface StatsViewProps {
@@ -14,8 +19,12 @@ export function StatsView({ onBack }: StatsViewProps) {
   const [period, setPeriod] = useState<TimePeriod>("today");
   const [stats, setStats] = useState<UserStatistics | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [selectedMetric, setSelectedMetric] = useState<LeaderboardMetric>("total_cards");
-  const [userRank, setUserRank] = useState<{ rank: number | null; value: number } | null>(null);
+  const [selectedMetric, setSelectedMetric] =
+    useState<LeaderboardMetric>("total_cards");
+  const [userRank, setUserRank] = useState<{
+    rank: number | null;
+    value: number;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -122,13 +131,13 @@ export function StatsView({ onBack }: StatsViewProps) {
     }
   };
 
-  const cardsStudied = period === "all"
-    ? stats?.total_cards_studied || 0
-    : stats?.cards_studied || 0;
+  const cardsStudied =
+    period === "all"
+      ? stats?.total_cards_studied || 0
+      : stats?.cards_studied || 0;
 
-  const timeSpent = period === "all"
-    ? stats?.total_time_ms || 0
-    : stats?.total_time_ms || 0;
+  const timeSpent =
+    period === "all" ? stats?.total_time_ms || 0 : stats?.total_time_ms || 0;
 
   const retentionRate = stats?.retention_rate || 0;
   const currentStreak = stats?.current_streak || 0;
@@ -261,7 +270,9 @@ export function StatsView({ onBack }: StatsViewProps) {
                 {/* User Rank Badge */}
                 {userRank && userRank.rank && (
                   <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2">
-                    <div className="text-xs text-muted-foreground mb-1">Your Rank</div>
+                    <div className="text-xs text-muted-foreground mb-1">
+                      Your Rank
+                    </div>
                     <div className="text-xl font-bold text-yellow-700 dark:text-yellow-400">
                       #{userRank.rank}
                     </div>
@@ -271,7 +282,14 @@ export function StatsView({ onBack }: StatsViewProps) {
 
               {/* Metric Selector */}
               <div className="flex gap-2 mb-6 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 overflow-x-auto">
-                {(["total_cards", "total_time", "retention_rate", "current_streak"] as LeaderboardMetric[]).map((metric) => (
+                {(
+                  [
+                    "total_cards",
+                    "total_time",
+                    "retention_rate",
+                    "current_streak",
+                  ] as LeaderboardMetric[]
+                ).map((metric) => (
                   <button
                     key={metric}
                     onClick={() => setSelectedMetric(metric)}
@@ -290,7 +308,9 @@ export function StatsView({ onBack }: StatsViewProps) {
               <div className="space-y-2">
                 {leaderboard.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
-                    <p>No data yet. Start studying to appear on the leaderboard!</p>
+                    <p>
+                      No data yet. Start studying to appear on the leaderboard!
+                    </p>
                   </div>
                 ) : (
                   leaderboard.slice(0, 10).map((entry, index) => (
@@ -386,11 +406,14 @@ export function StatsView({ onBack }: StatsViewProps) {
                   </div>
                   <div className="text-3xl font-bold text-pink-900 dark:text-pink-100 text-center">
                     {stats.last_study_date
-                      ? new Date(stats.last_study_date).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })
+                      ? new Date(stats.last_study_date).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )
                       : "Never"}
                   </div>
                 </div>

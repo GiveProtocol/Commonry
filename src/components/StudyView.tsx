@@ -297,7 +297,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.2 }}
                 >
-                  <div className="w-20 h-20 text-green-500 mx-auto mb-6 text-7xl">✓</div>
+                  <div className="w-20 h-20 text-green-500 mx-auto mb-6 text-7xl">
+                    ✓
+                  </div>
                 </motion.div>
                 <h2 className="text-3xl font-medium mb-4">Session Complete</h2>
                 <div className="space-y-3 mb-8">
@@ -317,7 +319,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               </>
             ) : (
               <>
-                <div className="w-20 h-20 text-primary mx-auto mb-6 text-7xl">✓</div>
+                <div className="w-20 h-20 text-primary mx-auto mb-6 text-7xl">
+                  ✓
+                </div>
                 <h2 className="text-3xl font-medium mb-4">No cards due</h2>
                 <p className="text-xl text-muted-foreground mb-8">
                   Great job keeping up with your reviews
@@ -409,9 +413,13 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   />
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 text-center cursor-pointer hover:border-emerald-600 transition-colors">
                     {isLoading ? (
-                      <div className="w-12 h-12 text-emerald-600 mx-auto text-5xl animate-spin">⟳</div>
+                      <div className="w-12 h-12 text-emerald-600 mx-auto text-5xl animate-spin">
+                        ⟳
+                      </div>
                     ) : (
-                      <div className="w-12 h-12 text-gray-400 mx-auto mb-3 text-5xl">↑</div>
+                      <div className="w-12 h-12 text-gray-400 mx-auto mb-3 text-5xl">
+                        ↑
+                      </div>
                     )}
                     <p className="text-gray-600 dark:text-gray-300">
                       {isLoading ? "Importing..." : "Click to select file"}

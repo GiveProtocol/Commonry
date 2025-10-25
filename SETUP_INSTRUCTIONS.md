@@ -7,6 +7,7 @@ This guide will help you set up the complete multi-user statistics and leaderboa
 ## What's Been Implemented
 
 ### Backend
+
 - ✅ User authentication (signup, login, JWT tokens)
 - ✅ PostgreSQL database schema with users, study sessions, and statistics tables
 - ✅ Automatic statistics aggregation using database triggers
@@ -14,6 +15,7 @@ This guide will help you set up the complete multi-user statistics and leaderboa
 - ✅ RESTful API endpoints for all features
 
 ### Frontend
+
 - ✅ Login and signup UI
 - ✅ Authentication flow with JWT tokens
 - ✅ Study session tracking synced with backend
@@ -34,15 +36,19 @@ This guide will help you set up the complete multi-user statistics and leaderboa
 Create a PostgreSQL database and run the schema:
 
 \`\`\`bash
+
 # Create database
+
 createdb commonry
 
 # Or using psql
+
 psql -U postgres
 CREATE DATABASE commonry;
 \\q
 
 # Run the schema
+
 psql -U postgres -d commonry -f schema.sql
 \`\`\`
 
@@ -90,8 +96,8 @@ npm run dev
 
 You should see:
 \`\`\`
-VITE v7.1.11  ready in XXX ms
-➜  Local:   http://localhost:5173/
+VITE v7.1.11 ready in XXX ms
+➜ Local: http://localhost:5173/
 \`\`\`
 
 ### 6. Test the Application
@@ -105,20 +111,24 @@ VITE v7.1.11  ready in XXX ms
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/signup` - Create new user
 - `POST /api/auth/login` - Login user
 - `GET /api/auth/me` - Get current user (requires auth)
 
 ### Study Sessions
+
 - `POST /api/study-sessions` - Record a study session
 - `POST /api/study-sessions/batch` - Batch record sessions
 
 ### Statistics
+
 - `GET /api/statistics/user/:userId?period=today|week|month|all` - Get user stats
 - `GET /api/statistics/daily/:userId?startDate=&endDate=` - Get daily stats
 - `GET /api/statistics/rank/:userId/:metric` - Get user rank
 
 ### Leaderboards
+
 - `GET /api/leaderboard/:metric?limit=100` - Get top users
   - Metrics: `total_cards`, `total_time`, `retention_rate`, `current_streak`
 
@@ -135,6 +145,7 @@ VITE v7.1.11  ready in XXX ms
 ### Automatic Features
 
 The database includes triggers that automatically:
+
 - Update daily statistics when sessions are recorded
 - Calculate and update total statistics
 - Track current and longest streaks
@@ -218,7 +229,7 @@ If you see database connection errors:
 3. Verify backend logs for errors
 4. Confirm study sessions are being recorded:
    \`\`\`sql
-   SELECT * FROM study_sessions ORDER BY studied_at DESC LIMIT 10;
+   SELECT \* FROM study_sessions ORDER BY studied_at DESC LIMIT 10;
    \`\`\`
 
 ## Development Notes
@@ -234,6 +245,7 @@ If you see database connection errors:
 ### Local-First Architecture
 
 The app works offline:
+
 - Study sessions stored locally in IndexedDB
 - Backend sync happens asynchronously
 - App continues working even if backend is down
@@ -245,9 +257,9 @@ The app works offline:
 - ✅ SQL injection protected (parameterized queries)
 - ✅ CORS enabled for development
 - ✅ Rate limiting on all endpoints
-- ⚠️  In production, use HTTPS only
-- ⚠️  Generate strong JWT_SECRET
-- ⚠️  Configure CORS for specific origins
+- ⚠️ In production, use HTTPS only
+- ⚠️ Generate strong JWT_SECRET
+- ⚠️ Configure CORS for specific origins
 
 ## Next Steps
 
@@ -276,6 +288,7 @@ The app works offline:
 ## Support
 
 For issues or questions:
+
 - Check the GitHub issues
 - Review API documentation
 - Check database logs
@@ -285,38 +298,38 @@ For issues or questions:
 
 \`\`\`
 ┌─────────────────┐
-│   Frontend      │
-│   (React +      │
-│    Vite)        │
-│                 │
-│  • Auth UI      │
-│  • Study View   │
-│  • Stats View   │
-│  • IndexedDB    │
+│ Frontend │
+│ (React + │
+│ Vite) │
+│ │
+│ • Auth UI │
+│ • Study View │
+│ • Stats View │
+│ • IndexedDB │
 └────────┬────────┘
-         │
-         │ HTTP + JWT
-         │
+│
+│ HTTP + JWT
+│
 ┌────────▼────────┐
-│   Backend       │
-│   (Express)     │
-│                 │
-│  • Auth API     │
-│  • Session API  │
-│  • Stats API    │
-│  • Leaderboard  │
+│ Backend │
+│ (Express) │
+│ │
+│ • Auth API │
+│ • Session API │
+│ • Stats API │
+│ • Leaderboard │
 └────────┬────────┘
-         │
-         │ SQL
-         │
+│
+│ SQL
+│
 ┌────────▼────────┐
-│  PostgreSQL     │
-│                 │
-│  • Users        │
-│  • Sessions     │
-│  • Statistics   │
-│  • Leaderboard  │
-│  • Triggers     │
+│ PostgreSQL │
+│ │
+│ • Users │
+│ • Sessions │
+│ • Statistics │
+│ • Leaderboard │
+│ • Triggers │
 └─────────────────┘
 \`\`\`
 

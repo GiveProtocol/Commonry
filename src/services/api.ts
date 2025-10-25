@@ -59,7 +59,9 @@ class ApiService {
 
       return { data };
     } catch (error) {
-      return { error: error instanceof Error ? error.message : "Network error" };
+      return {
+        error: error instanceof Error ? error.message : "Network error",
+      };
     }
   }
 
