@@ -11,6 +11,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
+import { ulid } from "ulid";
 
 dotenv.config();
 
@@ -98,15 +99,18 @@ app.post("/api/auth/signup", async (req, res) => {
   }
 
   try {
+    // Generate ULID for user
+    const userId = `usr_${ulid()}`;
+
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Create user
     const result = await pool.query(
-      `INSERT INTO users (username, email, password_hash, display_name)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO users (user_id, username, email, password_hash, display_name)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING user_id, username, email, display_name, created_at`,
-      [username.toLowerCase(), email.toLowerCase(), passwordHash, displayName || username]
+      [userId, username.toLowerCase(), email.toLowerCase(), passwordHash, displayName || username]
     );
 
     const user = result.rows[0];
@@ -232,11 +236,14 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
   }
 
   try {
+    // Generate ULID for session
+    const sessionId = `rev_${ulid()}`;
+
     const result = await pool.query(
-      `INSERT INTO study_sessions (user_id, card_id, time_spent_ms, rating, difficulty_rating)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO study_sessions (session_id, user_id, card_id, time_spent_ms, rating, difficulty_rating)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING session_id, studied_at, was_correct`,
-      [req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
+      [sessionId, req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
     );
 
     res.status(201).json({
@@ -265,11 +272,14 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
     for (const session of sessions) {
       const { cardId, timeSpentMs, rating, difficultyRating } = session;
 
+      // Generate ULID for each session
+      const sessionId = `rev_${ulid()}`;
+
       const result = await client.query(
-        `INSERT INTO study_sessions (user_id, card_id, time_spent_ms, rating, difficulty_rating)
-         VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO study_sessions (session_id, user_id, card_id, time_spent_ms, rating, difficulty_rating)
+         VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING session_id, studied_at`,
-        [req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
+        [sessionId, req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
       );
 
       results.push(result.rows[0]);
