@@ -356,7 +356,7 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
     } else {
       // All-time stats
       const result = await pool.query(
-        `SELECT * FROM user_statistics_total WHERE user_id = $1`,
+        "SELECT * FROM user_statistics_total WHERE user_id = $1",
         [userId]
       );
       stats = result.rows[0] || {
