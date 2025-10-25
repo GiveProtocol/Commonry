@@ -62,7 +62,8 @@ app.use(cors());
 app.use(generalLimiter);
 
 // JWT configuration
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_EXPIRES_IN = "7d";
 
 // Authentication middleware
@@ -90,11 +91,15 @@ app.post("/api/auth/signup", async (req, res) => {
   const { username, email, password, displayName } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ error: "Username, email, and password are required" });
+    return res
+      .status(400)
+      .json({ error: "Username, email, and password are required" });
   }
 
   if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 6 characters" });
   }
 
   try {
@@ -106,7 +111,12 @@ app.post("/api/auth/signup", async (req, res) => {
       `INSERT INTO users (username, email, password_hash, display_name)
        VALUES ($1, $2, $3, $4)
        RETURNING user_id, username, email, display_name, created_at`,
-      [username.toLowerCase(), email.toLowerCase(), passwordHash, displayName || username]
+      [
+        username.toLowerCase(),
+        email.toLowerCase(),
+        passwordHash,
+        displayName || username,
+      ],
     );
 
     const user = result.rows[0];
@@ -143,7 +153,9 @@ app.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    return res
+      .status(400)
+      .json({ error: "Username and password are required" });
   }
 
   try {
@@ -151,7 +163,7 @@ app.post("/api/auth/login", async (req, res) => {
       `SELECT user_id, username, email, password_hash, display_name, is_active
        FROM users
        WHERE username = $1 OR email = $1`,
-      [username.toLowerCase()]
+      [username.toLowerCase()],
     );
 
     if (result.rows.length === 0) {
@@ -173,7 +185,7 @@ app.post("/api/auth/login", async (req, res) => {
     // Update last login
     await pool.query(
       "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE user_id = $1",
-      [user.user_id]
+      [user.user_id],
     );
 
     // Generate JWT token
@@ -203,7 +215,7 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
       `SELECT user_id, username, email, display_name, created_at, last_login_at
        FROM users
        WHERE user_id = $1`,
-      [req.userId]
+      [req.userId],
     );
 
     if (result.rows.length === 0) {
@@ -224,7 +236,9 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
   const { cardId, timeSpentMs, rating, difficultyRating } = req.body;
 
   if (!cardId || timeSpentMs === undefined || !rating) {
-    return res.status(400).json({ error: "cardId, timeSpentMs, and rating are required" });
+    return res
+      .status(400)
+      .json({ error: "cardId, timeSpentMs, and rating are required" });
   }
 
   if (rating < 1 || rating > 4) {
@@ -236,7 +250,7 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
       `INSERT INTO study_sessions (user_id, card_id, time_spent_ms, rating, difficulty_rating)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING session_id, studied_at, was_correct`,
-      [req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
+      [req.userId, cardId, timeSpentMs, rating, difficultyRating || null],
     );
 
     res.status(201).json({
@@ -269,7 +283,7 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
         `INSERT INTO study_sessions (user_id, card_id, time_spent_ms, rating, difficulty_rating)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING session_id, studied_at`,
-        [req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
+        [req.userId, cardId, timeSpentMs, rating, difficultyRating || null],
       );
 
       results.push(result.rows[0]);
@@ -307,7 +321,7 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
                 correct_answers, total_answers, retention_rate
          FROM user_statistics_daily
          WHERE user_id = $1 AND date = CURRENT_DATE`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0] || {
         cards_studied: 0,
@@ -332,7 +346,7 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
           END as retention_rate
          FROM user_statistics_daily
          WHERE user_id = $1 AND date >= CURRENT_DATE - INTERVAL '7 days'`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0];
     } else if (period === "month") {
@@ -350,14 +364,14 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
           END as retention_rate
          FROM user_statistics_daily
          WHERE user_id = $1 AND date >= CURRENT_DATE - INTERVAL '30 days'`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0];
     } else {
       // All-time stats
       const result = await pool.query(
         "SELECT * FROM user_statistics_total WHERE user_id = $1",
-        [userId]
+        [userId],
       );
       stats = result.rows[0] || {
         total_cards_studied: 0,
@@ -378,28 +392,32 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
 });
 
 // Get daily statistics for a date range
-app.get("/api/statistics/daily/:userId", authenticateToken, async (req, res) => {
-  const { userId } = req.params;
-  const { startDate, endDate } = req.query;
+app.get(
+  "/api/statistics/daily/:userId",
+  authenticateToken,
+  async (req, res) => {
+    const { userId } = req.params;
+    const { startDate, endDate } = req.query;
 
-  try {
-    const result = await pool.query(
-      `SELECT date, cards_studied, unique_cards, total_time_ms,
+    try {
+      const result = await pool.query(
+        `SELECT date, cards_studied, unique_cards, total_time_ms,
               correct_answers, total_answers, retention_rate
        FROM user_statistics_daily
        WHERE user_id = $1
          AND date >= $2
          AND date <= $3
        ORDER BY date ASC`,
-      [userId, startDate || "1970-01-01", endDate || "2099-12-31"]
-    );
+        [userId, startDate || "1970-01-01", endDate || "2099-12-31"],
+      );
 
-    res.json({ dailyStats: result.rows });
-  } catch (error) {
-    console.error("Get daily statistics error:", error);
-    res.status(500).json({ error: "Failed to get daily statistics" });
-  }
-});
+      res.json({ dailyStats: result.rows });
+    } catch (error) {
+      console.error("Get daily statistics error:", error);
+      res.status(500).json({ error: "Failed to get daily statistics" });
+    }
+  },
+);
 
 // ==================== LEADERBOARD ENDPOINTS ====================
 
@@ -408,14 +426,22 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
   const { metric } = req.params;
   const { limit } = req.query;
 
-  const validMetrics = ["total_cards", "total_time", "retention_rate", "current_streak"];
+  const validMetrics = [
+    "total_cards",
+    "total_time",
+    "retention_rate",
+    "current_streak",
+  ];
   if (!validMetrics.includes(metric)) {
     return res.status(400).json({ error: "Invalid metric type" });
   }
 
   try {
     // First, refresh the leaderboard cache
-    await pool.query("SELECT refresh_leaderboard($1, $2)", [metric, parseInt(limit) || 100]);
+    await pool.query("SELECT refresh_leaderboard($1, $2)", [
+      metric,
+      parseInt(limit) || 100,
+    ]);
 
     // Then fetch the cached results
     const result = await pool.query(
@@ -423,7 +449,7 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
        FROM leaderboard_cache
        WHERE metric_type = $1
        ORDER BY rank ASC`,
-      [metric]
+      [metric],
     );
 
     res.json({
@@ -437,37 +463,45 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
 });
 
 // Get user's rank for a specific metric
-app.get("/api/statistics/rank/:userId/:metric", authenticateToken, async (req, res) => {
-  const { userId, metric } = req.params;
+app.get(
+  "/api/statistics/rank/:userId/:metric",
+  authenticateToken,
+  async (req, res) => {
+    const { userId, metric } = req.params;
 
-  const validMetrics = ["total_cards", "total_time", "retention_rate", "current_streak"];
-  if (!validMetrics.includes(metric)) {
-    return res.status(400).json({ error: "Invalid metric type" });
-  }
-
-  try {
-    let column, table, whereClause;
-
-    if (metric === "total_cards") {
-      column = "total_cards_studied";
-      table = "user_statistics_total";
-      whereClause = "total_cards_studied > 0";
-    } else if (metric === "total_time") {
-      column = "total_time_ms";
-      table = "user_statistics_total";
-      whereClause = "total_time_ms > 0";
-    } else if (metric === "retention_rate") {
-      column = "retention_rate";
-      table = "user_statistics_total";
-      whereClause = "total_attempts >= 50";
-    } else if (metric === "current_streak") {
-      column = "current_streak";
-      table = "user_statistics_total";
-      whereClause = "current_streak > 0";
+    const validMetrics = [
+      "total_cards",
+      "total_time",
+      "retention_rate",
+      "current_streak",
+    ];
+    if (!validMetrics.includes(metric)) {
+      return res.status(400).json({ error: "Invalid metric type" });
     }
 
-    const result = await pool.query(
-      `WITH ranked_users AS (
+    try {
+      let column, table, whereClause;
+
+      if (metric === "total_cards") {
+        column = "total_cards_studied";
+        table = "user_statistics_total";
+        whereClause = "total_cards_studied > 0";
+      } else if (metric === "total_time") {
+        column = "total_time_ms";
+        table = "user_statistics_total";
+        whereClause = "total_time_ms > 0";
+      } else if (metric === "retention_rate") {
+        column = "retention_rate";
+        table = "user_statistics_total";
+        whereClause = "total_attempts >= 50";
+      } else if (metric === "current_streak") {
+        column = "current_streak";
+        table = "user_statistics_total";
+        whereClause = "current_streak > 0";
+      }
+
+      const result = await pool.query(
+        `WITH ranked_users AS (
         SELECT
           user_id,
           ${column} as value,
@@ -478,23 +512,24 @@ app.get("/api/statistics/rank/:userId/:metric", authenticateToken, async (req, r
       SELECT rank, value
       FROM ranked_users
       WHERE user_id = $1`,
-      [userId]
-    );
+        [userId],
+      );
 
-    if (result.rows.length === 0) {
-      return res.json({ rank: null, value: 0 });
+      if (result.rows.length === 0) {
+        return res.json({ rank: null, value: 0 });
+      }
+
+      res.json({
+        metric,
+        rank: result.rows[0].rank,
+        value: result.rows[0].value,
+      });
+    } catch (error) {
+      console.error("Get rank error:", error);
+      res.status(500).json({ error: "Failed to get rank" });
     }
-
-    res.json({
-      metric,
-      rank: result.rows[0].rank,
-      value: result.rows[0].value,
-    });
-  } catch (error) {
-    console.error("Get rank error:", error);
-    res.status(500).json({ error: "Failed to get rank" });
-  }
-});
+  },
+);
 
 // Upload and import Anki deck
 app.post(
