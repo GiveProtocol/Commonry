@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import LoginView from "./LoginView";
 import SignupView from "./SignupView";
+import EmailVerificationView from "./EmailVerificationView";
 import { motion } from "framer-motion";
 
 interface AuthGateProps {
@@ -11,6 +12,16 @@ interface AuthGateProps {
 export default function AuthGate({ children }: AuthGateProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const [showSignup, setShowSignup] = useState(false);
+  const [verificationToken, setVerificationToken] = useState<string | null>(null);
+
+  // Check URL for verification token on mount
+  useEffect(() => {
+    const path = window.location.pathname;
+    const match = path.match(/\/verify-email\/([a-f0-9]+)/);
+    if (match) {
+      setVerificationToken(match[1]);
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -21,6 +32,19 @@ export default function AuthGate({ children }: AuthGateProps) {
           className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full"
         />
       </div>
+    );
+  }
+
+  // Handle email verification flow
+  if (verificationToken) {
+    return (
+      <EmailVerificationView
+        token={verificationToken}
+        onSuccess={() => {
+          setVerificationToken(null);
+          window.history.pushState({}, "", "/");
+        }}
+      />
     );
   }
 

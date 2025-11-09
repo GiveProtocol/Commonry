@@ -12,6 +12,8 @@ import jwt from "jsonwebtoken";
 import cors from "cors";
 import dotenv from "dotenv";
 import { ulid } from "ulid";
+import crypto from "crypto";
+import { sendVerificationEmail } from "./email-service.js";
 
 dotenv.config();
 
@@ -105,30 +107,38 @@ app.post("/api/auth/signup", async (req, res) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Generate verification token (random 32-byte hex string)
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
+    // Set expiration to 24 hours from now
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    // Create user with verification fields
     const result = await pool.query(
-      `INSERT INTO users (user_id, username, email, password_hash, display_name)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO users (user_id, username, email, password_hash, display_name,
+                         email_verified, verification_token, verification_token_expires)
+       VALUES ($1, $2, $3, $4, $5, FALSE, $6, $7)
        RETURNING user_id, username, email, display_name, created_at`,
-      [userId, username.toLowerCase(), email.toLowerCase(), passwordHash, displayName || username]
+      [userId, username.toLowerCase(), email.toLowerCase(), passwordHash,
+       displayName || username, verificationToken, expiresAt]
     );
 
     const user = result.rows[0];
 
-    // Generate JWT token
-    const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN,
-    });
+    // Send verification email
+    try {
+      await sendVerificationEmail(user.email, user.display_name, verificationToken);
+      console.log(`✅ Verification email sent to ${user.email}`);
+    } catch (emailError) {
+      console.error('❌ Failed to send verification email:', emailError);
+      // Don't fail signup if email fails, but log it
+    }
 
+    // Return success without JWT token
     res.status(201).json({
-      user: {
-        id: user.user_id,
-        username: user.username,
-        email: user.email,
-        displayName: user.display_name,
-        createdAt: user.created_at,
-      },
-      token,
+      message: "Account created successfully. Please check your email to verify your account.",
+      email: user.email,
+      requiresVerification: true,
     });
   } catch (error) {
     if (error.constraint === "users_username_key") {
@@ -142,6 +152,72 @@ app.post("/api/auth/signup", async (req, res) => {
   }
 });
 
+// Email verification
+app.get("/api/auth/verify-email/:token", async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    return res.status(400).json({ error: "Verification token is required" });
+  }
+
+  try {
+    // Find user with matching token
+    const result = await pool.query(
+      `SELECT user_id, username, email, display_name, email_verified,
+              verification_token_expires
+       FROM users
+       WHERE verification_token = $1`,
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: "Invalid verification token" });
+    }
+
+    const user = result.rows[0];
+
+    // Check if already verified
+    if (user.email_verified) {
+      return res.status(200).json({
+        message: "Email already verified. You can now log in.",
+        alreadyVerified: true,
+      });
+    }
+
+    // Check if token expired
+    const now = new Date();
+    const expiresAt = new Date(user.verification_token_expires);
+
+    if (now > expiresAt) {
+      return res.status(400).json({
+        error: "Verification link has expired. Please request a new one.",
+        expired: true,
+      });
+    }
+
+    // Mark email as verified and clear token
+    await pool.query(
+      `UPDATE users
+       SET email_verified = TRUE,
+           verification_token = NULL,
+           verification_token_expires = NULL
+       WHERE user_id = $1`,
+      [user.user_id]
+    );
+
+    console.log(`✅ Email verified for user: ${user.email}`);
+
+    res.status(200).json({
+      message: "Email verified successfully! You can now log in.",
+      verified: true,
+      username: user.username,
+    });
+  } catch (error) {
+    console.error("Email verification error:", error);
+    res.status(500).json({ error: "Failed to verify email" });
+  }
+});
+
 // User login
 app.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body;
@@ -152,7 +228,7 @@ app.post("/api/auth/login", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT user_id, username, email, password_hash, display_name, is_active
+      `SELECT user_id, username, email, password_hash, display_name, is_active, email_verified
        FROM users
        WHERE username = $1 OR email = $1`,
       [username.toLowerCase()]
@@ -172,6 +248,15 @@ app.post("/api/auth/login", async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
       return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Check if email is verified
+    if (!user.email_verified) {
+      return res.status(403).json({
+        error: "Please verify your email before logging in. Check your inbox for the verification link.",
+        emailNotVerified: true,
+        email: user.email,
+      });
     }
 
     // Update last login

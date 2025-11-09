@@ -1,19 +1,20 @@
 import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
+import { Mail, CheckCircle } from "lucide-react";
 
 interface SignupViewProps {
   onSwitchToLogin: () => void;
 }
 
 export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
-  const { signup } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +27,89 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
 
     setIsLoading(true);
 
-    const result = await signup(username, email, password, displayName);
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password, displayName }),
+      });
 
-    if (result.error) {
-      setError(result.error);
+      const data = await response.json();
+
+      if (response.ok) {
+        // Success! Show email verification message
+        setRegisteredEmail(data.email);
+        setShowSuccess(true);
+      } else {
+        setError(data.error || "Failed to create account");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+      console.error("Signup error:", err);
     }
 
     setIsLoading(false);
   };
+
+  // Show success message after registration
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md text-center"
+        >
+          <div className="flex justify-center mb-6">
+            <div className="bg-green-100 dark:bg-green-900/20 rounded-full p-4">
+              <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Account Created! 🎉
+          </h2>
+
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-left">
+                <p className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                  Verify Your Email
+                </p>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  We've sent a verification link to{" "}
+                  <span className="font-semibold">{registeredEmail}</span>
+                </p>
+                <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                  Please check your inbox and click the link to activate your
+                  account.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={onSwitchToLogin}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition"
+            >
+              Go to Login
+            </button>
+
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Didn't receive the email? Check your spam folder or{" "}
+              <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                resend verification
+              </button>
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
