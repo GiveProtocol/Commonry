@@ -45,7 +45,7 @@ export class SRSDatabase extends Dexie {
   importMappings!: Table<ImportMapping>;
   importBatches!: Table<ImportBatch>;
 
-  private srsEngine: SRSEngine;
+  public srsEngine: SRSEngine;
 
   constructor() {
     super("SRSDatabase");

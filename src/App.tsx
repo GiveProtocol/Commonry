@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { StudyView } from "./components/StudyView";
 import { DeckBrowser } from "./components/DeckBrowser";
@@ -7,12 +7,13 @@ import { Footer } from "./components/Footer";
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { useAuth } from "./contexts/AuthContext";
+import { DeckId } from "./types/ids";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
 function App() {
   const [currentView, setCurrentView] = useState<View>("home");
-  const [selectedDeckId, setSelectedDeckId] = useState<string | undefined>(
+  const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
     undefined,
   );
   const [isInitialized, setIsInitialized] = useState(false);
@@ -38,7 +39,7 @@ function App() {
     initializeApp();
   }, []);
 
-  const handleStartStudy = (deckId?: string) => {
+  const handleStartStudy = (deckId?: DeckId) => {
     setSelectedDeckId(deckId);
     setCurrentView("study");
   };

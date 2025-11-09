@@ -1,6 +1,7 @@
 // src/lib/anki-export.ts
 import JSZip from "jszip";
-import initSqlJs, { Database } from "sql.js";
+import initSqlJs from "sql.js";
+import type { Database, SqlJsStatic } from "sql.js";
 import { db } from "../storage/database";
 import type { Card, Deck } from "./srs-engine";
 import type { DeckId } from "../types/ids";
@@ -12,7 +13,7 @@ export interface AnkiExportResult {
   cardCount: number;
 }
 
-let SQL: typeof initSqlJs | null = null;
+let SQL: SqlJsStatic | null = null;
 
 async function initSQL() {
   if (!SQL) {

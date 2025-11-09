@@ -1,10 +1,12 @@
 // src/lib/anki-import.ts
 import JSZip from "jszip";
-import initSqlJs, { Database } from "sql.js";
+import initSqlJs from "sql.js";
+import type { Database, SqlJsStatic } from "sql.js";
 import { decompress } from "fzstd";
 import DOMPurify from "dompurify";
 import { db } from "../storage/database";
 import { ImportMappingService } from "../services/import-mapping-service";
+import { DeckId, CardId } from "../types/ids";
 
 export interface AnkiImportResult {
   deckName: string;
@@ -97,7 +99,7 @@ async function storeMediaFile(
       }
 
       // Convert Uint8Array to Blob with proper MIME type
-      const blob = new Blob([data], { type: mimeType });
+      const blob = new Blob([new Uint8Array(data)], { type: mimeType });
 
       store.put({ fileName, blob });
 
@@ -158,7 +160,7 @@ export async function getMediaUrl(fileName: string): Promise<string | null> {
   });
 }
 
-let SQL: typeof initSqlJs | null = null;
+let SQL: SqlJsStatic | null = null;
 
 async function initSQL() {
   if (!SQL) {
@@ -201,7 +203,7 @@ async function extractMediaFiles(zip: JSZip): Promise<void> {
 // Helper: Load collection database from ZIP
 async function loadCollectionDatabase(
   zip: JSZip,
-  SQLModule: typeof initSqlJs,
+  SQLModule: SqlJsStatic,
 ): Promise<Database> {
   const collectionFile =
     zip.file("collection.anki21b") ||
@@ -384,19 +386,19 @@ function renderTemplate(
 
   // Support field names with any characters (spaces, hyphens, parentheses, etc.)
   const conditionalRegex = /\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
-  rendered = rendered.replace(conditionalRegex, (match, fieldName, content) => {
+  rendered = rendered.replace(conditionalRegex, (_match, fieldName, content) => {
     const fieldValue = fieldMap[fieldName] || "";
     return fieldValue.trim() ? content : "";
   });
 
   const invertedRegex = /\{\{\^([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
-  rendered = rendered.replace(invertedRegex, (match, fieldName, content) => {
+  rendered = rendered.replace(invertedRegex, (_match, fieldName, content) => {
     const fieldValue = fieldMap[fieldName] || "";
     return fieldValue.trim() ? "" : content;
   });
 
   const fieldRegex = /\{\{([^}]+)\}\}/g;
-  rendered = rendered.replace(fieldRegex, (match, fieldName) => {
+  rendered = rendered.replace(fieldRegex, (_match, fieldName) => {
     return fieldMap[fieldName] || "";
   });
 
@@ -425,13 +427,13 @@ async function processNoteWithFallback(
   );
 
   // Create card with external ID tracking
-  const card = await db.srsEngine.createCard(
+  const card = db.srsEngine.createCard(
     frontData.text || "No content",
     backData.text || frontData.text || "No content",
-    deckId,
+    deckId as DeckId,
   );
 
-  card.id = cardId;
+  card.id = cardId as CardId;
   card.importSource = "anki";
   card.externalId = noteId;
 
@@ -469,7 +471,7 @@ async function processNoteWithModel(
   console.log("Field map:", fieldMap);
 
   const templates = model.tmpls || [];
-  const filteredTemplates = templates.filter((template, index) => {
+  const filteredTemplates = templates.filter((_template, index) => {
     if (cardDirection === "all") return true;
     if (cardDirection === "forward") return index === 0;
     if (cardDirection === "reverse") return index === 1;
@@ -523,13 +525,13 @@ async function processNoteWithModel(
     );
 
     // Create card with external ID tracking
-    const card = await db.srsEngine.createCard(
+    const card = db.srsEngine.createCard(
       frontData.text || "(image only)",
       backData.text || frontData.text || "(image only)",
-      deckId,
+      deckId as DeckId,
     );
 
-    card.id = cardId;
+    card.id = cardId as CardId;
     card.importSource = "anki";
     card.externalId = cardExternalId;
 
@@ -607,11 +609,11 @@ export async function importAnkiDeck(
       );
 
       // Check if deck already exists
-      const existingDeck = await db.getDeck(newDeckId);
+      const existingDeck = await db.getDeck(newDeckId as DeckId);
       if (!existingDeck) {
         // Create new deck
         const deck = {
-          id: newDeckId,
+          id: newDeckId as DeckId,
           name: deckName,
           description: `Imported from Anki (${notes.length} notes)`,
           cardCount: 0,
@@ -680,7 +682,7 @@ export async function importAnkiDeck(
       `\n✅ Created ${totalCardsCreated} cards from ${notes.length} notes`,
     );
 
-    await db.updateDeckStats(newDeckId);
+    await db.updateDeckStats(newDeckId as DeckId);
     database.close();
 
     // Mark import batch as completed

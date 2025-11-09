@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { Card, Deck } from "../lib/srs-engine";
 import { db } from "../storage/database";
+import { DeckId, CardId } from "../types/ids";
 
 export function useSRS() {
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [activeDeckId, setActiveDeckId] = useState<string>("default");
+  const [activeDeckId, setActiveDeckId] = useState<DeckId>("default" as DeckId);
 
   // Load next card for review
-  const loadNextCard = async (deckId: string = activeDeckId) => {
+  const loadNextCard = async (deckId: DeckId = activeDeckId) => {
     setIsLoading(true);
     try {
       const cards = await db.getCardsForReview(deckId, 1);
@@ -23,7 +24,7 @@ export function useSRS() {
   };
 
   // Record a review and get next card
-  const reviewCard = async (cardId: string, rating: number, duration = 0) => {
+  const reviewCard = async (cardId: CardId, rating: number, duration = 0) => {
     try {
       const result = await db.recordReview(cardId, rating, duration);
       await loadNextCard();
@@ -48,7 +49,7 @@ export function useSRS() {
   const createCard = async (
     front: string,
     back: string,
-    deckId: string = activeDeckId,
+    deckId: DeckId = activeDeckId,
   ) => {
     try {
       const cardId = await db.createCard(front, back, deckId);
@@ -83,7 +84,7 @@ export function useSRS() {
   };
 
   // Get deck statistics
-  const getDeckStats = async (deckId: string) => {
+  const getDeckStats = async (deckId: DeckId) => {
     try {
       await db.updateDeckStats(deckId);
       return await db.getDeck(deckId); // Get updated stats

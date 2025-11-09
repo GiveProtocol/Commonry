@@ -64,10 +64,6 @@ export class SRSEngine {
   private readonly EASY_BONUS = 1.3;
   private readonly INTERVAL_MODIFIER = 1.0;
 
-  // Learning steps in minutes
-  private readonly LEARNING_STEPS = [1, 10]; // 1 min, 10 min
-  private readonly RELEARNING_STEPS = [10]; // 10 min
-
   calculateNextReview(card: Card, rating: number): ReviewResult {
     const updatedCard = { ...card };
     const now = new Date();

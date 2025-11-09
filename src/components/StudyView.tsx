@@ -5,10 +5,11 @@ import { db } from "../storage/database";
 import StudyCard from "./StudyCard";
 import { api } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { DeckId } from "../types/ids";
 
 interface StudyViewProps {
   onBack: () => void;
-  initialDeckId?: string;
+  initialDeckId?: DeckId;
 }
 
 export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
@@ -17,7 +18,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
   const [dueCards, setDueCards] = useState<Card[]>([]);
   const [allCards, setAllCards] = useState<Card[]>([]);
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [selectedDeck, setSelectedDeck] = useState<string>("default");
+  const [selectedDeck, setSelectedDeck] = useState<DeckId>("default" as DeckId);
   const [isLoading, setIsLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -201,7 +202,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
 
   const handleDeckChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedDeck(e.target.value);
+      setSelectedDeck(e.target.value as DeckId);
     },
     [],
   );

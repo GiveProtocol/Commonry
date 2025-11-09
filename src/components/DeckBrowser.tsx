@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { db } from "../storage/database";
 import { Deck } from "../lib/srs-engine";
+import { IdService } from "../services/id-service";
+import { DeckId } from "../types/ids";
 // skipcq: JS-C1003 - Radix UI Dialog components require namespace import
 import * as Dialog from "@radix-ui/react-dialog";
 // skipcq: JS-C1003 - Radix UI DropdownMenu components require namespace import
@@ -29,8 +31,8 @@ import { useToast } from "./Toast";
 
 interface DeckBrowserProps {
   onBack: () => void;
-  onSelectDeck?: (deckId: string) => void;
-  onStartStudy?: (deckId?: string) => void;
+  onSelectDeck?: (deckId: DeckId) => void;
+  onStartStudy?: (deckId?: DeckId) => void;
 }
 
 export function DeckBrowser({
@@ -39,7 +41,7 @@ export function DeckBrowser({
   onStartStudy,
 }: DeckBrowserProps) {
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
+  const [selectedDeckId, setSelectedDeckId] = useState<DeckId | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [newDeckName, setNewDeckName] = useState("");
@@ -120,7 +122,7 @@ export function DeckBrowser({
     }
   }, [pendingImportFile, cardDirection]);
 
-  const handleSelectDeck = (deckId: string) => {
+  const handleSelectDeck = (deckId: DeckId) => {
     if (onSelectDeck) {
       onSelectDeck(deckId);
     } else {
@@ -166,16 +168,17 @@ export function DeckBrowser({
 
   const handleDuplicateDeck = async (deck: Deck) => {
     const newDeckName = `${deck.name} (Copy)`;
-    const newDeck = await db.createDeck(newDeckName, deck.description);
+    const newDeckId = await db.createDeck(newDeckName, deck.description);
 
     // Copy all cards from the original deck to the new deck
     const cards = await db.cards.where("deckId").equals(deck.id).toArray();
     for (const card of cards) {
-      // Omit id to let Dexie auto-generate, then add the new deckId
+      // Generate new ID for the duplicated card
       const { id: _id, ...cardWithoutId } = card;
       await db.cards.add({
         ...cardWithoutId,
-        deckId: newDeck.id,
+        id: IdService.generateCardId(),
+        deckId: newDeckId,
       });
     }
 
@@ -295,7 +298,7 @@ export function DeckBrowser({
 
   const handleDeckClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const deckId = e.currentTarget.dataset.deckId;
-    if (deckId) handleSelectDeck(deckId);
+    if (deckId) handleSelectDeck(deckId as DeckId);
   }, []);
 
   const handleDeckKeyDown = useCallback(
@@ -303,7 +306,7 @@ export function DeckBrowser({
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         const deckId = e.currentTarget.dataset.deckId;
-        if (deckId) handleSelectDeck(deckId);
+        if (deckId) handleSelectDeck(deckId as DeckId);
       }
     },
     [],
@@ -315,9 +318,9 @@ export function DeckBrowser({
       const deckId = e.currentTarget.dataset.deckId;
       if (deckId) {
         if (onStartStudy) {
-          onStartStudy(deckId);
+          onStartStudy(deckId as DeckId);
         } else {
-          handleSelectDeck(deckId);
+          handleSelectDeck(deckId as DeckId);
         }
       }
     },

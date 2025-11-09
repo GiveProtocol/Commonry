@@ -33,7 +33,7 @@ export class SM2Scheduler implements Scheduler {
       repetitions += 1;
 
       // Update ease factor
-      easeFactor = SM2Scheduler.getNextEaseFactor(card, rating);
+      easeFactor = this.getNextEaseFactor(card, rating);
     }
 
     // Calculate next due date
@@ -59,7 +59,7 @@ export class SM2Scheduler implements Scheduler {
     };
   }
 
-  static getNextInterval(card: Card, rating: number): number {
+  getNextInterval(card: Card, rating: number): number {
     if (rating < 3) {
       return rating === 1 ? 1 : Math.max(1, Math.floor(card.interval * 0.6));
     }
@@ -73,7 +73,7 @@ export class SM2Scheduler implements Scheduler {
     }
   }
 
-  static getNextEaseFactor(card: Card, rating: number): number {
+  getNextEaseFactor(card: Card, rating: number): number {
     // EF' = EF + (0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02))
     const ef =
       card.easeFactor + (0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));

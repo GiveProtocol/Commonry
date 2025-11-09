@@ -10,11 +10,12 @@ import {
 } from "lucide-react";
 import { db } from "../storage/database";
 import { Card, Deck } from "../lib/srs-engine";
+import { DeckId } from "../types/ids";
 // skipcq: JS-C1003 - Radix UI Dialog components require namespace import
 import * as Dialog from "@radix-ui/react-dialog";
 
 interface DeckViewProps {
-  deckId: string;
+  deckId: DeckId;
   onBack: () => void;
 }
 
