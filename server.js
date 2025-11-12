@@ -86,6 +86,38 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
+// ==================== HELPER FUNCTIONS ====================
+
+/**
+ * Get user by username from database
+ */
+async function getUserByUsername(username) {
+  const result = await pool.query(
+    "SELECT user_id FROM users WHERE username = $1",
+    [username.toLowerCase()]
+  );
+  return result.rows[0] || null;
+}
+
+/**
+ * Check if a specific privacy setting is enabled for a user
+ */
+async function checkPrivacySetting(userId, settingName) {
+  const result = await pool.query(
+    `SELECT ${settingName} FROM privacy_settings WHERE user_id = $1`,
+    [userId]
+  );
+  // Default to true if no privacy settings exist
+  return result.rows[0]?.[settingName] !== false;
+}
+
+/**
+ * Generate ULID with prefix
+ */
+function generateULID(prefix) {
+  return `${prefix}_${ulid()}`;
+}
+
 // ==================== AUTHENTICATION ENDPOINTS ====================
 
 // User signup
@@ -102,7 +134,7 @@ app.post("/api/auth/signup", async (req, res) => {
 
   try {
     // Generate ULID for user
-    const userId = `usr_${ulid()}`;
+    const userId = generateULID('usr');
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
@@ -476,24 +508,16 @@ app.get("/api/profile/:username/stats", async (req, res) => {
 
   try {
     // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1",
-      [username.toLowerCase()]
-    );
+    const user = await getUserByUsername(username);
 
-    if (userResult.rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const userId = userResult.rows[0].user_id;
+    const userId = user.user_id;
 
     // Check privacy settings
-    const privacyResult = await pool.query(
-      "SELECT show_statistics FROM privacy_settings WHERE user_id = $1",
-      [userId]
-    );
-
-    const showStats = privacyResult.rows[0]?.show_statistics !== false;
+    const showStats = await checkPrivacySetting(userId, 'show_statistics');
 
     if (!showStats) {
       return res.status(403).json({ error: "User statistics are private" });
@@ -507,7 +531,7 @@ app.get("/api/profile/:username/stats", async (req, res) => {
 
     if (statsResult.rows.length === 0) {
       // Create default statistics record
-      const statId = `stat_${ulid()}`;
+      const statId = generateULID('stat');
       await pool.query(
         `INSERT INTO user_statistics (stat_id, user_id)
          VALUES ($1, $2)`,
@@ -556,7 +580,7 @@ app.get("/api/profile/:username/privacy", authenticateToken, async (req, res) =>
 
     if (result.rows.length === 0) {
       // Create default privacy settings
-      const settingId = `priv_${ulid()}`;
+      const settingId = generateULID('priv');
       await pool.query(
         `INSERT INTO privacy_settings (setting_id, user_id)
          VALUES ($1, $2)`,
@@ -601,7 +625,7 @@ app.put("/api/profile/privacy", authenticateToken, async (req, res) => {
 
     if (existingResult.rows.length === 0) {
       // Create new privacy settings
-      const settingId = `priv_${ulid()}`;
+      const settingId = generateULID('priv');
       result = await pool.query(
         `INSERT INTO privacy_settings (
            setting_id, user_id, privacy_preset, show_statistics, show_decks,
@@ -678,24 +702,16 @@ app.get("/api/profile/:username/achievements", async (req, res) => {
 
   try {
     // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1",
-      [username.toLowerCase()]
-    );
+    const user = await getUserByUsername(username);
 
-    if (userResult.rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const userId = userResult.rows[0].user_id;
+    const userId = user.user_id;
 
     // Check privacy settings
-    const privacyResult = await pool.query(
-      "SELECT show_achievements FROM privacy_settings WHERE user_id = $1",
-      [userId]
-    );
-
-    const showAchievements = privacyResult.rows[0]?.show_achievements !== false;
+    const showAchievements = await checkPrivacySetting(userId, 'show_achievements');
 
     if (!showAchievements) {
       return res.status(403).json({ error: "User achievements are private" });
@@ -753,7 +769,7 @@ app.post("/api/profile/follow/:username", authenticateToken, async (req, res) =>
     }
 
     // Create follow relationship
-    const followId = `flw_${ulid()}`;
+    const followId = generateULID('flw');
     const result = await pool.query(
       `INSERT INTO user_follows (follow_id, follower_id, following_id)
        VALUES ($1, $2, $3)
@@ -813,24 +829,16 @@ app.get("/api/profile/:username/followers", async (req, res) => {
 
   try {
     // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1",
-      [username.toLowerCase()]
-    );
+    const user = await getUserByUsername(username);
 
-    if (userResult.rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const userId = userResult.rows[0].user_id;
+    const userId = user.user_id;
 
     // Check privacy settings
-    const privacyResult = await pool.query(
-      "SELECT show_followers FROM privacy_settings WHERE user_id = $1",
-      [userId]
-    );
-
-    const showFollowers = privacyResult.rows[0]?.show_followers !== false;
+    const showFollowers = await checkPrivacySetting(userId, 'show_followers');
 
     if (!showFollowers) {
       return res.status(403).json({ error: "User followers list is private" });
@@ -860,24 +868,16 @@ app.get("/api/profile/:username/following", async (req, res) => {
 
   try {
     // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1",
-      [username.toLowerCase()]
-    );
+    const user = await getUserByUsername(username);
 
-    if (userResult.rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const userId = userResult.rows[0].user_id;
+    const userId = user.user_id;
 
     // Check privacy settings
-    const privacyResult = await pool.query(
-      "SELECT show_followers FROM privacy_settings WHERE user_id = $1",
-      [userId]
-    );
-
-    const showFollowers = privacyResult.rows[0]?.show_followers !== false;
+    const showFollowers = await checkPrivacySetting(userId, 'show_followers');
 
     if (!showFollowers) {
       return res.status(403).json({ error: "User following list is private" });
@@ -917,7 +917,7 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
 
   try {
     // Generate ULID for session
-    const sessionId = `rev_${ulid()}`;
+    const sessionId = generateULID('rev');
 
     const result = await pool.query(
       `INSERT INTO study_sessions (session_id, user_id, card_id, time_spent_ms, rating, difficulty_rating)
@@ -953,7 +953,7 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
       const { cardId, timeSpentMs, rating, difficultyRating } = session;
 
       // Generate ULID for each session
-      const sessionId = `rev_${ulid()}`;
+      const sessionId = generateULID('rev');
 
       const result = await client.query(
         `INSERT INTO study_sessions (session_id, user_id, card_id, time_spent_ms, rating, difficulty_rating)

@@ -9,6 +9,48 @@ interface CommandHistoryProps {
   showSearch?: boolean;
 }
 
+// Shared helper functions
+function formatTimestamp(date: Date): string {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return 'just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  return date.toLocaleDateString();
+}
+
+function getResultColor(result?: 'success' | 'error' | 'info'): string {
+  switch (result) {
+    case 'success':
+      return 'text-green-400';
+    case 'error':
+      return 'text-red-400';
+    case 'info':
+      return 'text-cyan';
+    default:
+      return 'text-text-muted';
+  }
+}
+
+function getResultSymbol(result?: 'success' | 'error' | 'info'): string {
+  switch (result) {
+    case 'success':
+      return '✓';
+    case 'error':
+      return '✗';
+    case 'info':
+      return 'ℹ';
+    default:
+      return '→';
+  }
+}
+
 export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHistoryProps) {
   const { history, clearHistory, searchHistory } = useCommandHistory();
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,47 +66,6 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
   const displayHistory = isExpanded
     ? filteredHistory
     : filteredHistory.slice(0, maxVisible);
-
-  const formatTimestamp = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (seconds < 60) return 'just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
-  };
-
-  const getResultColor = (result?: 'success' | 'error' | 'info') => {
-    switch (result) {
-      case 'success':
-        return 'text-green-400';
-      case 'error':
-        return 'text-red-400';
-      case 'info':
-        return 'text-cyan';
-      default:
-        return 'text-text-muted';
-    }
-  };
-
-  const getResultSymbol = (result?: 'success' | 'error' | 'info') => {
-    switch (result) {
-      case 'success':
-        return '✓';
-      case 'error':
-        return '✗';
-      case 'info':
-        return 'ℹ';
-      default:
-        return '→';
-    }
-  };
 
   return (
     <TerminalBorder className="p-6">
@@ -164,47 +165,6 @@ interface HistoryEntryProps {
 }
 
 function HistoryEntry({ entry, index }: HistoryEntryProps) {
-  const formatTimestamp = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (seconds < 60) return 'just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
-  };
-
-  const getResultColor = (result?: 'success' | 'error' | 'info') => {
-    switch (result) {
-      case 'success':
-        return 'text-green-400';
-      case 'error':
-        return 'text-red-400';
-      case 'info':
-        return 'text-cyan';
-      default:
-        return 'text-text-muted';
-    }
-  };
-
-  const getResultSymbol = (result?: 'success' | 'error' | 'info') => {
-    switch (result) {
-      case 'success':
-        return '✓';
-      case 'error':
-        return '✗';
-      case 'info':
-        return 'ℹ';
-      default:
-        return '→';
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}

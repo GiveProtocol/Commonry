@@ -15,36 +15,13 @@ export function TypingText({
   className = '',
   onComplete
 }: TypingTextProps) {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
+  const { displayText, isComplete } = useTypingEffect(text, speed, delay);
 
   useEffect(() => {
-    // Reset state when text changes
-    setDisplayText('');
-    setCurrentIndex(0);
-    setIsComplete(false);
-  }, [text]);
-
-  useEffect(() => {
-    if (isComplete) return;
-
-    const delayTimer = setTimeout(() => {
-      if (currentIndex < text.length) {
-        const timer = setTimeout(() => {
-          setDisplayText(text.substring(0, currentIndex + 1));
-          setCurrentIndex(currentIndex + 1);
-        }, speed);
-
-        return () => clearTimeout(timer);
-      } else if (currentIndex === text.length && !isComplete) {
-        setIsComplete(true);
-        onComplete?.();
-      }
-    }, delay);
-
-    return () => clearTimeout(delayTimer);
-  }, [currentIndex, text, speed, delay, isComplete, onComplete]);
+    if (isComplete) {
+      onComplete?.();
+    }
+  }, [isComplete, onComplete]);
 
   return (
     <span className={className}>
