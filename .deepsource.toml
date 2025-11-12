@@ -5,12 +5,18 @@ name = "javascript"
 enabled = true
 
   [analyzers.meta]
+  dialect = "typescript"
+  module_system = "es-modules"
   environment = [
     "nodejs",
     "browser"
   ]
   plugins = ["react"]
-  skip_doc_coverage = ["file-docstring"]
+  skip_doc_coverage = [
+    "function-declaration",
+    "function-expression",
+    "arrow-function-expression"
+  ]
 
   [[analyzers.meta.exclude_rules]]
   code = "JS-0417"
