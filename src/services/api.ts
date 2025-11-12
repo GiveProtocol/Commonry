@@ -54,7 +54,7 @@ class ApiService {
       const data = await response.json();
 
       if (!response.ok) {
-        return { error: data.error || "Request failed" };
+        return { error: data.error || "Request failed", ...data };
       }
 
       return { data };
@@ -160,6 +160,87 @@ class ApiService {
       `/api/leaderboard/${metric}?limit=${limit}`,
     );
   }
+
+  // ==================== PROFILE ENDPOINTS ====================
+
+  async getProfile(username: string) {
+    return this.request<{ profile: UserProfile; privacy: PrivacySettings }>(
+      `/api/profile/${username}`,
+    );
+  }
+
+  async updateProfile(profile: {
+    displayName?: string;
+    bio?: string;
+    pronouns?: string;
+    location?: string;
+    avatarUrl?: string;
+    learningTopics?: string[];
+  }) {
+    return this.request<{ profile: UserProfile }>("/api/profile", {
+      method: "PUT",
+      body: JSON.stringify(profile),
+    });
+  }
+
+  async getProfileStats(username: string) {
+    return this.request<{ stats: ProfileStatistics }>(
+      `/api/profile/${username}/stats`,
+    );
+  }
+
+  async getPrivacySettings(username: string) {
+    return this.request<{ privacy: PrivacySettings }>(
+      `/api/profile/${username}/privacy`,
+    );
+  }
+
+  async updatePrivacySettings(settings: Partial<PrivacySettings>) {
+    return this.request<{ privacy: PrivacySettings }>("/api/profile/privacy", {
+      method: "PUT",
+      body: JSON.stringify(settings),
+    });
+  }
+
+  async getAchievements() {
+    return this.request<{ achievements: Achievement[] }>("/api/achievements");
+  }
+
+  async getUserAchievements(username: string) {
+    return this.request<{ achievements: UserAchievement[] }>(
+      `/api/profile/${username}/achievements`,
+    );
+  }
+
+  async followUser(username: string) {
+    return this.request<{ success: boolean; follow: any }>(
+      `/api/profile/follow/${username}`,
+      {
+        method: "POST",
+      },
+    );
+  }
+
+  async unfollowUser(username: string) {
+    return this.request<{ success: boolean }>(
+      `/api/profile/follow/${username}`,
+      {
+        method: "DELETE",
+      },
+    );
+  }
+
+  async getFollowers(username: string) {
+    return this.request<{ followers: FollowUser[] }>(
+      `/api/profile/${username}/followers`,
+    );
+  }
+
+  async getFollowing(username: string) {
+    return this.request<{ following: FollowUser[] }>(
+      `/api/profile/${username}/following`,
+    );
+  }
 }
 
 // ==================== TYPES ====================
@@ -217,6 +298,83 @@ export interface LeaderboardEntry {
   display_name: string;
   value: number;
   updated_at: string;
+}
+
+export interface UserProfile {
+  userId: string;
+  username: string;
+  displayName: string;
+  bio?: string;
+  pronouns?: string;
+  location?: string;
+  avatarUrl?: string;
+  learningTopics?: string[];
+  memberSince: string;
+}
+
+export interface PrivacySettings {
+  settingId: string;
+  userId: string;
+  privacyPreset: string;
+  showStatistics: boolean;
+  showDecks: boolean;
+  showForumActivity: boolean;
+  showFollowers: boolean;
+  showAchievements: boolean;
+  showGoals: boolean;
+}
+
+export interface ProfileStatistics {
+  statId: string;
+  userId: string;
+  currentStreak: number;
+  longestStreak: number;
+  lastStudyDate?: string;
+  totalStudyDays: number;
+  totalCardsReviewed: number;
+  totalCardsMastered: number;
+  activeDecksCount: number;
+  newCardsThisWeek: number;
+  newCardsThisMonth: number;
+  totalStudyTimeMs: number;
+  averageSessionTimeMs: number;
+  topSubjects: any[];
+  globalRank?: number;
+  optedIntoLeaderboard: boolean;
+}
+
+export interface Achievement {
+  achievementId: string;
+  name: string;
+  description: string;
+  category: string;
+  badgeIcon: string;
+  criteria: any;
+  displayOrder: number;
+  rarity: string;
+}
+
+export interface UserAchievement {
+  userAchievementId: string;
+  progress: number;
+  target: number;
+  unlocked: boolean;
+  unlockedAt?: string;
+  achievementId: string;
+  name: string;
+  description: string;
+  category: string;
+  badgeIcon: string;
+  criteria: any;
+  rarity: string;
+}
+
+export interface FollowUser {
+  userId: string;
+  username: string;
+  displayName: string;
+  avatarUrl?: string;
+  followedAt: string;
 }
 
 // Export singleton instance

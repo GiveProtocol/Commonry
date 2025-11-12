@@ -84,24 +84,28 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
 
   const styles = {
     success: {
-      bg: "bg-green-50 dark:bg-green-900/20",
-      border: "border-green-200 dark:border-green-800",
-      text: "text-green-900 dark:text-green-100",
-      icon: (
-        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-      ),
+      bg: "bg-dark-surface",
+      border: "border-green-500",
+      text: "text-green-400",
+      shadow: "shadow-[0_0_20px_rgba(34,197,94,0.4)]",
+      icon: <CheckCircle className="w-5 h-5 text-green-400" />,
+      symbol: "✓",
     },
     error: {
-      bg: "bg-red-50 dark:bg-red-900/20",
-      border: "border-red-200 dark:border-red-800",
-      text: "text-red-900 dark:text-red-100",
-      icon: <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />,
+      bg: "bg-dark-surface",
+      border: "border-red-500",
+      text: "text-red-400",
+      shadow: "shadow-[0_0_20px_rgba(239,68,68,0.4)]",
+      icon: <AlertCircle className="w-5 h-5 text-red-400" />,
+      symbol: "✗",
     },
     info: {
-      bg: "bg-blue-50 dark:bg-blue-900/20",
-      border: "border-blue-200 dark:border-blue-800",
-      text: "text-blue-900 dark:text-blue-100",
-      icon: <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
+      bg: "bg-dark-surface",
+      border: "border-cyan",
+      text: "text-cyan",
+      shadow: "shadow-[0_0_20px_rgba(0,217,255,0.4)]",
+      icon: <Info className="w-5 h-5 text-cyan" />,
+      symbol: "ℹ",
     },
   };
 
@@ -113,18 +117,34 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       animate={{ opacity: 1, y: 0, x: 0 }}
       exit={{ opacity: 0, x: 100 }}
       transition={{ duration: 0.2 }}
-      className={`${style.bg} ${style.border} ${style.text} border rounded-lg shadow-lg p-4 min-w-[300px] max-w-md pointer-events-auto`}
+      className="pointer-events-auto"
     >
-      <div className="flex items-start gap-3">
-        {style.icon}
-        <p className="flex-1 text-sm font-medium">{toast.message}</p>
-        <button
-          onClick={handleDismiss}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-          aria-label="Dismiss notification"
-        >
-          <X className="w-4 h-4" />
-        </button>
+      <div className={`${style.bg} border-2 ${style.border} ${style.shadow} rounded-lg overflow-hidden min-w-[320px] max-w-md`}>
+        {/* Terminal header */}
+        <div className="h-6 bg-dark-border border-b-2 border-current flex items-center px-3 gap-2 opacity-50">
+          <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+          <div className="w-2 h-2 rounded-full bg-amber/50"></div>
+          <div className="w-2 h-2 rounded-full bg-cyan/50"></div>
+          <span className="ml-1 text-[10px] font-mono text-text-muted">notification</span>
+        </div>
+
+        <div className="p-4">
+          <div className="flex items-start gap-3">
+            <span className={`${style.text} font-mono text-lg font-bold`}>
+              {style.symbol}
+            </span>
+            <p className={`flex-1 text-sm font-mono ${style.text}`}>
+              {toast.message}
+            </p>
+            <button
+              onClick={handleDismiss}
+              className="text-text-muted hover:text-red-400 transition-colors"
+              aria-label="Dismiss notification"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
     </motion.div>
   );

@@ -143,32 +143,32 @@ export function StatsView({ onBack }: StatsViewProps) {
   const currentStreak = stats?.current_streak || 0;
 
   return (
-    <div className="bg-white dark:bg-black min-h-screen">
+    <div className="bg-dark min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between p-8 border-b border-border">
+      <div className="flex items-center justify-between p-8 border-b-2 border-cyan shadow-[0_2px_20px_rgba(0,217,255,0.3)]">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-text-muted hover:text-cyan transition-colors font-mono hover:shadow-cyan-glow"
         >
-          ← Back
+          ← ./back
         </button>
 
-        <h1 className="text-2xl font-bold">Statistics</h1>
+        <h1 className="text-2xl font-bold text-cyan font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">[STATISTICS]</h1>
 
         <div></div>
       </div>
 
       <div className="p-8 max-w-7xl mx-auto">
         {/* Period Selector */}
-        <div className="flex gap-2 mb-8 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 max-w-md mx-auto">
+        <div className="flex gap-2 mb-8 bg-dark-surface border border-cyan/30 rounded-lg p-1 max-w-md mx-auto">
           {(["today", "week", "month", "all"] as TimePeriod[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
+              className={`flex-1 py-2 px-4 rounded-md font-medium font-mono transition-all ${
                 period === p
-                  ? "bg-white dark:bg-gray-700 text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"
+                  : "text-text-muted hover:text-cyan hover:shadow-cyan-glow"
               }`}
             >
               {getPeriodLabel(p)}
@@ -178,11 +178,14 @@ export function StatsView({ onBack }: StatsViewProps) {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full"
-            />
+            <div className="text-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-12 h-12 border-2 border-cyan border-t-transparent rounded-full mx-auto mb-4"
+              />
+              <p className="text-text-muted font-mono text-sm">Loading stats...</p>
+            </div>
           </div>
         ) : (
           <>
@@ -191,7 +194,7 @@ export function StatsView({ onBack }: StatsViewProps) {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6"
+                className="bg-dark-surface border-2 border-cyan/30 hover:border-cyan rounded-lg p-6 hover:shadow-cyan-glow transition-all"
               >
                 <div className="flex flex-col items-center mb-3">
                   <img
@@ -204,11 +207,11 @@ export function StatsView({ onBack }: StatsViewProps) {
                     alt="Target"
                     className="w-12 h-12 mb-2 hidden dark:block"
                   />
-                  <span className="text-blue-900 dark:text-blue-300 text-sm font-medium">
+                  <span className="text-cyan text-sm font-medium font-mono">
                     {period === "all" ? "Total Cards" : "Cards Studied"}
                   </span>
                 </div>
-                <div className="text-4xl font-bold text-blue-900 dark:text-blue-100 text-center">
+                <div className="text-4xl font-bold text-cyan text-center font-mono">
                   {cardsStudied}
                 </div>
               </motion.div>
@@ -217,7 +220,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-800 rounded-xl p-6"
+                className="bg-dark-surface border-2 border-amber/30 hover:border-amber rounded-lg p-6 hover:shadow-amber-glow transition-all"
               >
                 <div className="flex flex-col items-center mb-3">
                   <img
@@ -230,11 +233,11 @@ export function StatsView({ onBack }: StatsViewProps) {
                     alt="Sundial"
                     className="w-12 h-12 mb-2 hidden dark:block"
                   />
-                  <span className="text-purple-900 dark:text-purple-300 text-sm font-medium">
+                  <span className="text-amber text-sm font-medium font-mono">
                     Time Spent
                   </span>
                 </div>
-                <div className="text-4xl font-bold text-purple-900 dark:text-purple-100 text-center">
+                <div className="text-4xl font-bold text-amber text-center font-mono">
                   {formatTime(timeSpent)}
                 </div>
               </motion.div>
@@ -243,7 +246,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-xl p-6"
+                className="bg-dark-surface border-2 border-cyan/30 hover:border-cyan rounded-lg p-6 hover:shadow-cyan-glow transition-all"
               >
                 <div className="flex flex-col items-center mb-3">
                   <img
@@ -256,11 +259,11 @@ export function StatsView({ onBack }: StatsViewProps) {
                     alt="Chart"
                     className="w-12 h-12 mb-2 hidden dark:block"
                   />
-                  <span className="text-green-900 dark:text-green-300 text-sm font-medium">
+                  <span className="text-cyan text-sm font-medium font-mono">
                     Retention Rate
                   </span>
                 </div>
-                <div className="text-4xl font-bold text-green-900 dark:text-green-100 text-center">
+                <div className="text-4xl font-bold text-cyan text-center font-mono">
                   {retentionRate.toFixed(1)}%
                 </div>
               </motion.div>
@@ -269,7 +272,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border border-orange-200 dark:border-orange-800 rounded-xl p-6"
+                className="bg-dark-surface border-2 border-amber/30 hover:border-amber rounded-lg p-6 hover:shadow-amber-glow transition-all"
               >
                 <div className="flex flex-col items-center mb-3">
                   <img
@@ -282,11 +285,11 @@ export function StatsView({ onBack }: StatsViewProps) {
                     alt="Fire"
                     className="w-12 h-12 mb-2 hidden dark:block"
                   />
-                  <span className="text-orange-900 dark:text-orange-300 text-sm font-medium">
+                  <span className="text-amber text-sm font-medium font-mono">
                     Current Streak
                   </span>
                 </div>
-                <div className="text-4xl font-bold text-orange-900 dark:text-orange-100 text-center">
+                <div className="text-4xl font-bold text-amber text-center font-mono">
                   {currentStreak}
                   <span className="text-lg ml-1">days</span>
                 </div>
@@ -298,16 +301,16 @@ export function StatsView({ onBack }: StatsViewProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-card border border-border rounded-xl p-6"
+              className="bg-dark-surface border-2 border-amber rounded-lg p-6 shadow-[0_0_30px_rgba(251,191,36,0.2)]"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-2xl font-bold">Leaderboard</h2>
+                  <h2 className="text-2xl font-bold text-amber font-mono [text-shadow:0_0_15px_rgba(251,191,36,0.5)]">[LEADERBOARD]</h2>
                 </div>
 
                 {/* User Rank Badge */}
                 {userRank?.rank && (
-                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2">
+                  <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2">
                     <div className="text-xs text-muted-foreground mb-1">
                       Your Rank
                     </div>
@@ -319,7 +322,7 @@ export function StatsView({ onBack }: StatsViewProps) {
               </div>
 
               {/* Metric Selector */}
-              <div className="flex gap-2 mb-6 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 overflow-x-auto">
+              <div className="flex gap-2 mb-6 bg-dark border border-cyan/30 rounded-lg p-1 overflow-x-auto">
                 {(
                   [
                     "total_cards",
@@ -331,10 +334,10 @@ export function StatsView({ onBack }: StatsViewProps) {
                   <button
                     key={metric}
                     onClick={() => setSelectedMetric(metric)}
-                    className={`py-2 px-4 rounded-md font-medium whitespace-nowrap transition-all ${
+                    className={`py-2 px-4 rounded-md font-medium font-mono whitespace-nowrap transition-all ${
                       selectedMetric === metric
-                        ? "bg-white dark:bg-gray-700 text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"
+                        : "text-text-muted hover:text-cyan"
                     }`}
                   >
                     {getMetricLabel(metric)}
@@ -359,7 +362,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                       transition={{ delay: index * 0.05 }}
                       className={`flex items-center justify-between p-4 rounded-lg transition-all ${
                         entry.user_id === user?.id
-                          ? "bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700"
+                          ? "bg-cyan-50 dark:bg-cyan-900/20 border-2 border-cyan-300 dark:border-cyan-700"
                           : "bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
                       }`}
                     >
@@ -384,7 +387,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                               {entry.display_name || entry.username}
                             </span>
                             {entry.user_id === user?.id && (
-                              <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
+                              <span className="text-xs bg-cyan-600 text-white px-2 py-0.5 rounded-full">
                                 You
                               </span>
                             )}
@@ -410,7 +413,7 @@ export function StatsView({ onBack }: StatsViewProps) {
 
               {/* View More Button */}
               {leaderboard.length > 10 && (
-                <button className="w-full mt-4 py-3 text-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-medium transition-all">
+                <button className="w-full mt-4 py-3 text-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 rounded-lg font-medium transition-all">
                   View Full Leaderboard ({leaderboard.length} users)
                 </button>
               )}
@@ -424,13 +427,13 @@ export function StatsView({ onBack }: StatsViewProps) {
                 transition={{ delay: 0.5 }}
                 className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-800/20 border border-cyan-200 dark:border-cyan-800 rounded-xl p-6">
                   <div className="text-center mb-3">
-                    <span className="text-indigo-900 dark:text-indigo-300 text-lg font-medium">
+                    <span className="text-cyan-900 dark:text-cyan-300 text-lg font-medium">
                       Longest Streak
                     </span>
                   </div>
-                  <div className="text-5xl font-bold text-indigo-900 dark:text-indigo-100 text-center">
+                  <div className="text-5xl font-bold text-cyan-900 dark:text-cyan-100 text-center">
                     {stats.longest_streak}
                     <span className="text-2xl ml-2">days</span>
                   </div>

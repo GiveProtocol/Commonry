@@ -12,7 +12,11 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<{ error?: string }>;
+  login: (username: string, password: string) => Promise<{
+    error?: string;
+    emailNotVerified?: boolean;
+    email?: string;
+  }>;
   signup: (
     username: string,
     email: string,
@@ -61,7 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await api.login(username, password);
 
     if (response.error) {
-      return { error: response.error };
+      // Pass through email verification info if present
+      return {
+        error: response.error,
+        emailNotVerified: (response as any).emailNotVerified,
+        email: (response as any).email,
+      };
     }
 
     if (response.data) {

@@ -38,6 +38,10 @@ export default function EmailVerificationView({
           if (data.expired) {
             setStatus("expired");
             setMessage(data.error);
+          } else if (data.invalidToken) {
+            // Token was already used or is invalid - might be already verified
+            setStatus("already-verified");
+            setMessage(data.error);
           } else {
             setStatus("error");
             setMessage(data.error || "Failed to verify email");
@@ -62,15 +66,15 @@ export default function EmailVerificationView({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md text-center"
+        className="bg-white dark:bg-card dark:card-border rounded-2xl card-shadow-deep p-8 w-full max-w-md text-center"
       >
         {status === "verifying" && (
           <div className="space-y-4">
-            <Loader2 className="w-16 h-16 text-blue-600 animate-spin mx-auto" />
+            <Loader2 className="w-16 h-16 text-cyan-600 animate-spin mx-auto" />
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Verifying Email...
             </h2>
@@ -100,7 +104,7 @@ export default function EmailVerificationView({
             </div>
             <button
               onClick={handleContinue}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition"
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition"
             >
               Continue to Login
             </button>
@@ -110,8 +114,8 @@ export default function EmailVerificationView({
         {status === "already-verified" && (
           <div className="space-y-6">
             <div className="flex justify-center">
-              <div className="bg-blue-100 dark:bg-blue-900/20 rounded-full p-4">
-                <CheckCircle className="w-16 h-16 text-blue-600 dark:text-blue-400" />
+              <div className="bg-cyan-100 dark:bg-cyan-900/20 rounded-full p-4">
+                <CheckCircle className="w-16 h-16 text-cyan-600 dark:text-cyan-400" />
               </div>
             </div>
             <div>
@@ -122,7 +126,7 @@ export default function EmailVerificationView({
             </div>
             <button
               onClick={handleContinue}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition"
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition"
             >
               Go to Login
             </button>

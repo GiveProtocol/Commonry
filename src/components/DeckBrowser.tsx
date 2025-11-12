@@ -341,12 +341,12 @@ export function DeckBrowser({
 
   const getGradientClass = (index: number): string => {
     const gradients = [
-      "bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500",
+      "bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700",
       "bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500",
       "bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500",
-      "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500",
+      "bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600",
       "bg-gradient-to-r from-pink-500 via-rose-500 to-red-500",
-      "bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500",
+      "bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700",
     ];
     return gradients[index % gradients.length];
   };
@@ -357,36 +357,36 @@ export function DeckBrowser({
   }
 
   return (
-    <div className="bg-white dark:bg-black h-full">
+    <div className="bg-terminal-base h-full">
       {/* Header */}
-      <div className="border-b border-border py-14">
+      <div className="border-b-2 border-terminal-primary dark:border-cyan py-14 shadow-terminal-glow dark:shadow-[0_2px_20px_rgba(0,217,255,0.3)]">
         <div className="flex items-center justify-between px-8 relative">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-terminal-muted dark:text-text-muted hover:terminal-primary dark:hover:text-cyan transition-colors font-mono hover:shadow-terminal-glow dark:hover:shadow-cyan-glow"
           >
             <ArrowLeft size={20} />
-            Back
+            ./back
           </button>
 
-          <h1 className="text-xl font-medium absolute left-1/2 -translate-x-1/2">
-            Browse Decks
+          <h1 className="text-xl font-bold font-mono absolute left-1/2 -translate-x-1/2 terminal-primary dark:text-cyan text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+            [BROWSE_DECKS]
           </h1>
 
-          <div className="flex gap-6">
+          <div className="flex gap-6 font-mono">
             <button
               onClick={handleShowCreateDialog}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-terminal-muted dark:text-text-muted hover:terminal-accent dark:hover:text-amber transition-colors hover:[text-shadow:0_0_8px_currentColor]"
             >
               <Plus size={20} />
-              Create
+              [Create]
             </button>
             <button
               onClick={handleShowImportDialog}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-terminal-muted dark:text-text-muted hover:terminal-primary dark:hover:text-cyan transition-colors hover:[text-shadow:0_0_8px_currentColor]"
             >
               <Upload size={20} />
-              Import
+              [Import]
             </button>
           </div>
         </div>
@@ -398,22 +398,22 @@ export function DeckBrowser({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-card border border-border rounded-lg p-8 text-center "
+            className="bg-terminal-surface dark:bg-dark-surface border-2 border-terminal-accent dark:border-amber rounded-lg p-8 text-center shadow-terminal-accent-glow dark:shadow-[0_0_30px_rgba(251,191,36,0.3)]"
           >
             <FolderOpen
               size={48}
-              className="mx-auto text-gray-400 dark:text-white/60 mb-4"
+              className="mx-auto terminal-accent dark:text-amber mb-4"
             />
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              No decks found
+            <h2 className="text-xl font-bold terminal-accent dark:text-amber mb-2 font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+              NO_DECKS_FOUND
             </h2>
-            <p className="text-gray-600 dark:text-white/80 mb-6">
-              Create a new deck or import an Anki deck to get started
+            <p className="text-terminal-muted dark:text-text-muted mb-6 font-mono">
+              $ ./create --deck || ./import --anki
             </p>
             <div className="flex gap-4 justify-center">
               <button
                 onClick={handleShowCreateDialog}
-                className="px-6 py-3 bg-primary hover:opacity-90 text-primary-foreground rounded transition-colors"
+                className="px-6 py-3 bg-terminal-primary dark:bg-cyan hover:bg-terminal-primary/90 dark:hover:bg-cyan-dark text-paper dark:text-dark rounded transition-all font-mono font-bold shadow-terminal-glow dark:shadow-cyan-glow border border-terminal-primary dark:border-cyan"
               >
                 Create Deck
               </button>
@@ -466,7 +466,7 @@ export function DeckBrowser({
                           onClick={handleEditMenuClick}
                           data-deck-id={deck.id}
                         >
-                          <Edit2 size={16} className="text-indigo-500" />
+                          <Edit2 size={16} className="text-cyan-500" />
                           Edit Deck
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
@@ -474,7 +474,7 @@ export function DeckBrowser({
                           onClick={handleDuplicateClick}
                           data-deck-index={index}
                         >
-                          <Copy size={16} className="text-blue-500" />
+                          <Copy size={16} className="text-cyan-500" />
                           Duplicate
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
@@ -534,7 +534,7 @@ export function DeckBrowser({
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-center">
                       <Clock
-                        className="mx-auto mb-1 text-orange-600 dark:text-orange-400"
+                        className="mx-auto mb-1 text-amber-600 dark:text-amber-400"
                         size={16}
                       />
                       <p className="text-lg font-bold text-gray-900 dark:text-white">
@@ -546,7 +546,7 @@ export function DeckBrowser({
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-center">
                       <Sparkles
-                        className="mx-auto mb-1 text-blue-600 dark:text-blue-400"
+                        className="mx-auto mb-1 text-cyan-600 dark:text-cyan-400"
                         size={16}
                       />
                       <p className="text-lg font-bold text-gray-900 dark:text-white">
@@ -562,7 +562,7 @@ export function DeckBrowser({
                   <button
                     onClick={handleStudyClick}
                     data-deck-id={deck.id}
-                    className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                   >
                     <Play size={18} />
                     Study Now
@@ -577,57 +577,67 @@ export function DeckBrowser({
       {/* Create Deck Dialog */}
       <Dialog.Root open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-gray-200 dark:border-white/10">
-            <Dialog.Title className="text-xl font-semibold text-foreground mb-4">
-              Create New Deck
-            </Dialog.Title>
-            <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="new-deck-name"
-                  className="block text-gray-700 dark:text-white/80 text-sm mb-2"
-                >
-                  Deck Name
-                </label>
-                <input
-                  id="new-deck-name"
-                  type="text"
-                  value={newDeckName}
-                  onChange={handleNewDeckNameChange}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-lg text-foreground placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-primary"
-                  placeholder="Enter deck name"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="new-deck-description"
-                  className="block text-gray-700 dark:text-white/80 text-sm mb-2"
-                >
-                  Description (Optional)
-                </label>
-                <textarea
-                  id="new-deck-description"
-                  value={newDeckDescription}
-                  onChange={handleNewDeckDescriptionChange}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-lg text-foreground placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-primary resize-none"
-                  placeholder="Enter deck description"
-                  rows={3}
-                />
-              </div>
-              <div className="flex gap-3 justify-end">
-                <Dialog.Close asChild>
-                  <button className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
-                    Cancel
+          <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
+            {/* Terminal header */}
+            <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
+              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <span className="ml-2 text-xs font-mono text-text-muted">./create-deck</span>
+            </div>
+
+            <div className="p-6">
+              <Dialog.Title className="text-xl font-bold text-cyan mb-4 font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+                [CREATE_NEW_DECK]
+              </Dialog.Title>
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="new-deck-name"
+                    className="block text-text-muted text-sm mb-2 font-mono"
+                  >
+                    $ --name=
+                  </label>
+                  <input
+                    id="new-deck-name"
+                    type="text"
+                    value={newDeckName}
+                    onChange={handleNewDeckNameChange}
+                    className="w-full px-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow font-mono transition-all"
+                    placeholder="enter deck name..."
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="new-deck-description"
+                    className="block text-text-muted text-sm mb-2 font-mono"
+                  >
+                    $ --description= (optional)
+                  </label>
+                  <textarea
+                    id="new-deck-description"
+                    value={newDeckDescription}
+                    onChange={handleNewDeckDescriptionChange}
+                    className="w-full px-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow resize-none font-mono transition-all"
+                    placeholder="enter description..."
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-3 justify-end">
+                  <Dialog.Close asChild>
+                    <button className="px-4 py-2 text-text-muted hover:text-amber transition-colors font-mono hover:[text-shadow:0_0_8px_currentColor]">
+                      [Cancel]
+                    </button>
+                  </Dialog.Close>
+                  <button
+                    onClick={handleCreateDeck}
+                    disabled={!newDeckName.trim()}
+                    className="px-6 py-2 bg-cyan hover:bg-cyan-dark disabled:bg-dark-border disabled:text-text-muted text-dark rounded font-mono font-bold transition-all shadow-cyan-glow border border-cyan disabled:shadow-none disabled:border-dark-border"
+                  >
+                    ./create
                   </button>
-                </Dialog.Close>
-                <button
-                  onClick={handleCreateDeck}
-                  disabled={!newDeckName.trim()}
-                  className="px-6 py-2 bg-primary hover:bg-primary/90 disabled:bg-gray-300 dark:disabled:bg-white/10 disabled:text-gray-500 dark:disabled:text-white/40 text-white rounded-lg transition-colors"
-                >
-                  Create
-                </button>
+                </div>
               </div>
             </div>
           </Dialog.Content>
@@ -637,63 +647,73 @@ export function DeckBrowser({
       {/* Import Deck Dialog */}
       <Dialog.Root open={showImportDialog} onOpenChange={setShowImportDialog}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-gray-200 dark:border-white/10">
-            <Dialog.Title className="text-xl font-semibold text-foreground mb-4">
-              Import Anki Deck
-            </Dialog.Title>
-            <div className="space-y-4">
-              {importError && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <p className="text-red-600 dark:text-red-400 text-sm">
-                    {importError}
-                  </p>
-                </div>
-              )}
+          <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-amber shadow-[0_0_40px_rgba(251,191,36,0.3)] overflow-hidden">
+            {/* Terminal header */}
+            <div className="h-8 bg-dark-border border-b-2 border-amber/30 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
+              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <span className="ml-2 text-xs font-mono text-text-muted">./import-deck</span>
+            </div>
 
-              {isImporting ? (
-                <div className="border-2 border-gray-300 dark:border-white/20 rounded-lg p-8 text-center bg-gray-50 dark:bg-white/5">
-                  <Loader2
-                    size={48}
-                    className="mx-auto text-indigo-600 dark:text-indigo-400 mb-4 animate-spin"
-                  />
-                  <p className="text-gray-900 dark:text-white font-semibold text-lg mb-2">
-                    Importing Deck...
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Please wait while we process your Anki deck
-                  </p>
-                </div>
-              ) : (
-                <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-lg p-8 text-center hover:border-gray-400 dark:hover:border-white/30 transition-colors">
-                  <Upload
-                    size={48}
-                    className="mx-auto text-gray-400 dark:text-white/60 mb-4"
-                  />
-                  <p className="text-gray-600 dark:text-white/80 mb-4">
-                    Select an Anki deck file (.apkg) to import
-                  </p>
-                  <label className="inline-block px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors cursor-pointer">
-                    Choose File
-                    <input
-                      type="file"
-                      accept=".apkg"
-                      onChange={handleImportDeck}
-                      className="hidden"
+            <div className="p-6">
+              <Dialog.Title className="text-xl font-bold text-amber mb-4 font-mono [text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+                [IMPORT_ANKI_DECK]
+              </Dialog.Title>
+              <div className="space-y-4">
+                {importError && (
+                  <div className="bg-red-900/20 border-2 border-red-500/50 rounded-lg p-4">
+                    <p className="text-red-400 text-sm font-mono">
+                      ERROR: {importError}
+                    </p>
+                  </div>
+                )}
+
+                {isImporting ? (
+                  <div className="border-2 border-amber/30 rounded-lg p-8 text-center bg-dark">
+                    <Loader2
+                      size={48}
+                      className="mx-auto text-amber mb-4 animate-spin"
                     />
-                  </label>
-                </div>
-              )}
+                    <p className="text-amber font-semibold text-lg mb-2 font-mono [text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+                      IMPORTING_DECK...
+                    </p>
+                    <p className="text-text-muted text-sm font-mono">
+                      $ processing anki deck...
+                    </p>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-amber/30 rounded-lg p-8 text-center hover:border-amber hover:shadow-amber-glow transition-all">
+                    <Upload
+                      size={48}
+                      className="mx-auto text-amber mb-4"
+                    />
+                    <p className="text-text-muted mb-4 font-mono">
+                      $ select .apkg file
+                    </p>
+                    <label className="inline-block px-6 py-3 bg-amber hover:bg-amber-dark text-dark rounded transition-all cursor-pointer font-mono font-bold shadow-amber-glow border border-amber">
+                      ./choose-file
+                      <input
+                        type="file"
+                        accept=".apkg"
+                        onChange={handleImportDeck}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
 
-              <div className="flex gap-3 justify-end">
-                <Dialog.Close asChild>
-                  <button
-                    className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
-                    disabled={isImporting}
-                  >
-                    Cancel
-                  </button>
-                </Dialog.Close>
+                <div className="flex gap-3 justify-end">
+                  <Dialog.Close asChild>
+                    <button
+                      className="px-4 py-2 text-text-muted hover:text-amber transition-colors font-mono hover:[text-shadow:0_0_8px_currentColor] disabled:opacity-50"
+                      disabled={isImporting}
+                    >
+                      [Cancel]
+                    </button>
+                  </Dialog.Close>
+                </div>
               </div>
             </div>
           </Dialog.Content>
@@ -703,57 +723,67 @@ export function DeckBrowser({
       {/* Edit Deck Dialog */}
       <Dialog.Root open={showEditDialog} onOpenChange={setShowEditDialog}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-gray-200 dark:border-white/10">
-            <Dialog.Title className="text-xl font-semibold text-foreground mb-4">
-              Edit Deck
-            </Dialog.Title>
-            <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="edit-deck-name"
-                  className="block text-gray-700 dark:text-white/80 text-sm mb-2"
-                >
-                  Deck Name
-                </label>
-                <input
-                  id="edit-deck-name"
-                  type="text"
-                  value={editDeckName}
-                  onChange={handleEditDeckNameChange}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-lg text-foreground placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-primary"
-                  placeholder="Enter deck name"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="edit-deck-description"
-                  className="block text-gray-700 dark:text-white/80 text-sm mb-2"
-                >
-                  Description (Optional)
-                </label>
-                <textarea
-                  id="edit-deck-description"
-                  value={editDeckDescription}
-                  onChange={handleEditDeckDescriptionChange}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded-lg text-foreground placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-primary resize-none"
-                  placeholder="Enter deck description"
-                  rows={3}
-                />
-              </div>
-              <div className="flex gap-3 justify-end">
-                <Dialog.Close asChild>
-                  <button className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
-                    Cancel
+          <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
+            {/* Terminal header */}
+            <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
+              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <span className="ml-2 text-xs font-mono text-text-muted">./edit-deck</span>
+            </div>
+
+            <div className="p-6">
+              <Dialog.Title className="text-xl font-bold text-cyan mb-4 font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+                [EDIT_DECK]
+              </Dialog.Title>
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="edit-deck-name"
+                    className="block text-text-muted text-sm mb-2 font-mono"
+                  >
+                    $ --name=
+                  </label>
+                  <input
+                    id="edit-deck-name"
+                    type="text"
+                    value={editDeckName}
+                    onChange={handleEditDeckNameChange}
+                    className="w-full px-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow font-mono transition-all"
+                    placeholder="enter deck name..."
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="edit-deck-description"
+                    className="block text-text-muted text-sm mb-2 font-mono"
+                  >
+                    $ --description= (optional)
+                  </label>
+                  <textarea
+                    id="edit-deck-description"
+                    value={editDeckDescription}
+                    onChange={handleEditDeckDescriptionChange}
+                    className="w-full px-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow resize-none font-mono transition-all"
+                    placeholder="enter description..."
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-3 justify-end">
+                  <Dialog.Close asChild>
+                    <button className="px-4 py-2 text-text-muted hover:text-amber transition-colors font-mono hover:[text-shadow:0_0_8px_currentColor]">
+                      [Cancel]
+                    </button>
+                  </Dialog.Close>
+                  <button
+                    onClick={handleEditDeck}
+                    disabled={!editDeckName.trim()}
+                    className="px-6 py-2 bg-cyan hover:bg-cyan-dark disabled:bg-dark-border disabled:text-text-muted text-dark rounded font-mono font-bold transition-all shadow-cyan-glow border border-cyan disabled:shadow-none disabled:border-dark-border"
+                  >
+                    ./save
                   </button>
-                </Dialog.Close>
-                <button
-                  onClick={handleEditDeck}
-                  disabled={!editDeckName.trim()}
-                  className="px-6 py-2 bg-primary hover:bg-primary/90 disabled:bg-gray-300 dark:disabled:bg-white/10 disabled:text-gray-500 dark:disabled:text-white/40 text-white rounded-lg transition-colors"
-                >
-                  Save Changes
-                </button>
+                </div>
               </div>
             </div>
           </Dialog.Content>
@@ -763,28 +793,38 @@ export function DeckBrowser({
       {/* Delete Deck Dialog */}
       <Dialog.Root open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-gray-200 dark:border-white/10">
-            <Dialog.Title className="text-xl font-semibold text-foreground mb-4">
-              Delete Deck
-            </Dialog.Title>
-            <Dialog.Description className="text-gray-600 dark:text-white/80 mb-6">
-              Are you sure you want to delete &quot;{selectedDeck?.name}&quot;?
-              This will permanently delete all {selectedDeck?.cardCount} cards
-              in this deck. This action cannot be undone.
-            </Dialog.Description>
-            <div className="flex gap-3 justify-end">
-              <Dialog.Close asChild>
-                <button className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
-                  Cancel
+          <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.3)] overflow-hidden">
+            {/* Terminal header */}
+            <div className="h-8 bg-dark-border border-b-2 border-red-500/30 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <span className="ml-2 text-xs font-mono text-text-muted">./delete-deck --confirm</span>
+            </div>
+
+            <div className="p-6">
+              <Dialog.Title className="text-xl font-bold text-red-400 mb-4 font-mono [text-shadow:0_0_15px_rgba(239,68,68,0.5)]">
+                [WARNING_DELETE]
+              </Dialog.Title>
+              <Dialog.Description className="text-text-muted mb-6 font-mono text-sm">
+                <div className="mb-2">$ TARGET: &quot;{selectedDeck?.name}&quot;</div>
+                <div className="mb-2">$ CARDS: {selectedDeck?.cardCount}</div>
+                <div className="text-red-400">$ ACTION: IRREVERSIBLE</div>
+              </Dialog.Description>
+              <div className="flex gap-3 justify-end">
+                <Dialog.Close asChild>
+                  <button className="px-4 py-2 text-text-muted hover:text-cyan transition-colors font-mono hover:[text-shadow:0_0_8px_currentColor]">
+                    [Cancel]
+                  </button>
+                </Dialog.Close>
+                <button
+                  onClick={handleDeleteDeck}
+                  className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-mono font-bold transition-all shadow-[0_0_15px_rgba(239,68,68,0.5)] border border-red-500"
+                >
+                  ./delete --force
                 </button>
-              </Dialog.Close>
-              <button
-                onClick={handleDeleteDeck}
-                className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-              >
-                Delete Deck
-              </button>
+              </div>
             </div>
           </Dialog.Content>
         </Dialog.Portal>
@@ -796,95 +836,105 @@ export function DeckBrowser({
         onOpenChange={setShowCardDirectionDialog}
       >
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-gray-200 dark:border-white/10">
-            <Dialog.Title className="text-xl font-semibold text-foreground mb-4">
-              Choose Card Direction
-            </Dialog.Title>
-            <Dialog.Description className="text-gray-600 dark:text-white/80 mb-6">
-              Select which cards to import from this deck:
-            </Dialog.Description>
-
-            <div className="space-y-3 mb-6">
-              <label
-                aria-label="Both Directions - Import all cards"
-                className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  name="cardDirection"
-                  value="all"
-                  checked={cardDirection === "all"}
-                  onChange={handleCardDirectionChange}
-                  className="mt-1"
-                />
-                <div>
-                  <div className="font-semibold text-foreground">
-                    Both Directions
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-white/60">
-                    Import all cards (bidirectional learning)
-                  </div>
-                </div>
-              </label>
-
-              <label
-                aria-label="Forward Only - First card template only"
-                className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  name="cardDirection"
-                  value="forward"
-                  checked={cardDirection === "forward"}
-                  onChange={handleCardDirectionChange}
-                  className="mt-1"
-                />
-                <div>
-                  <div className="font-semibold text-foreground">
-                    Forward Only
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-white/60">
-                    First card template only (e.g., Image → Text)
-                  </div>
-                </div>
-              </label>
-
-              <label
-                aria-label="Reverse Only - Second card template only"
-                className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  name="cardDirection"
-                  value="reverse"
-                  checked={cardDirection === "reverse"}
-                  onChange={handleCardDirectionChange}
-                  className="mt-1"
-                />
-                <div>
-                  <div className="font-semibold text-foreground">
-                    Reverse Only
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-white/60">
-                    Second card template only (e.g., Text → Image)
-                  </div>
-                </div>
-              </label>
+          <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
+            {/* Terminal header */}
+            <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
+              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <span className="ml-2 text-xs font-mono text-text-muted">./configure-import</span>
             </div>
 
-            <div className="flex gap-3 justify-end">
-              <Dialog.Close asChild>
-                <button className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors">
-                  Cancel
+            <div className="p-6">
+              <Dialog.Title className="text-xl font-bold text-cyan mb-4 font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+                [SELECT_DIRECTION]
+              </Dialog.Title>
+              <Dialog.Description className="text-text-muted mb-6 font-mono text-sm">
+                $ --mode=?
+              </Dialog.Description>
+
+              <div className="space-y-3 mb-6">
+                <label
+                  aria-label="Both Directions - Import all cards"
+                  className="flex items-start gap-3 p-3 rounded-lg border-2 border-cyan/30 hover:border-cyan hover:shadow-cyan-glow cursor-pointer transition-all bg-dark"
+                >
+                  <input
+                    type="radio"
+                    name="cardDirection"
+                    value="all"
+                    checked={cardDirection === "all"}
+                    onChange={handleCardDirectionChange}
+                    className="mt-1 accent-cyan"
+                  />
+                  <div>
+                    <div className="font-semibold text-cyan font-mono">
+                      [BIDIRECTIONAL]
+                    </div>
+                    <div className="text-sm text-text-muted font-mono">
+                      ↔ all cards (front + back)
+                    </div>
+                  </div>
+                </label>
+
+                <label
+                  aria-label="Forward Only - First card template only"
+                  className="flex items-start gap-3 p-3 rounded-lg border-2 border-cyan/30 hover:border-cyan hover:shadow-cyan-glow cursor-pointer transition-all bg-dark"
+                >
+                  <input
+                    type="radio"
+                    name="cardDirection"
+                    value="forward"
+                    checked={cardDirection === "forward"}
+                    onChange={handleCardDirectionChange}
+                    className="mt-1 accent-cyan"
+                  />
+                  <div>
+                    <div className="font-semibold text-cyan font-mono">
+                      [FORWARD_ONLY]
+                    </div>
+                    <div className="text-sm text-text-muted font-mono">
+                      → first template (e.g., img → text)
+                    </div>
+                  </div>
+                </label>
+
+                <label
+                  aria-label="Reverse Only - Second card template only"
+                  className="flex items-start gap-3 p-3 rounded-lg border-2 border-cyan/30 hover:border-cyan hover:shadow-cyan-glow cursor-pointer transition-all bg-dark"
+                >
+                  <input
+                    type="radio"
+                    name="cardDirection"
+                    value="reverse"
+                    checked={cardDirection === "reverse"}
+                    onChange={handleCardDirectionChange}
+                    className="mt-1 accent-cyan"
+                  />
+                  <div>
+                    <div className="font-semibold text-cyan font-mono">
+                      [REVERSE_ONLY]
+                    </div>
+                    <div className="text-sm text-text-muted font-mono">
+                      ← second template (e.g., text → img)
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <Dialog.Close asChild>
+                  <button className="px-4 py-2 text-text-muted hover:text-amber transition-colors font-mono hover:[text-shadow:0_0_8px_currentColor]">
+                    [Cancel]
+                  </button>
+                </Dialog.Close>
+                <button
+                  onClick={handleConfirmImport}
+                  className="px-6 py-2 bg-cyan hover:bg-cyan-dark text-dark rounded font-mono font-bold transition-all shadow-cyan-glow border border-cyan"
+                >
+                  ./import
                 </button>
-              </Dialog.Close>
-              <button
-                onClick={handleConfirmImport}
-                className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors"
-              >
-                Import
-              </button>
+              </div>
             </div>
           </Dialog.Content>
         </Dialog.Portal>

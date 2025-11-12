@@ -3,7 +3,12 @@ import { motion } from "framer-motion";
 import { StudyView } from "./components/StudyView";
 import { DeckBrowser } from "./components/DeckBrowser";
 import { StatsView } from "./components/StatsView";
+import { ProfileView } from "./components/ProfileView";
 import { Footer } from "./components/Footer";
+import { HeroSection } from "./components/sections/HeroSection";
+import { FeaturesSection } from "./components/sections/FeaturesSection";
+import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
+import { SkipToMain } from "./components/ui/SkipToMain";
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { useAuth } from "./contexts/AuthContext";
@@ -46,13 +51,25 @@ function App() {
 
   if (!isInitialized) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-white border-t-transparent rounded-full"
-        />
-        <span className="ml-3 text-white text-lg">Initializing...</span>
+      <div className="flex items-center justify-center min-h-screen bg-terminal-base">
+        <div className="text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-12 h-12 border-2 border-terminal-primary border-t-transparent rounded-full mx-auto mb-4"
+          />
+          <div className="font-mono terminal-primary text-lg">
+            <span className="text-terminal-muted">$ ./init</span>
+            <motion.span
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              className="ml-1"
+            >
+              _
+            </motion.span>
+          </div>
+          <p className="text-terminal-muted text-sm mt-2">Initializing database...</p>
+        </div>
       </div>
     );
   }
@@ -89,57 +106,71 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background relative flex flex-col">
+      <SkipToMain />
+      <ScanlineOverlay />
+
       {/* Navigation Bar */}
       {currentView !== "home" && (
-        <nav className="border-b border-border bg-white dark:bg-black sticky top-0 z-40">
+        <nav className="border-b-2 border-terminal-primary bg-terminal-base sticky top-0 z-40 shadow-terminal-glow">
           <div className="px-8 py-4">
             {/* Logo and Brand */}
             <button
               onClick={navigateToHome}
-              className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
             >
-              <img
-                src={
-                  theme === "dark"
-                    ? "/commonry_black.svg"
-                    : "/commonry_trans.svg"
-                }
-                alt="Commonry Logo"
-                className="h-20"
-              />
-              <span className="text-2xl font-semibold text-foreground tracking-wide">
-                COMMONRY
-              </span>
+              <div className="text-4xl">🏛️</div>
+              <div className="font-mono">
+                <div className="text-terminal-muted text-xs">$ cd ~</div>
+                <div className="terminal-primary text-2xl font-bold group-hover:text-shadow-terminal transition-all">
+                  COMMONRY
+                </div>
+              </div>
             </button>
 
             {/* Navigation Links - Second Row */}
-            <div className="flex items-center justify-end gap-8 text-sm">
+            <div className="flex items-center gap-6 font-mono text-sm">
               <button
                 onClick={navigateToStudy}
-                className={`hover:text-foreground transition-colors ${currentView === "study" ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
+                  currentView === "study"
+                    ? "terminal-primary font-bold text-shadow-terminal"
+                    : "text-terminal-muted hover:terminal-primary"
+                }`}
               >
-                Study
+                [Study]
               </button>
-              <span className="text-muted-foreground">|</span>
+              <span className="text-terminal-muted">|</span>
               <button
                 onClick={navigateToBrowse}
-                className={`hover:text-foreground transition-colors ${currentView === "browse" ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
+                  currentView === "browse"
+                    ? "terminal-primary font-bold text-shadow-terminal"
+                    : "text-terminal-muted hover:terminal-primary"
+                }`}
               >
-                Commons
+                [Commons]
               </button>
-              <span className="text-muted-foreground">|</span>
+              <span className="text-terminal-muted">|</span>
               <button
                 onClick={navigateToSquare}
-                className={`hover:text-foreground transition-colors ${currentView === "square" ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
+                  currentView === "square"
+                    ? "terminal-primary font-bold text-shadow-terminal"
+                    : "text-terminal-muted hover:terminal-primary"
+                }`}
               >
-                The Square
+                [The Square]
               </button>
-              <span className="text-muted-foreground">|</span>
+              <span className="text-terminal-muted">|</span>
               <button
                 onClick={navigateToProfile}
-                className={`hover:text-foreground transition-colors ${currentView === "profile" ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
+                  currentView === "profile"
+                    ? "terminal-primary font-bold text-shadow-terminal"
+                    : "text-terminal-muted hover:terminal-primary"
+                }`}
               >
-                Profile
+                [Profile]
               </button>
             </div>
           </div>
@@ -157,7 +188,9 @@ function App() {
         {theme === "dark" ? "☀️" : "🌙"}
       </button>
 
-      <div className="flex-1 flex flex-col">{renderView()}</div>
+      <main id="main-content" className="flex-1 flex flex-col">
+        {renderView()}
+      </main>
 
       <Footer onNavigate={setCurrentView} />
     </div>
@@ -169,84 +202,11 @@ interface HomeViewProps {
 }
 
 function HomeView({ onNavigate }: HomeViewProps) {
-  const { theme } = useTheme();
-  const handleNavigateStudy = useCallback(
-    () => onNavigate("study"),
-    [onNavigate],
-  );
-  const handleNavigateBrowse = useCallback(
-    () => onNavigate("browse"),
-    [onNavigate],
-  );
-  const handleNavigateStats = useCallback(
-    () => onNavigate("stats"),
-    [onNavigate],
-  );
-
   return (
-    <div className="flex items-center justify-center flex-1 px-6 bg-gradient-to-br from-primary/20 to-secondary/20">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-black border border-border rounded-2xl p-8 shadow-2xl max-w-md w-full animate-float"
-      >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-col items-center mb-2"
-        >
-          <img
-            src={
-              theme === "dark" ? "/commonry_black.svg" : "/commonry_trans.svg"
-            }
-            alt="Commonry Logo"
-            className="h-24 mb-3"
-          />
-          <h1 className="text-3xl font-bold text-foreground text-center gradient-text">
-            COMMONRY
-          </h1>
-        </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-muted-foreground text-center mb-8"
-        >
-          A Commons for Lifelong Learning
-        </motion.p>
-
-        <div className="space-y-4">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleNavigateStudy}
-            className="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground py-4 px-6 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          >
-            Start Studying
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleNavigateBrowse}
-            className="w-full flex items-center justify-center gap-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-4 px-6 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
-          >
-            Browse Decks
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleNavigateStats}
-            className="w-full flex items-center justify-center gap-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-4 px-6 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
-          >
-            Statistics
-          </motion.button>
-        </div>
-      </motion.div>
-    </div>
+    <>
+      <HeroSection onNavigate={onNavigate} />
+      <FeaturesSection />
+    </>
   );
 }
 
@@ -262,78 +222,28 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl p-8 shadow-2xl max-w-md w-full text-center"
+        className="relative border-2 border-terminal-accent dark:border-amber rounded-lg p-8 shadow-terminal-accent-glow dark:shadow-[0_0_30px_rgba(251,191,36,0.3)] max-w-md w-full text-center bg-terminal-surface dark:bg-dark-surface overflow-hidden"
       >
-        <h1 className="text-3xl font-bold text-foreground mb-2">{title}</h1>
-        <p className="text-muted-foreground mb-8">{subtitle}</p>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onBack}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-6 rounded-lg transition-all"
-        >
-          Back to Home
-        </motion.button>
-      </motion.div>
-    </div>
-  );
-}
-
-interface ProfileViewProps {
-  onBack: () => void;
-}
-
-function ProfileView({ onBack }: ProfileViewProps) {
-  const { user, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    onBack();
-  };
-
-  return (
-    <div className="flex items-center justify-center flex-1 px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl p-8 shadow-2xl max-w-md w-full"
-      >
-        <h1 className="text-3xl font-bold text-foreground mb-6 text-center">Profile</h1>
-
-        <div className="space-y-4 mb-8">
-          <div className="border-b border-border pb-3">
-            <p className="text-sm text-muted-foreground">Username</p>
-            <p className="text-lg font-medium text-foreground">{user?.username}</p>
-          </div>
-
-          <div className="border-b border-border pb-3">
-            <p className="text-sm text-muted-foreground">Display Name</p>
-            <p className="text-lg font-medium text-foreground">{user?.displayName}</p>
-          </div>
-
-          <div className="border-b border-border pb-3">
-            <p className="text-sm text-muted-foreground">Email</p>
-            <p className="text-lg font-medium text-foreground">{user?.email}</p>
-          </div>
+        {/* Terminal header */}
+        <div className="absolute top-0 left-0 right-0 h-8 bg-terminal-muted dark:bg-dark-border border-b border-terminal-accent/30 dark:border-amber/30 flex items-center px-4 gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+          <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50"></div>
+          <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50"></div>
         </div>
 
-        <div className="space-y-3">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg transition-all"
-          >
-            Sign Out
-          </motion.button>
-
+        <div className="mt-8">
+          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">$ cat status.txt</div>
+          <h1 className="text-3xl font-bold terminal-accent dark:text-amber mb-2 font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+            {title}
+          </h1>
+          <p className="text-terminal-muted dark:text-text-muted mb-8 font-mono">{subtitle}</p>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onBack}
-            className="w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground py-3 px-6 rounded-lg transition-all"
+            className="bg-terminal-primary dark:bg-cyan hover:bg-terminal-primary/90 dark:hover:bg-cyan-dark text-paper dark:text-dark py-3 px-6 rounded border border-terminal-primary dark:border-cyan font-mono font-bold transition-all shadow-terminal-glow dark:shadow-cyan-glow"
           >
-            Back to Home
+            ./back-to-home
           </motion.button>
         </div>
       </motion.div>
@@ -342,3 +252,4 @@ function ProfileView({ onBack }: ProfileViewProps) {
 }
 
 export default App;
+

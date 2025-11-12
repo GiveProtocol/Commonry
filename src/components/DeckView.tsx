@@ -235,13 +235,13 @@ export function DeckView({ deckId, onBack }: DeckViewProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "new":
-        return "text-blue-400";
+        return "text-cyan-400";
       case "learning":
         return "text-yellow-400";
       case "review":
         return "text-green-400";
       case "relearning":
-        return "text-orange-400";
+        return "text-amber-400";
       default:
         return "text-gray-500 dark:text-white/60";
     }
@@ -365,7 +365,7 @@ export function DeckView({ deckId, onBack }: DeckViewProps) {
                     <button
                       onClick={handleRetireClick}
                       data-card-id={card.id}
-                      className="p-2 text-gray-500 dark:text-white/60 hover:text-orange-400 hover:bg-orange-500/10 rounded-lg transition-colors"
+                      className="p-2 text-gray-500 dark:text-white/60 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors"
                       title="Retire from rotation"
                     >
                       <Archive size={16} />

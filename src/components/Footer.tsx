@@ -1,49 +1,17 @@
-import { useCallback } from "react";
-import { Github } from "lucide-react";
-
 interface FooterProps {
   onNavigate?: (view: "home") => void;
 }
 
 export function Footer({ onNavigate }: FooterProps) {
-  const handleNavigateHome = useCallback(() => {
-    onNavigate?.("home");
-  }, [onNavigate]);
-
   return (
-    <footer className="border-t border-border mt-auto">
+    <footer className="border-t-2 border-terminal-muted dark:border-dark-border bg-terminal-base mt-auto">
       <div className="max-w-7xl mx-auto px-8 py-6">
-        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
-          <div className="flex items-center">
-            <button onClick={handleNavigateHome} className="cursor-pointer">
-              <img
-                src="/commonry_text_only.png"
-                alt="Commonry"
-                className="h-4"
-              />
-            </button>
+        <div className="text-center">
+          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">
+            $ echo "Infrastructure, not a product" | ./commit-to-commons
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-muted-foreground">
-            <button className="hover:text-foreground transition-colors">
-              Library
-            </button>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
-            >
-              <Github size={16} />
-              GitHub
-            </a>
-            <a
-              href="https://bsky.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              Bluesky
-            </a>
+          <div className="font-mono text-terminal-muted dark:text-text-muted text-xs">
+            └─ Operated by Give Protocol Foundation • MIT License
           </div>
         </div>
       </div>

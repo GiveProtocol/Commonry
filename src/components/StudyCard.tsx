@@ -148,19 +148,19 @@ export default function StudyCard({
       value: 2,
       label: "Hard",
       interval: "3 days",
-      bgColor: "bg-orange-100",
-      hoverColor: "hover:bg-orange-200",
-      textColor: "text-orange-700",
-      borderColor: "border-orange-300",
+      bgColor: "bg-amber-100",
+      hoverColor: "hover:bg-amber-200",
+      textColor: "text-amber-700",
+      borderColor: "border-amber-300",
     },
     {
       value: 3,
       label: "Good",
       interval: "10 days",
-      bgColor: "bg-blue-100",
-      hoverColor: "hover:bg-blue-200",
-      textColor: "text-blue-700",
-      borderColor: "border-blue-300",
+      bgColor: "bg-cyan-100",
+      hoverColor: "hover:bg-cyan-200",
+      textColor: "text-cyan-700",
+      borderColor: "border-cyan-300",
     },
     {
       value: 4,
@@ -184,7 +184,7 @@ export default function StudyCard({
           tabIndex={!isFlipped ? 0 : -1}
           role={!isFlipped ? "button" : undefined}
           aria-label={!isFlipped ? "Click to reveal answer" : undefined}
-          className={`${!isFlipped ? "cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600" : ""} bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center border-2 border-gray-200 dark:border-gray-700 transition-colors min-h-[200px]`}
+          className={`${!isFlipped ? "cursor-pointer hover:border-cyan-300 dark:hover:border-cyan-600" : ""} bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center border-2 border-gray-200 dark:border-gray-700 transition-colors min-h-[200px]`}
         >
           {frontAudioUrl && (
             <button
@@ -192,12 +192,12 @@ export default function StudyCard({
               className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
               title="Play audio"
             >
-              <Volume2 className="w-5 h-5 text-indigo-600" />
+              <Volume2 className="w-5 h-5 text-cyan-600" />
             </button>
           )}
 
           <div className="text-center w-full">
-            <span className="inline-block px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-full mb-4">
+            <span className="inline-block px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 text-xs font-semibold rounded-full mb-4">
               Question
             </span>
             {frontImageUrl && (
@@ -312,7 +312,7 @@ export default function StudyCard({
       <div className="w-full max-w-2xl mt-12 grid grid-cols-3 gap-4">
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2 flex items-center gap-2">
-            <Clock size={16} className="text-orange-500" />
+            <Clock size={16} className="text-amber-500" />
             Time
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -322,7 +322,7 @@ export default function StudyCard({
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2 flex items-center gap-2">
-            <BarChart3 size={16} className="text-purple-500" />
+            <BarChart3 size={16} className="text-cyan-500" />
             Streak
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -331,7 +331,7 @@ export default function StudyCard({
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2 flex items-center gap-2">
-            <BarChart3 size={16} className="text-indigo-500" />
+            <BarChart3 size={16} className="text-cyan-500" />
             Reviewed
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">

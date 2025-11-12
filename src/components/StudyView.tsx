@@ -225,26 +225,29 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
 
   if (isLoading && sessionStats.reviewed === 0) {
     return (
-      <div className="h-full flex items-center justify-center bg-background">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
-        />
+      <div className="h-full flex items-center justify-center bg-terminal-base">
+        <div className="text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-12 h-12 border-2 border-terminal-primary dark:border-cyan border-t-transparent rounded-full mx-auto mb-4"
+          />
+          <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Loading cards...</p>
+        </div>
       </div>
     );
   }
 
   if (!currentCard) {
     return (
-      <div className="bg-white dark:bg-black p-8 h-full">
+      <div className="bg-terminal-base p-8 h-full">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <button
             onClick={onBack}
-            className="mb-8 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors border border-border rounded px-4 py-2"
+            className="mb-8 flex items-center gap-2 text-terminal-muted dark:text-text-muted hover:terminal-primary dark:hover:text-cyan transition-colors border border-terminal-primary/30 dark:border-cyan/30 rounded px-4 py-2 font-mono hover:shadow-terminal-glow dark:hover:shadow-cyan-glow"
           >
-            ← Back
+            ← ./back
           </button>
 
           {/* Header */}
@@ -253,11 +256,11 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             animate={{ y: 0, opacity: 1 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl font-medium gradient-text mb-3">
-              Commonry App
+            <h1 className="text-4xl font-bold terminal-primary dark:text-cyan mb-3 font-mono text-shadow-terminal dark:[text-shadow:0_0_20px_rgba(0,217,255,0.5)]">
+              COMMONRY
             </h1>
-            <p className="text-muted-foreground">
-              Your commons for lifelong learning
+            <p className="text-terminal-muted dark:text-text-muted font-mono">
+              $ ./study --mode=review
             </p>
 
             {/* Deck Selector */}
@@ -265,18 +268,18 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               <div className="mt-6 flex items-center justify-center gap-3">
                 <label
                   htmlFor="deck-selector-top"
-                  className="text-gray-600 dark:text-gray-400"
+                  className="text-terminal-muted dark:text-text-muted font-mono"
                 >
-                  Studying:
+                  --deck=
                 </label>
                 <select
                   id="deck-selector-top"
                   value={selectedDeck}
                   onChange={handleDeckChange}
-                  className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  className="px-4 py-2 bg-terminal-surface dark:bg-dark-surface border-2 border-terminal-primary/30 dark:border-cyan/30 rounded terminal-primary dark:text-cyan font-mono focus:outline-none focus:border-terminal-primary dark:focus:border-cyan focus:shadow-terminal-glow dark:focus:shadow-cyan-glow transition-all"
                 >
                   {decks.map((deck) => (
-                    <option key={deck.id} value={deck.id}>
+                    <option key={deck.id} value={deck.id} className="bg-terminal-surface dark:bg-dark terminal-primary dark:text-cyan">
                       {deck.name} ({deck.dueCount} due)
                     </option>
                   ))}
@@ -289,7 +292,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-card border-2 border-border rounded-lg p-12 text-center"
+            className="bg-terminal-surface dark:bg-dark-surface border-2 border-terminal-primary dark:border-cyan rounded-lg p-12 text-center shadow-terminal-glow dark:shadow-[0_0_30px_rgba(0,217,255,0.3)]"
           >
             {sessionStats.reviewed > 0 ? (
               <>
@@ -298,30 +301,31 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.2 }}
                 >
-                  <div className="w-20 h-20 text-green-500 mx-auto mb-6 text-7xl">✓</div>
+                  <div className="w-20 h-20 terminal-primary dark:text-cyan mx-auto mb-6 text-7xl [text-shadow:0_0_20px_var(--terminal-green)] dark:[text-shadow:0_0_20px_#00d9ff]">✓</div>
                 </motion.div>
-                <h2 className="text-3xl font-medium mb-4">Session Complete</h2>
-                <div className="space-y-3 mb-8">
-                  <p className="text-xl">
-                    You reviewed{" "}
-                    <span className="font-medium">{sessionStats.reviewed}</span>{" "}
-                    cards
+                <h2 className="text-3xl font-bold mb-4 terminal-primary dark:text-cyan font-mono text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]">SESSION_COMPLETE</h2>
+                <div className="space-y-3 mb-8 font-mono">
+                  <p className="text-xl text-terminal-base dark:text-text-primary">
+                    <span className="text-terminal-muted dark:text-text-muted">$ reviewed:</span>{" "}
+                    <span className="font-bold terminal-accent dark:text-amber">{sessionStats.reviewed}</span>{" "}
+                    <span className="text-terminal-muted dark:text-text-muted">cards</span>
                   </p>
-                  <p className="text-lg text-muted-foreground">
-                    Accuracy:{" "}
+                  <p className="text-lg text-terminal-muted dark:text-text-muted">
+                    <span className="text-terminal-muted dark:text-text-muted">$ accuracy:</span>{" "}
+                    <span className="terminal-primary dark:text-cyan font-bold">
                     {Math.round(
                       (sessionStats.correct / sessionStats.reviewed) * 100,
                     )}
-                    %
+                    %</span>
                   </p>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-20 h-20 text-primary mx-auto mb-6 text-7xl">✓</div>
-                <h2 className="text-3xl font-medium mb-4">No cards due</h2>
-                <p className="text-xl text-muted-foreground mb-8">
-                  Great job keeping up with your reviews
+                <div className="w-20 h-20 terminal-accent dark:text-amber mx-auto mb-6 text-7xl [text-shadow:0_0_20px_var(--terminal-orange)] dark:[text-shadow:0_0_20px_#fbbf24]">✓</div>
+                <h2 className="text-3xl font-bold mb-4 terminal-accent dark:text-amber font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">ALL_CLEAR</h2>
+                <p className="text-xl text-terminal-muted dark:text-text-muted mb-8 font-mono">
+                  No cards due for review
                 </p>
               </>
             )}
@@ -329,16 +333,16 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleShowImport}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-all"
+                className="px-6 py-3 bg-terminal-accent dark:bg-amber hover:bg-terminal-accent/90 dark:hover:bg-amber-dark text-paper dark:text-dark rounded font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-terminal-accent-glow dark:shadow-amber-glow border border-terminal-accent dark:border-amber"
               >
-                Import Deck
+                ./import-deck
               </button>
 
               <button
                 onClick={handleBackClick}
-                className="px-6 py-3 bg-card border-2 border-border rounded font-medium flex items-center justify-center gap-2 hover:border-foreground transition-all"
+                className="px-6 py-3 bg-terminal-surface dark:bg-dark-surface border-2 border-terminal-primary/30 dark:border-cyan/30 hover:border-terminal-primary dark:hover:border-cyan rounded font-mono font-bold flex items-center justify-center gap-2 hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all terminal-primary dark:text-cyan"
               >
-                Browse Decks
+                ./browse-decks
               </button>
             </div>
           </motion.div>
@@ -350,28 +354,28 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             transition={{ delay: 0.3 }}
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8"
           >
-            <div className="glass rounded-2xl p-6 text-center">
+            <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
               <p className="text-3xl mb-2">📚</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
                 {allCards.length}
               </p>
-              <p className="text-gray-600 dark:text-gray-400">Total Cards</p>
+              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Total Cards</p>
             </div>
 
-            <div className="glass rounded-2xl p-6 text-center">
+            <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-accent/30 dark:border-amber/30 rounded-lg p-6 text-center hover:border-terminal-accent dark:hover:border-amber hover:shadow-terminal-accent-glow dark:hover:shadow-amber-glow transition-all">
               <p className="text-3xl mb-2">🔥</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-2xl font-bold terminal-accent dark:text-amber font-mono">
                 {sessionStats.streak}
               </p>
-              <p className="text-gray-600 dark:text-gray-400">Current Streak</p>
+              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Current Streak</p>
             </div>
 
-            <div className="glass rounded-2xl p-6 text-center">
+            <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
               <p className="text-3xl mb-2">🎯</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
                 20
               </p>
-              <p className="text-gray-600 dark:text-gray-400">Daily Goal</p>
+              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Daily Goal</p>
             </div>
           </motion.div>
         </div>
@@ -439,7 +443,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
     <>
       <AnimatePresence mode="wait">
         {currentCard && (
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-900/10 dark:to-indigo-900/10">
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-cyan-50 to-cyan-50 dark:from-gray-900 dark:via-cyan-900/10 dark:to-cyan-900/10">
             {/* Header */}
             <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-10">
               <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -464,7 +468,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                    <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
                       {sessionStats.reviewed}/
                       {sessionStats.reviewed + dueCards.length}
                     </div>
@@ -482,7 +486,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                 <div className="flex gap-2 items-center">
                   <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-cyan-500 to-cyan-600 transition-all duration-500"
                       style={{
                         width: `${(sessionStats.reviewed / (sessionStats.reviewed + dueCards.length)) * 100}%`,
                       }}

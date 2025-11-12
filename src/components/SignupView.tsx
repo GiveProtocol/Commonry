@@ -15,6 +15,8 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,14 +55,42 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
     setIsLoading(false);
   };
 
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    setResendMessage("");
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/resend-verification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: registeredEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResendMessage(data.message || "Verification email sent!");
+      } else {
+        setResendMessage(data.error || "Failed to resend email. Please try again.");
+      }
+    } catch (err) {
+      setResendMessage("Network error. Please try again.");
+      console.error("Resend verification error:", err);
+    }
+
+    setResendLoading(false);
+  };
+
   // Show success message after registration
   if (showSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md text-center"
+          className="bg-white dark:bg-card dark:card-border rounded-2xl card-shadow-deep p-8 w-full max-w-md text-center"
         >
           <div className="flex justify-center mb-6">
             <div className="bg-green-100 dark:bg-green-900/20 rounded-full p-4">
@@ -72,18 +102,18 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
             Account Created! 🎉
           </h2>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+          <div className="bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <Mail className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
               <div className="text-left">
-                <p className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                <p className="font-semibold text-cyan-900 dark:text-cyan-100 mb-1">
                   Verify Your Email
                 </p>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="text-sm text-cyan-700 dark:text-cyan-300">
                   We've sent a verification link to{" "}
                   <span className="font-semibold">{registeredEmail}</span>
                 </p>
-                <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                <p className="text-sm text-cyan-600 dark:text-cyan-400 mt-2">
                   Please check your inbox and click the link to activate your
                   account.
                 </p>
@@ -94,15 +124,29 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
           <div className="space-y-3">
             <button
               onClick={onSwitchToLogin}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition"
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition"
             >
               Go to Login
             </button>
 
+            {resendMessage && (
+              <div className={`text-sm p-3 rounded-lg ${
+                resendMessage.includes("sent") || resendMessage.includes("Verification email")
+                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                  : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+              }`}>
+                {resendMessage}
+              </div>
+            )}
+
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Didn't receive the email? Check your spam folder or{" "}
-              <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
-                resend verification
+              <button
+                onClick={handleResendVerification}
+                disabled={resendLoading}
+                className="text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {resendLoading ? "Sending..." : "resend verification"}
               </button>
             </p>
           </div>
@@ -112,11 +156,11 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md"
+        className="bg-white dark:bg-card dark:card-border rounded-2xl card-shadow-deep p-8 w-full max-w-md"
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -146,7 +190,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="Choose a username"
               required
               autoComplete="username"
@@ -165,7 +209,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="your.email@example.com"
               required
               autoComplete="email"
@@ -184,7 +228,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="How should we call you?"
               autoComplete="name"
             />
@@ -202,7 +246,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="At least 6 characters"
               required
               autoComplete="new-password"
@@ -212,7 +256,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Creating account..." : "Create Account"}
           </button>
@@ -223,7 +267,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
             Already have an account?{" "}
             <button
               onClick={onSwitchToLogin}
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+              className="text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 font-medium"
             >
               Sign in
             </button>
