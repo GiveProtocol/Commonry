@@ -39,7 +39,7 @@ async function createTransporter() {
     console.log(`   Preview emails at: https://ethereal.email`);
   } else {
     // Use configured SMTP
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT || '587'),
       secure: process.env.EMAIL_PORT === '465',
@@ -61,7 +61,7 @@ async function createTransporter() {
 export async function sendVerificationEmail(email, username, verificationToken) {
   const transporter = await createTransporter();
 
-  const verificationUrl = `${process.env.VITE_API_URL || 'http://localhost:3000'}/verify-email/${verificationToken}`;
+  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || 'Commonry <noreply@commonry.com>',
@@ -134,6 +134,7 @@ export async function sendVerificationEmail(email, username, verificationToken) 
               padding: 12px;
               margin: 20px 0;
               border-radius: 4px;
+              color: #92400e;
             }
           </style>
         </head>
@@ -154,7 +155,7 @@ export async function sendVerificationEmail(email, username, verificationToken) 
             </div>
 
             <p>Or copy and paste this link into your browser:</p>
-            <p style="word-break: break-all; color: #2563eb; font-size: 14px;">${verificationUrl}</p>
+            <p style="word-break: break-all; color: #1f2937; background-color: #f3f4f6; padding: 12px; border-radius: 6px; font-size: 14px;">${verificationUrl}</p>
 
             <div class="warning">
               <strong>⏰ This link will expire in 24 hours.</strong>
@@ -206,7 +207,7 @@ The Commonry Team
 export async function sendPasswordResetEmail(email, username, resetToken) {
   const transporter = await createTransporter();
 
-  const resetUrl = `${process.env.VITE_API_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || 'Commonry <noreply@commonry.com>',
