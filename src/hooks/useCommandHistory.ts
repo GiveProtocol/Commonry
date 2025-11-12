@@ -47,7 +47,7 @@ export function useCommandHistory() {
     metadata?: Record<string, any>
   ) => {
     const entry: CommandHistoryEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: crypto.randomUUID(),
       command,
       timestamp: new Date(),
       type,
