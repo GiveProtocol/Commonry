@@ -26,7 +26,8 @@ async function createTransporter() {
     transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
-      secure: false,
+      secure: false, // Use STARTTLS instead of implicit TLS
+      requireTLS: true, // Require encrypted connection via STARTTLS
       auth: {
         user: testAccount.user,
         pass: testAccount.pass,
@@ -42,7 +43,8 @@ async function createTransporter() {
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: process.env.EMAIL_PORT === '465',
+      secure: process.env.EMAIL_PORT === '465', // Use implicit TLS for port 465
+      requireTLS: process.env.EMAIL_PORT !== '465', // Require STARTTLS for other ports
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
@@ -56,12 +58,32 @@ async function createTransporter() {
 }
 
 /**
+ * Get frontend URL with security validation
+ */
+function getFrontendUrl() {
+  const url = process.env.FRONTEND_URL;
+
+  if (!url) {
+    console.warn('⚠️  FRONTEND_URL not configured. Using localhost for development only.');
+    console.warn('⚠️  This is insecure for production. Set FRONTEND_URL environment variable.');
+    return 'http://localhost:5173'; // Development fallback only
+  }
+
+  if (process.env.NODE_ENV === 'production' && url.startsWith('http://')) {
+    console.error('❌ SECURITY WARNING: Using http:// in production is insecure!');
+    console.error('❌ Please use https:// for FRONTEND_URL in production.');
+  }
+
+  return url;
+}
+
+/**
  * Send verification email to user
  */
 export async function sendVerificationEmail(email, username, verificationToken) {
   const transporter = await createTransporter();
 
-  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
+  const verificationUrl = `${getFrontendUrl()}/verify-email/${verificationToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || 'Commonry <noreply@commonry.com>',
@@ -207,7 +229,7 @@ The Commonry Team
 export async function sendPasswordResetEmail(email, username, resetToken) {
   const transporter = await createTransporter();
 
-  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+  const resetUrl = `${getFrontendUrl()}/reset-password/${resetToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || 'Commonry <noreply@commonry.com>',
