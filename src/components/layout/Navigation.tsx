@@ -11,7 +11,6 @@ interface NavigationProps {
 }
 
 export function Navigation({
-  currentView,
   onNavigate,
   onSignIn,
 }: NavigationProps) {

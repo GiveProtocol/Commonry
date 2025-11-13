@@ -16,10 +16,10 @@ type TimePeriod = "today" | "week" | "month" | "all";
 
 export function StatsView({ onBack }: StatsViewProps) {
   const { user } = useAuth();
-  const [period, setPeriod] = useState<TimePeriod>("today");
+  const [period, _setPeriod] = useState<TimePeriod>("today");
   const [stats, setStats] = useState<UserStatistics | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [selectedMetric, setSelectedMetric] =
+  const [selectedMetric, _setSelectedMetric] =
     useState<LeaderboardMetric>("total_cards");
   const [userRank, setUserRank] = useState<{
     rank: number | null;
