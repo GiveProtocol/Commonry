@@ -22,10 +22,12 @@ export function useCommandHistory() {
       try {
         const parsed = JSON.parse(stored);
         // Convert timestamp strings back to Date objects
-        const historyWithDates = parsed.map((entry: { timestamp: string; [key: string]: unknown }) => ({
-          ...entry,
-          timestamp: new Date(entry.timestamp),
-        }));
+        const historyWithDates = parsed.map(
+          (entry: { timestamp: string; [key: string]: unknown }) => ({
+            ...entry,
+            timestamp: new Date(entry.timestamp),
+          }),
+        );
         setHistory(historyWithDates);
       } catch (error) {
         console.error("Failed to load command history:", error);

@@ -12,7 +12,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<{
+  login: (
+    username: string,
+    password: string,
+  ) => Promise<{
     error?: string;
     emailNotVerified?: boolean;
     email?: string;
@@ -68,8 +71,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Pass through email verification info if present
       return {
         error: response.error,
-        emailNotVerified: (response as { emailNotVerified?: boolean; email?: string }).emailNotVerified,
-        email: (response as { emailNotVerified?: boolean; email?: string }).email,
+        emailNotVerified: (
+          response as { emailNotVerified?: boolean; email?: string }
+        ).emailNotVerified,
+        email: (response as { emailNotVerified?: boolean; email?: string })
+          .email,
       };
     }
 
