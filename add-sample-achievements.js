@@ -12,8 +12,7 @@ async function addSampleAchievements() {
     );
 
     if (userResult.rows.length === 0) {
-      console.error("User not found!");
-      process.exit(1);
+      throw new Error("User not found!");
     }
 
     const userId = userResult.rows[0].user_id;
@@ -119,10 +118,10 @@ async function addSampleAchievements() {
     console.log("    🌟 Hundred Strong - 87/100 cards mastered");
     console.log("    💎 Century Scholar - 12/100 day streak");
 
-    process.exit(0);
+    process.exitCode = 0;
   } catch (error) {
     console.error("❌ Error adding sample achievements:", error);
-    process.exit(1);
+    process.exitCode = 1;
   }
 }
 
