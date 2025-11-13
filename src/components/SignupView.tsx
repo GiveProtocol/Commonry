@@ -110,7 +110,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
                   Verify Your Email
                 </p>
                 <p className="text-sm text-cyan-700 dark:text-cyan-300">
-                  We've sent a verification link to{" "}
+                  We&apos;ve sent a verification link to{" "}
                   <span className="font-semibold">{registeredEmail}</span>
                 </p>
                 <p className="text-sm text-cyan-600 dark:text-cyan-400 mt-2">
@@ -140,7 +140,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
             )}
 
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Didn't receive the email? Check your spam folder or{" "}
+              Didn&apos;t receive the email? Check your spam folder or{" "}
               <button
                 onClick={handleResendVerification}
                 disabled={resendLoading}
