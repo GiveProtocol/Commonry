@@ -21,6 +21,9 @@ enabled = true
 [[analyzers.exclude]]
 identifier = "JS-0417"
 
+[[analyzers.exclude]]
+identifier = "JS-D019"  # False positive: STARTTLS with requireTLS=true is secure
+
 [[analyzers]]
 name = "test-coverage"
 enabled = false

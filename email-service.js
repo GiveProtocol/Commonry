@@ -28,8 +28,11 @@ async function createTransporter() {
     transporter = nodemailer.createTransport({
       host: "smtp.ethereal.email",
       port: 587,
-      secure: true, // Use STARTTLS instead of implicit TLS
-      requireTLS: true, // Require encrypted connection via STARTTLS
+      // SECURITY NOTE: This configuration IS secure (DeepSource JS-D019 is a false positive)
+      // Port 587 requires: secure=false (connection starts plain) + requireTLS=true (forces STARTTLS upgrade)
+      // This is the modern, recommended approach per RFC 8314
+      secure: false, // Connection starts unencrypted, then upgrades via STARTTLS
+      requireTLS: true, // REQUIRED: Forces encrypted TLS connection via STARTTLS command
       auth: {
         user: testAccount.user,
         pass: testAccount.pass,
@@ -45,8 +48,11 @@ async function createTransporter() {
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT || "587"),
-      secure: true,
-      requireTLS: true,
+      // SECURITY NOTE: Both configurations are secure (DeepSource JS-D019 is a false positive)
+      // Port 465: secure=true (implicit TLS from start)
+      // Port 587: secure=false + requireTLS=true (STARTTLS upgrade, per RFC 8314)
+      secure: process.env.EMAIL_PORT === "465", // Implicit TLS for port 465
+      requireTLS: process.env.EMAIL_PORT !== "465", // Force STARTTLS for port 587
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
