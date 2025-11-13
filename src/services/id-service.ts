@@ -117,7 +117,7 @@ export class IdService {
    * @returns True if the id is a valid NoteId, otherwise false.
    */
   static isNoteId(id: string): id is NoteId {
-    return id.startsWith(ENTITY_PREFIXES.note + "_") && this.isValidId(id);
+    return id.startsWith(`${ENTITY_PREFIXES.note}_`) && this.isValidId(id);
   }
 
   /**
@@ -127,7 +127,7 @@ export class IdService {
    * @returns True if the id starts with the card prefix and is a valid id.
    */
   static isCardId(id: string): id is CardId {
-    return id.startsWith(ENTITY_PREFIXES.card + "_") && this.isValidId(id);
+    return id.startsWith(`${ENTITY_PREFIXES.card}_`) && this.isValidId(id);
   }
 
   /**
@@ -136,7 +136,7 @@ export class IdService {
    * @returns True if the id starts with the deck prefix and is a valid id.
    */
   static isDeckId(id: string): id is DeckId {
-    return id.startsWith(ENTITY_PREFIXES.deck + "_") && this.isValidId(id);
+    return id.startsWith(`${ENTITY_PREFIXES.deck}_`) && this.isValidId(id);
   }
 
   /**
@@ -145,7 +145,7 @@ export class IdService {
    * @returns True if the id starts with the review entity prefix and is a valid id.
    */
   static isReviewId(id: string): id is ReviewId {
-    return id.startsWith(ENTITY_PREFIXES.review + "_") && this.isValidId(id);
+    return id.startsWith(`${ENTITY_PREFIXES.review}_`) && this.isValidId(id);
   }
 
   /**
@@ -154,7 +154,7 @@ export class IdService {
    * @returns {boolean} True if the id starts with the media prefix and is valid.
    */
   static isMediaId(id: string): id is MediaId {
-    return id.startsWith(ENTITY_PREFIXES.media + "_") && this.isValidId(id);
+    return id.startsWith(`${ENTITY_PREFIXES.media}_`) && this.isValidId(id);
   }
 
   /**
@@ -163,7 +163,7 @@ export class IdService {
    * @returns True if the id is a UserId; otherwise, false.
    */
   static isUserId(id: string): id is UserId {
-    return id.startsWith(ENTITY_PREFIXES.user + "_") && this.isValidId(id);
+    return id.startsWith(`${ENTITY_PREFIXES.user}_`) && this.isValidId(id);
   }
 
   // ===== Parsing Methods =====
