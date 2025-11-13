@@ -638,10 +638,10 @@ app.get(
         return res.json({ privacy: newResult.rows[0] });
       }
 
-      res.json({ privacy: result.rows[0] });
+      return res.json({ privacy: result.rows[0] });
     } catch (error) {
       console.error("Get privacy settings error:", error);
-      res.status(500).json({ error: "Failed to get privacy settings" });
+      return res.status(500).json({ error: "Failed to get privacy settings" });
     }
   },
 );
@@ -827,13 +827,13 @@ app.post(
         [followId, req.userId, followingId],
       );
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         follow: result.rows[0],
       });
     } catch (error) {
       console.error("Follow user error:", error);
-      res.status(500).json({ error: "Failed to follow user" });
+      return res.status(500).json({ error: "Failed to follow user" });
     }
   },
 );
@@ -870,10 +870,10 @@ app.delete(
         return res.status(404).json({ error: "Not following this user" });
       }
 
-      res.json({ success: true });
+      return res.json({ success: true });
     } catch (error) {
       console.error("Unfollow user error:", error);
-      res.status(500).json({ error: "Failed to unfollow user" });
+      return res.status(500).json({ error: "Failed to unfollow user" });
     }
   },
 );
