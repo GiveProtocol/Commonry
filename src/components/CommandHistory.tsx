@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Clock, Trash2, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCommandHistory, CommandHistoryEntry } from '../hooks/useCommandHistory';
@@ -67,6 +67,26 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
     ? filteredHistory
     : filteredHistory.slice(0, maxVisible);
 
+  const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const handleFilterAll = useCallback(() => setFilterType('all'), []);
+  const handleFilterAction = useCallback(() => setFilterType('action'), []);
+  const handleFilterNavigation = useCallback(() => setFilterType('navigation'), []);
+  const handleFilterSystem = useCallback(() => setFilterType('system'), []);
+
+  const filterHandlers: Record<'all' | 'action' | 'navigation' | 'system', () => void> = {
+    all: handleFilterAll,
+    action: handleFilterAction,
+    navigation: handleFilterNavigation,
+    system: handleFilterSystem,
+  };
+
+  const handleToggleExpand = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
+
   return (
     <TerminalBorder className="p-6">
       {/* Header */}
@@ -96,7 +116,7 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="$ grep..."
               className="w-full pl-10 pr-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow font-mono text-sm transition-all"
             />
@@ -106,7 +126,7 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
             {(['all', 'action', 'navigation', 'system'] as const).map((type) => (
               <button
                 key={type}
-                onClick={() => setFilterType(type)}
+                onClick={filterHandlers[type]}
                 className={`px-3 py-1 rounded font-mono text-xs transition-all ${
                   filterType === type
                     ? 'bg-cyan text-dark border-2 border-cyan shadow-cyan-glow'
@@ -137,7 +157,7 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
 
           {filteredHistory.length > maxVisible && (
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={handleToggleExpand}
               className="w-full py-2 text-cyan hover:text-cyan-dark transition-colors font-mono text-sm flex items-center justify-center gap-2"
             >
               {isExpanded ? (

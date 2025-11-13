@@ -161,12 +161,20 @@ export function StatsView({ onBack }: StatsViewProps) {
       </div>
 
       <div className="p-8 max-w-7xl mx-auto">
+          const periodHandlers = React.useMemo(() => {
+            const handlers = {} as Record<TimePeriod, () => void>;
+            (["today", "week", "month", "all"] as TimePeriod[]).forEach((p) => {
+              handlers[p] = () => setPeriod(p);
+            });
+            return handlers;
+          }, [setPeriod]);
+
         {/* Period Selector */}
         <div className="flex gap-2 mb-8 bg-dark-surface border border-cyan/30 rounded-lg p-1 max-w-md mx-auto">
           {(["today", "week", "month", "all"] as TimePeriod[]).map((p) => (
             <button
               key={p}
-              onClick={() => setPeriod(p)}
+              onClick={periodHandlers[p]}
               className={`flex-1 py-2 px-4 rounded-md font-medium font-mono transition-all ${
                 period === p
                   ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"
@@ -336,19 +344,28 @@ export function StatsView({ onBack }: StatsViewProps) {
                     "retention_rate",
                     "current_streak",
                   ] as LeaderboardMetric[]
-                ).map((metric) => (
-                  <button
-                    key={metric}
-                    onClick={() => setSelectedMetric(metric)}
-                    className={`py-2 px-4 rounded-md font-medium font-mono whitespace-nowrap transition-all ${
-                      selectedMetric === metric
-                        ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"
-                        : "text-text-muted hover:text-cyan"
-                    }`}
-                  >
-                    {getMetricLabel(metric)}
-                  </button>
-                ))}
+                const handleMetricClick = React.useCallback(
+                  (event: React.MouseEvent<HTMLButtonElement>) => {
+                    const metric = event.currentTarget.getAttribute('data-metric') as string;
+                    setSelectedMetric(metric);
+                  },
+                  [setSelectedMetric]
+                );
+
+                                ).map((metric) => (
+                                  <button
+                                    key={metric}
+                                    data-metric={metric}
+                                    onClick={handleMetricClick}
+                                    className={`py-2 px-4 rounded-md font-medium font-mono whitespace-nowrap transition-all ${
+                                      selectedMetric === metric
+                                        ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"
+                                        : "text-text-muted hover:text-cyan"
+                                    }`}
+                                  >
+                                    {getMetricLabel(metric)}
+                                  </button>
+                                ))}
               </div>
 
               {/* Leaderboard List */}

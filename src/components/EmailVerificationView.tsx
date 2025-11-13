@@ -65,6 +65,10 @@ export default function EmailVerificationView({
     }
   };
 
+  const handleResendVerification = React.useCallback(() => {
+    // TODO: Implement resend verification
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
       <motion.div
@@ -148,9 +152,7 @@ export default function EmailVerificationView({
             </div>
             <div className="space-y-3">
               <button
-                onClick={() => {
-                  /* TODO: Implement resend verification */
-                }}
+                onClick={handleResendVerification}
                 className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-3 px-4 rounded-lg transition"
               >
                 Resend Verification Email

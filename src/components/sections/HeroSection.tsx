@@ -13,6 +13,15 @@ interface HeroSectionProps {
 
 export function HeroSection({ onNavigate }: HeroSectionProps) {
   const [showContent, setShowContent] = useState(false);
+  const handleTypingComplete = useCallback(() => {
+    setShowContent(true);
+  }, []);
+  const handleStudyClick = useCallback(() => {
+    onNavigate('study');
+  }, [onNavigate]);
+  const handleBrowseClick = useCallback(() => {
+    onNavigate('browse');
+  }, [onNavigate]);
 
   return (
     <div className="min-h-screen bg-terminal-base flex items-center justify-center px-6 py-20 relative overflow-hidden">
@@ -26,7 +35,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             <TypingText
               text="commonry@localhost:~$ cat mission.txt"
               speed={30}
-              onComplete={() => setShowContent(true)}
+              onComplete={handleTypingComplete}
             />
           </div>
           {showContent && (
@@ -80,14 +89,14 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 <div className="flex gap-4 justify-center mb-12 animate-[fadeIn_0.5s_ease-in_0.8s] opacity-0 [animation-fill-mode:forwards]">
                   <TerminalButton
                     variant="cyan"
-                    onClick={() => onNavigate('study')}
+                    onClick={handleStudyClick}
                     className="px-8 py-4 text-sm"
                   >
                     $ ./start-learning
                   </TerminalButton>
                   <TerminalButton
                     variant="amber"
-                    onClick={() => onNavigate('browse')}
+                    onClick={handleBrowseClick}
                     className="px-8 py-4 text-sm"
                   >
                     $ ./browse-decks
