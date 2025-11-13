@@ -1,6 +1,6 @@
 export const terminalAnimations = {
   // Typing effect
-  typing: (text: string, speed: number = 50) => {
+  typing: (text: string, speed = 50) => {
     return new Promise<void>((resolve) => {
       let index = 0;
       const interval = setInterval(() => {
@@ -72,7 +72,7 @@ export const terminalAnimations = {
   },
 
   // Utility for creating typing effect hook
-  useTypingEffect: (text: string, speed: number = 50) => {
+  useTypingEffect: (text: string, speed = 50) => {
     // This would be implemented as a custom React hook
     // For now, returning a simple implementation guide
     return {
@@ -91,9 +91,9 @@ export const getLoadingSpinner = (frame: number): string => {
 // Helper function for creating progress bar
 export const createProgressBar = (
   progress: number,
-  width: number = 20,
-  filled: string = '█',
-  empty: string = '░'
+  width = 20,
+  filled = '█',
+  empty = '░'
 ): string => {
   const filledWidth = Math.round((progress / 100) * width);
   const emptyWidth = width - filledWidth;

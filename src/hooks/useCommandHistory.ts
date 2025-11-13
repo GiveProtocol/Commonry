@@ -67,7 +67,7 @@ export function useCommandHistory() {
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const getRecentCommands = useCallback((count: number = 10) => {
+  const getRecentCommands = useCallback((count = 10) => {
     return history.slice(0, count);
   }, [history]);
 
