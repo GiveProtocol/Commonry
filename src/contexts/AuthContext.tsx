@@ -68,8 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Pass through email verification info if present
       return {
         error: response.error,
-        emailNotVerified: (response as any).emailNotVerified,
-        email: (response as any).email,
+        emailNotVerified: (response as { emailNotVerified?: boolean; email?: string }).emailNotVerified,
+        email: (response as { emailNotVerified?: boolean; email?: string }).email,
       };
     }
 
