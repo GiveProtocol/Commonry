@@ -206,7 +206,7 @@ export function ProfileView({ onBack }: ProfileViewProps) {
           {/* Bio Section */}
           {profile.bio && (
             <div className="px-8 py-6 border-b border-border">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3"></h2>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Bio</h2>
               <p className="text-foreground leading-relaxed">{profile.bio}</p>
             </div>
           )}
