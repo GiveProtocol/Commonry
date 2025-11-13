@@ -21,7 +21,7 @@ export default function EmailVerificationView({
     const verifyEmail = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/auth/verify-email/${token}`
+          `http://localhost:3000/api/auth/verify-email/${token}`,
         );
         const data = await response.json();
 
