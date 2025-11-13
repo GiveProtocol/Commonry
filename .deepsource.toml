@@ -18,8 +18,8 @@ enabled = true
     "arrow-function-expression"
   ]
 
-  [[analyzers.meta.exclude_rules]]
-  code = "JS-0417"
+[[analyzers.exclude]]
+identifier = "JS-0417"
 
 [[analyzers]]
 name = "test-coverage"
