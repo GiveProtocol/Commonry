@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface TypingTextProps {
   text: string;
@@ -12,8 +12,8 @@ export function TypingText({
   text,
   speed = 50,
   delay = 0,
-  className = '',
-  onComplete
+  className = "",
+  onComplete,
 }: TypingTextProps) {
   const { displayText, isComplete } = useTypingEffect(text, speed, delay);
 
@@ -35,12 +35,12 @@ export function TypingText({
 
 // Hook version for more control
 export function useTypingEffect(text: string, speed = 50, delay = 0) {
-  const [displayText, setDisplayText] = useState('');
+  const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    setDisplayText('');
+    setDisplayText("");
     setCurrentIndex(0);
     setIsComplete(false);
   }, [text]);

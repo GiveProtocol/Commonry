@@ -14,25 +14,25 @@ export const terminalAnimations = {
   },
 
   // Command line prompt
-  commandPrompt: 'commonry@localhost:~$',
+  commandPrompt: "commonry@localhost:~$",
 
   // Status indicators
-  statusDots: (status: 'loading' | 'success' | 'error') => {
+  statusDots: (status: "loading" | "success" | "error") => {
     const styles = {
-      loading: 'animate-pulse text-amber',
-      success: 'text-cyan',
-      error: 'text-red-500',
+      loading: "animate-pulse text-amber",
+      success: "text-cyan",
+      error: "text-red-500",
     };
     return styles[status];
   },
 
   // Terminal status symbols
   statusSymbols: {
-    loading: '⣾⣽⣻⢿⡿⣟⣯⣷',
-    success: '✓',
-    error: '✗',
-    warning: '⚠',
-    info: 'ℹ',
+    loading: "⣾⣽⣻⢿⡿⣟⣯⣷",
+    success: "✓",
+    error: "✗",
+    warning: "⚠",
+    info: "ℹ",
   },
 
   // Animation sequences
@@ -50,25 +50,25 @@ export const terminalAnimations = {
     glitchIn: {
       initial: { opacity: 0, x: -10 },
       animate: { opacity: 1, x: 0 },
-      transition: { duration: 0.2, ease: 'easeOut' },
+      transition: { duration: 0.2, ease: "easeOut" },
     },
     scanLine: {
-      initial: { y: '-100%' },
-      animate: { y: '100%' },
-      transition: { duration: 8, repeat: Infinity, ease: 'linear' },
+      initial: { y: "-100%" },
+      animate: { y: "100%" },
+      transition: { duration: 8, repeat: Infinity, ease: "linear" },
     },
   },
 
   // Terminal color codes (ANSI-style)
   colors: {
-    cyan: '#00d9ff',
-    amber: '#fbbf24',
-    green: '#10b981',
-    red: '#ef4444',
-    yellow: '#eab308',
-    blue: '#3b82f6',
-    purple: '#a855f7',
-    gray: '#6b7280',
+    cyan: "#00d9ff",
+    amber: "#fbbf24",
+    green: "#10b981",
+    red: "#ef4444",
+    yellow: "#eab308",
+    blue: "#3b82f6",
+    purple: "#a855f7",
+    gray: "#6b7280",
   },
 
   // Utility for creating typing effect hook
@@ -84,7 +84,7 @@ export const terminalAnimations = {
 
 // Helper function for creating loading spinner
 export const getLoadingSpinner = (frame: number): string => {
-  const spinners = ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'];
+  const spinners = ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"];
   return spinners[frame % spinners.length];
 };
 
@@ -92,8 +92,8 @@ export const getLoadingSpinner = (frame: number): string => {
 export const createProgressBar = (
   progress: number,
   width = 20,
-  filled = '█',
-  empty = '░'
+  filled = "█",
+  empty = "░",
 ): string => {
   const filledWidth = Math.round((progress / 100) * width);
   const emptyWidth = width - filledWidth;
@@ -103,24 +103,24 @@ export const createProgressBar = (
 // Terminal-style timestamp
 export const getTerminalTimestamp = (): string => {
   const now = new Date();
-  return now.toISOString().replace('T', ' ').split('.')[0];
+  return now.toISOString().replace("T", " ").split(".")[0];
 };
 
 // Command builder
 export const buildCommand = (command: string, args: string[] = []): string => {
-  return `$ ${command} ${args.join(' ')}`.trim();
+  return `$ ${command} ${args.join(" ")}`.trim();
 };
 
 // Status message formatter
 export const formatStatusMessage = (
-  status: 'success' | 'error' | 'warning' | 'info',
-  message: string
+  status: "success" | "error" | "warning" | "info",
+  message: string,
 ): { symbol: string; color: string; message: string } => {
   const config = {
-    success: { symbol: '✓', color: 'text-cyan' },
-    error: { symbol: '✗', color: 'text-red-500' },
-    warning: { symbol: '⚠', color: 'text-amber' },
-    info: { symbol: 'ℹ', color: 'text-blue-500' },
+    success: { symbol: "✓", color: "text-cyan" },
+    error: { symbol: "✗", color: "text-red-500" },
+    warning: { symbol: "⚠", color: "text-amber" },
+    info: { symbol: "ℹ", color: "text-blue-500" },
   };
 
   return {
