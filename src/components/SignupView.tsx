@@ -19,92 +19,110 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters");
+        return;
+      }
 
-    setIsLoading(true);
+      setIsLoading(true);
+
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, email, password, displayName }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Success! Show email verification message
+          setRegisteredEmail(data.email);
+          setShowSuccess(true);
+        } else {
+          setError(data.error || "Failed to create account");
+        }
+      } catch (err) {
+        setError("Network error. Please try again.");
+        console.error("Signup error:", err);
+      }
+
+      setIsLoading(false);
+    },
+    [username, email, password, displayName],
+  );
+
+  const handleResendVerification = useCallback(async () => {
+    setResendLoading(true);
+    setResendMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-verification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: registeredEmail }),
         },
-        body: JSON.stringify({ username, email, password, displayName }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        // Success! Show email verification message
-        setRegisteredEmail(data.email);
-        setShowSuccess(true);
+        setResendMessage(data.message || "Verification email sent!");
       } else {
-        setError(data.error || "Failed to create account");
+        setResendMessage(
+          data.error || "Failed to resend email. Please try again.",
+        );
       }
     } catch (err) {
-      setError("Network error. Please try again.");
-      console.error("Signup error:", err);
-  }
-
-  setIsLoading(false);
-};
-
-const handleResendVerification = async () => {
-  setResendLoading(true);
-  setResendMessage("");
-
-  try {
-    const response = await fetch(
-      "http://localhost:3000/api/auth/resend-verification",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: registeredEmail }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      setResendMessage(data.message || "Verification email sent!");
-    } else {
-      setResendMessage(
-        data.error || "Failed to resend email. Please try again.",
-      );
+      setResendMessage("Network error. Please try again.");
+      console.error("Resend verification error:", err);
     }
-  } catch (err) {
-    setResendMessage("Network error. Please try again.");
-    console.error("Resend verification error:", err);
-  }
 
-  setResendLoading(false);
-};
+    setResendLoading(false);
+  }, [registeredEmail]);
 
-const handleUsernameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-  setUsername(e.target.value);
-}, []);
-const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-  setEmail(e.target.value);
-}, []);
-const handleDisplayNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-  setDisplayName(e.target.value);
-}, []);
-const handlePasswordChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-  setPassword(e.target.value);
-}, []);
+  const handleUsernameChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setUsername(e.target.value);
+    },
+    [],
+  );
 
-// Show success message after registration
-if (showSuccess) {
-  return (
+  const handleEmailChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setEmail(e.target.value);
+    },
+    [],
+  );
+
+  const handleDisplayNameChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setDisplayName(e.target.value);
+    },
+    [],
+  );
+
+  const handlePasswordChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+    },
+    [],
+  );
+
+  // Show success message after registration
+  if (showSuccess) {
+    return (
     <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -174,11 +192,11 @@ if (showSuccess) {
         </div>
       </motion.div>
     </div>
-  );
-}
+    );
+  }
 
-return (
-  <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -294,8 +312,8 @@ return (
             Sign in
           </button>
         </p>
-      </div>
-    </motion.div>
-  </div>
-);
+        </div>
+      </motion.div>
+    </div>
+  );
 }
