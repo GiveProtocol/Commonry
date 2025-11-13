@@ -1,6 +1,6 @@
-import { TerminalButton } from '../ui/TerminalButton';
-import { TypingCursor } from '../ui/TypingCursor';
-import { Github } from 'lucide-react';
+import { TerminalButton } from "../ui/TerminalButton";
+import { TypingCursor } from "../ui/TypingCursor";
+import { Github } from "lucide-react";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
@@ -10,14 +10,18 @@ interface NavigationProps {
   onSignIn?: () => void;
 }
 
-export function Navigation({ currentView, onNavigate, onSignIn }: NavigationProps) {
+export function Navigation({ onNavigate, onSignIn }: NavigationProps) {
+  const handleNavigateHome = useCallback(() => {
+    onNavigate?.("home");
+  }, [onNavigate]);
+
   return (
     <nav className="border-b-2 border-cyan bg-dark sticky top-0 z-50 shadow-[0_0_20px_rgba(0,217,255,0.3)]">
       <div className="max-w-7xl mx-auto px-8 py-4">
         <div className="flex items-center justify-between">
           {/* Logo Section */}
           <button
-            onClick={() => onNavigate?.('home')}
+            onClick={handleNavigateHome}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity group"
           >
             <div className="text-4xl">🏛️</div>

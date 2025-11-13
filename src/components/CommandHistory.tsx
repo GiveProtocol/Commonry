@@ -1,8 +1,18 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Clock, Trash2, Search, ChevronDown, ChevronUp } from 'lucide-react';
-import { useCommandHistory, CommandHistoryEntry } from '../hooks/useCommandHistory';
-import { TerminalBorder } from './ui/TerminalBorder';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Terminal,
+  Clock,
+  Trash2,
+  Search,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import {
+  useCommandHistory,
+  CommandHistoryEntry,
+} from "../hooks/useCommandHistory";
+import { TerminalBorder } from "./ui/TerminalBorder";
 
 interface CommandHistoryProps {
   maxVisible?: number;
@@ -18,50 +28,80 @@ function formatTimestamp(date: Date): string {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return "just now";
   if (minutes < 60) return `${minutes}m ago`;
   if (hours < 24) return `${hours}h ago`;
   if (days < 7) return `${days}d ago`;
   return date.toLocaleDateString();
 }
 
-function getResultColor(result?: 'success' | 'error' | 'info'): string {
+function getResultColor(result?: "success" | "error" | "info"): string {
   switch (result) {
-    case 'success':
-      return 'text-green-400';
-    case 'error':
-      return 'text-red-400';
-    case 'info':
-      return 'text-cyan';
+    case "success":
+      return "text-green-400";
+    case "error":
+      return "text-red-400";
+    case "info":
+      return "text-cyan";
     default:
-      return 'text-text-muted';
+      return "text-text-muted";
   }
 }
 
-function getResultSymbol(result?: 'success' | 'error' | 'info'): string {
+function getResultSymbol(result?: "success" | "error" | "info"): string {
   switch (result) {
-    case 'success':
-      return '✓';
-    case 'error':
-      return '✗';
-    case 'info':
-      return 'ℹ';
+    case "success":
+      return "✓";
+    case "error":
+      return "✗";
+    case "info":
+      return "ℹ";
     default:
-      return '→';
+      return "→";
   }
 }
 
-export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHistoryProps) {
+export function CommandHistory({
+  maxVisible = 20,
+  showSearch = true,
+}: CommandHistoryProps) {
   const { history, clearHistory, searchHistory } = useCommandHistory();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
-  const [filterType, setFilterType] = useState<'all' | 'action' | 'navigation' | 'system'>('all');
+  const [filterType, setFilterType] = useState<
+    "all" | "action" | "navigation" | "system"
+  >("all");
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    [],
+  );
+
+  const handleToggleExpanded = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
+
+  const FILTER_TYPES = useMemo(
+    () => ["all", "action", "navigation", "system"] as const,
+    [],
+  );
+
+  const filterTypeHandlers = useMemo(() => {
+    const handlers: Record<(typeof FILTER_TYPES)[number], () => void> =
+      {} as any;
+    FILTER_TYPES.forEach((t) => {
+      handlers[t] = () => setFilterType(t);
+    });
+    return handlers;
+  }, [FILTER_TYPES, setFilterType]);
 
   const filteredHistory = searchQuery
     ? searchHistory(searchQuery)
-    : filterType === 'all'
+    : filterType === "all"
       ? history
-      : history.filter(entry => entry.type === filterType);
+      : history.filter((entry) => entry.type === filterType);
 
   const displayHistory = isExpanded
     ? filteredHistory
@@ -96,21 +136,21 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="$ grep..."
               className="w-full pl-10 pr-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow font-mono text-sm transition-all"
             />
           </div>
 
           <div className="flex gap-2">
-            {(['all', 'action', 'navigation', 'system'] as const).map((type) => (
+            {FILTER_TYPES.map((type) => (
               <button
                 key={type}
-                onClick={() => setFilterType(type)}
+                onClick={filterTypeHandlers[type]}
                 className={`px-3 py-1 rounded font-mono text-xs transition-all ${
                   filterType === type
-                    ? 'bg-cyan text-dark border-2 border-cyan shadow-cyan-glow'
-                    : 'bg-dark border-2 border-cyan/30 text-text-muted hover:border-cyan'
+                    ? "bg-cyan text-dark border-2 border-cyan shadow-cyan-glow"
+                    : "bg-dark border-2 border-cyan/30 text-text-muted hover:border-cyan"
                 }`}
               >
                 [{type.toUpperCase()}]
@@ -123,7 +163,7 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
       {/* History List */}
       {filteredHistory.length === 0 ? (
         <div className="text-center py-8 text-text-muted font-mono text-sm">
-          {searchQuery ? '$ no matches found' : '$ history is empty'}
+          {searchQuery ? "$ no matches found" : "$ history is empty"}
         </div>
       ) : (
         <>
@@ -137,7 +177,7 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
 
           {filteredHistory.length > maxVisible && (
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={handleToggleExpanded}
               className="w-full py-2 text-cyan hover:text-cyan-dark transition-colors font-mono text-sm flex items-center justify-center gap-2"
             >
               {isExpanded ? (
@@ -174,7 +214,9 @@ function HistoryEntry({ entry, index }: HistoryEntryProps) {
       className="bg-dark border border-cyan/20 rounded p-3 hover:border-cyan/40 transition-all group"
     >
       <div className="flex items-start gap-3">
-        <span className={`font-mono text-sm font-bold ${getResultColor(entry.result)}`}>
+        <span
+          className={`font-mono text-sm font-bold ${getResultColor(entry.result)}`}
+        >
           {getResultSymbol(entry.result)}
         </span>
         <div className="flex-1 min-w-0">

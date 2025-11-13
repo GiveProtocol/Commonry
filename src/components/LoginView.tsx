@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
 
@@ -42,20 +42,25 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
     setResendMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/resend-verification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-verification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: unverifiedEmail }),
         },
-        body: JSON.stringify({ email: unverifiedEmail }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         setResendMessage(data.message || "Verification email sent!");
       } else {
-        setResendMessage(data.error || "Failed to resend email. Please try again.");
+        setResendMessage(
+          data.error || "Failed to resend email. Please try again.",
+        );
       }
     } catch (err) {
       setResendMessage("Network error. Please try again.");
@@ -64,6 +69,20 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
 
     setResendLoading(false);
   };
+
+  const handleUsernameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setUsername(e.target.value);
+    },
+    [],
+  );
+
+  const handlePasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+    },
+    [],
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
@@ -103,11 +122,14 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
                   </button>
 
                   {resendMessage && (
-                    <div className={`mt-2 text-sm p-2 rounded ${
-                      resendMessage.includes("sent") || resendMessage.includes("new verification")
-                        ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-                        : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
-                    }`}>
+                    <div
+                      className={`mt-2 text-sm p-2 rounded ${
+                        resendMessage.includes("sent") ||
+                        resendMessage.includes("new verification")
+                          ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                          : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                      }`}
+                    >
                       {resendMessage}
                     </div>
                   )}
@@ -127,7 +149,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
               id="username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="Enter your username or email"
               required
@@ -146,7 +168,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="Enter your password"
               required

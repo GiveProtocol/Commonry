@@ -12,7 +12,9 @@ interface AuthGateProps {
 export default function AuthGate({ children }: AuthGateProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const [showSignup, setShowSignup] = useState(false);
-  const [verificationToken, setVerificationToken] = useState<string | null>(null);
+  const [verificationToken, setVerificationToken] = useState<string | null>(
+    null,
+  );
 
   // Check URL for verification token on mount
   useEffect(() => {
@@ -22,6 +24,19 @@ export default function AuthGate({ children }: AuthGateProps) {
       setVerificationToken(match[1]);
     }
   }, []);
+
+  const handleEmailVerificationSuccess = useCallback(() => {
+    setVerificationToken(null);
+    window.history.pushState({}, "", "/");
+  }, [setVerificationToken]);
+
+  const handleSwitchToLogin = useCallback(() => {
+    setShowSignup(false);
+  }, [setShowSignup]);
+
+  const handleSwitchToSignup = useCallback(() => {
+    setShowSignup(true);
+  }, [setShowSignup]);
 
   if (isLoading) {
     return (
@@ -40,19 +55,16 @@ export default function AuthGate({ children }: AuthGateProps) {
     return (
       <EmailVerificationView
         token={verificationToken}
-        onSuccess={() => {
-          setVerificationToken(null);
-          window.history.pushState({}, "", "/");
-        }}
+        onSuccess={handleEmailVerificationSuccess}
       />
     );
   }
 
   if (!isAuthenticated) {
     return showSignup ? (
-      <SignupView onSwitchToLogin={() => setShowSignup(false)} />
+      <SignupView onSwitchToLogin={handleSwitchToLogin} />
     ) : (
-      <LoginView onSwitchToSignup={() => setShowSignup(true)} />
+      <LoginView onSwitchToSignup={handleSwitchToSignup} />
     );
   }
 
