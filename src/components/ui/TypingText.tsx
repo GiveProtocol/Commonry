@@ -34,11 +34,7 @@ export function TypingText({
 }
 
 // Hook version for more control
-export function useTypingEffect(
-  text: string,
-  speed = 50,
-  delay = 0,
-) {
+export function useTypingEffect(text: string, speed = 50, delay = 0) {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);

@@ -10,10 +10,7 @@ interface NavigationProps {
   onSignIn?: () => void;
 }
 
-export function Navigation({
-  onNavigate,
-  onSignIn,
-}: NavigationProps) {
+export function Navigation({ onNavigate, onSignIn }: NavigationProps) {
   return (
     <nav className="border-b-2 border-cyan bg-dark sticky top-0 z-50 shadow-[0_0_20px_rgba(0,217,255,0.3)]">
       <div className="max-w-7xl mx-auto px-8 py-4">
