@@ -80,13 +80,13 @@ export function TerminalModal({
             <div className="flex items-center gap-2">
               <div
                 className={`w-3 h-3 rounded-full ${dotColors[variant].close}`}
-              ></div>
+              />
               <div
                 className={`w-3 h-3 rounded-full ${dotColors[variant].secondary}`}
-              ></div>
+              />
               <div
                 className={`w-3 h-3 rounded-full ${dotColors[variant].main}`}
-              ></div>
+              />
               {commandName && (
                 <span className="ml-2 text-xs font-mono text-terminal-muted dark:text-text-muted">
                   {commandName}

@@ -119,10 +119,16 @@ export function CommandHistory({
 
           <div className="flex gap-2">
             {(["all", "action", "navigation", "system"] as const).map(
+              const handleFilterTypeClick = React.useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+                const type = event.currentTarget.getAttribute('data-type')!;
+                setFilterType(type);
+              }, [setFilterType]);
+
               (type) => (
                 <button
                   key={type}
-                  onClick={() => setFilterType(type)}
+                  data-type={type}
+                  onClick={handleFilterTypeClick}
                   className={`px-3 py-1 rounded font-mono text-xs transition-all ${
                     filterType === type
                       ? "bg-cyan text-dark border-2 border-cyan shadow-cyan-glow"

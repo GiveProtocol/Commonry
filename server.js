@@ -639,9 +639,11 @@ app.get(
       }
 
       res.json({ privacy: result.rows[0] });
+      return null;
     } catch (error) {
       console.error("Get privacy settings error:", error);
       res.status(500).json({ error: "Failed to get privacy settings" });
+      return null;
     }
   },
 );
@@ -831,9 +833,11 @@ app.post(
         success: true,
         follow: result.rows[0],
       });
+      return null;
     } catch (error) {
       console.error("Follow user error:", error);
       res.status(500).json({ error: "Failed to follow user" });
+      return null;
     }
   },
 );
@@ -871,9 +875,11 @@ app.delete(
       }
 
       res.json({ success: true });
+      return null;
     } catch (error) {
       console.error("Unfollow user error:", error);
       res.status(500).json({ error: "Failed to unfollow user" });
+      return null;
     }
   },
 );

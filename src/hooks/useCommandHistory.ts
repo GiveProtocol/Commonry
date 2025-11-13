@@ -45,7 +45,7 @@ export function useCommandHistory() {
       command: string,
       type: "action" | "navigation" | "system" = "action",
       result?: "success" | "error" | "info",
-      metadata?: Record<string, any>,
+      metadata?: Record<string, unknown>,
     ) => {
       const entry: CommandHistoryEntry = {
         id: crypto.randomUUID(),
@@ -71,7 +71,7 @@ export function useCommandHistory() {
   }, []);
 
   const getRecentCommands = useCallback(
-    (count: number = 10) => {
+    (count = 10) => {
       return history.slice(0, count);
     },
     [history],
