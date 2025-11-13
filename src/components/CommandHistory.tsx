@@ -90,7 +90,7 @@ export function CommandHistory({
 
   const filterTypeHandlers = useMemo(() => {
     const handlers: Record<(typeof FILTER_TYPES)[number], () => void> =
-      {} as any;
+      {} as Record<(typeof FILTER_TYPES)[number], () => void>;
     FILTER_TYPES.forEach((t) => {
       handlers[t] = () => setFilterType(t);
     });
