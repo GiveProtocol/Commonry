@@ -581,9 +581,9 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
               <span className="ml-2 text-xs font-mono text-text-muted">./create-deck</span>
             </div>
 
@@ -651,9 +651,9 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-amber shadow-[0_0_40px_rgba(251,191,36,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-amber/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
               <span className="ml-2 text-xs font-mono text-text-muted">./import-deck</span>
             </div>
 
@@ -727,9 +727,9 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
               <span className="ml-2 text-xs font-mono text-text-muted">./edit-deck</span>
             </div>
 
@@ -797,9 +797,9 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-red-500/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500" />
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
               <span className="ml-2 text-xs font-mono text-text-muted">./delete-deck --confirm</span>
             </div>
 
@@ -840,9 +840,9 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
               <span className="ml-2 text-xs font-mono text-text-muted">./configure-import</span>
             </div>
 
