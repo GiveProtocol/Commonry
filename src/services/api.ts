@@ -144,7 +144,6 @@ class ApiService {
       },
     );
   }
-}
 
   // ==================== STATISTICS ENDPOINTS ====================
 

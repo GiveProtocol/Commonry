@@ -42,5 +42,5 @@ export function applyTheme(theme: Theme) {
     root.style.setProperty(`--color-${key}`, value);
   });
 
-  root.setAttribute('data-theme', effectiveTheme);
+  root.dataset.theme = effectiveTheme;
 }
