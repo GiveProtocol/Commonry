@@ -581,10 +581,12 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
-              <span className="ml-2 text-xs font-mono text-text-muted">./create-deck</span>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
+              <span className="ml-2 text-xs font-mono text-text-muted">
+                ./create-deck
+              </span>
             </div>
 
             <div className="p-6">
@@ -651,10 +653,12 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-amber shadow-[0_0_40px_rgba(251,191,36,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-amber/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
-              <span className="ml-2 text-xs font-mono text-text-muted">./import-deck</span>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
+              <span className="ml-2 text-xs font-mono text-text-muted">
+                ./import-deck
+              </span>
             </div>
 
             <div className="p-6">
@@ -685,10 +689,7 @@ export function DeckBrowser({
                   </div>
                 ) : (
                   <div className="border-2 border-dashed border-amber/30 rounded-lg p-8 text-center hover:border-amber hover:shadow-amber-glow transition-all">
-                    <Upload
-                      size={48}
-                      className="mx-auto text-amber mb-4"
-                    />
+                    <Upload size={48} className="mx-auto text-amber mb-4" />
                     <p className="text-text-muted mb-4 font-mono">
                       $ select .apkg file
                     </p>
@@ -727,10 +728,12 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
-              <span className="ml-2 text-xs font-mono text-text-muted">./edit-deck</span>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
+              <span className="ml-2 text-xs font-mono text-text-muted">
+                ./edit-deck
+              </span>
             </div>
 
             <div className="p-6">
@@ -797,10 +800,12 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-red-500/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <span className="ml-2 text-xs font-mono text-text-muted">./delete-deck --confirm</span>
+              <div className="w-3 h-3 rounded-full bg-red-500" />
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <span className="ml-2 text-xs font-mono text-text-muted">
+                ./delete-deck --confirm
+              </span>
             </div>
 
             <div className="p-6">
@@ -808,7 +813,9 @@ export function DeckBrowser({
                 [WARNING_DELETE]
               </Dialog.Title>
               <Dialog.Description className="text-text-muted mb-6 font-mono text-sm">
-                <div className="mb-2">$ TARGET: &quot;{selectedDeck?.name}&quot;</div>
+                <div className="mb-2">
+                  $ TARGET: &quot;{selectedDeck?.name}&quot;
+                </div>
                 <div className="mb-2">$ CARDS: {selectedDeck?.cardCount}</div>
                 <div className="text-red-400">$ ACTION: IRREVERSIBLE</div>
               </Dialog.Description>
@@ -840,10 +847,12 @@ export function DeckBrowser({
           <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-lg p-0 w-full max-w-md border-2 border-cyan shadow-[0_0_40px_rgba(0,217,255,0.3)] overflow-hidden">
             {/* Terminal header */}
             <div className="h-8 bg-dark-border border-b-2 border-cyan/30 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-amber/50"></div>
-              <div className="w-3 h-3 rounded-full bg-cyan/50"></div>
-              <span className="ml-2 text-xs font-mono text-text-muted">./configure-import</span>
+              <div className="w-3 h-3 rounded-full bg-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber/50" />
+              <div className="w-3 h-3 rounded-full bg-cyan/50" />
+              <span className="ml-2 text-xs font-mono text-text-muted">
+                ./configure-import
+              </span>
             </div>
 
             <div className="p-6">
