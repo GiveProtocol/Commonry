@@ -16,6 +16,8 @@ export default function EmailVerificationView({
   >("verifying");
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [resending, setResending] = useState(false);
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -38,6 +40,10 @@ export default function EmailVerificationView({
           if (data.expired) {
             setStatus("expired");
             setMessage(data.error);
+            // Store email if provided for resend functionality
+            if (data.email) {
+              setUserEmail(data.email);
+            }
           } else if (data.invalidToken) {
             // Token was already used or is invalid - might be already verified
             setStatus("already-verified");
@@ -62,6 +68,43 @@ export default function EmailVerificationView({
   const handleContinue = () => {
     if (status === "success" || status === "already-verified") {
       onSuccess();
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!userEmail) {
+      setMessage("Email address not available. Please try signing up again.");
+      return;
+    }
+
+    setResending(true);
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-verification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: userEmail }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(
+          "Verification email sent! Please check your inbox and spam folder."
+        );
+        setStatus("success");
+      } else {
+        setMessage(data.error || "Failed to resend verification email");
+      }
+    } catch (error) {
+      setMessage("Network error. Please try again later.");
+      console.error("Resend verification error:", error);
+    } finally {
+      setResending(false);
     }
   };
 
@@ -148,12 +191,14 @@ export default function EmailVerificationView({
             </div>
             <div className="space-y-3">
               <button
-                onClick={() => {
-                  /* TODO: Implement resend verification */
-                }}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-3 px-4 rounded-lg transition"
+                onClick={handleResendVerification}
+                disabled={resending}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
               >
-                Resend Verification Email
+                {resending && (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                )}
+                {resending ? "Resending..." : "Resend Verification Email"}
               </button>
               <button
                 onClick={onSuccess}
