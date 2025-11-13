@@ -23,7 +23,7 @@ export default function EmailVerificationView({
     const verifyEmail = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/auth/verify-email/${token}`
+          `http://localhost:3000/api/auth/verify-email/${token}`,
         );
         const data = await response.json();
 
@@ -87,14 +87,14 @@ export default function EmailVerificationView({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email: userEmail }),
-        }
+        },
       );
 
       const data = await response.json();
 
       if (response.ok) {
         setMessage(
-          "Verification email sent! Please check your inbox and spam folder."
+          "Verification email sent! Please check your inbox and spam folder.",
         );
         setStatus("success");
       } else {
@@ -195,9 +195,7 @@ export default function EmailVerificationView({
                 disabled={resending}
                 className="w-full bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
               >
-                {resending && (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                )}
+                {resending && <Loader2 className="w-4 h-4 animate-spin" />}
                 {resending ? "Resending..." : "Resend Verification Email"}
               </button>
               <button
