@@ -42,20 +42,25 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
     setResendMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/resend-verification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-verification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: unverifiedEmail }),
         },
-        body: JSON.stringify({ email: unverifiedEmail }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         setResendMessage(data.message || "Verification email sent!");
       } else {
-        setResendMessage(data.error || "Failed to resend email. Please try again.");
+        setResendMessage(
+          data.error || "Failed to resend email. Please try again.",
+        );
       }
     } catch (err) {
       setResendMessage("Network error. Please try again.");
@@ -103,11 +108,14 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
                   </button>
 
                   {resendMessage && (
-                    <div className={`mt-2 text-sm p-2 rounded ${
-                      resendMessage.includes("sent") || resendMessage.includes("new verification")
-                        ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-                        : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
-                    }`}>
+                    <div
+                      className={`mt-2 text-sm p-2 rounded ${
+                        resendMessage.includes("sent") ||
+                        resendMessage.includes("new verification")
+                          ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                          : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                      }`}
+                    >
                       {resendMessage}
                     </div>
                   )}

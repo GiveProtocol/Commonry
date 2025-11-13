@@ -153,7 +153,9 @@ export function StatsView({ onBack }: StatsViewProps) {
           ← ./back
         </button>
 
-        <h1 className="text-2xl font-bold text-cyan font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">[STATISTICS]</h1>
+        <h1 className="text-2xl font-bold text-cyan font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+          [STATISTICS]
+        </h1>
 
         <div></div>
       </div>
@@ -184,7 +186,9 @@ export function StatsView({ onBack }: StatsViewProps) {
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 className="w-12 h-12 border-2 border-cyan border-t-transparent rounded-full mx-auto mb-4"
               />
-              <p className="text-text-muted font-mono text-sm">Loading stats...</p>
+              <p className="text-text-muted font-mono text-sm">
+                Loading stats...
+              </p>
             </div>
           </div>
         ) : (
@@ -305,7 +309,9 @@ export function StatsView({ onBack }: StatsViewProps) {
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-2xl font-bold text-amber font-mono [text-shadow:0_0_15px_rgba(251,191,36,0.5)]">[LEADERBOARD]</h2>
+                  <h2 className="text-2xl font-bold text-amber font-mono [text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+                    [LEADERBOARD]
+                  </h2>
                 </div>
 
                 {/* User Rank Badge */}

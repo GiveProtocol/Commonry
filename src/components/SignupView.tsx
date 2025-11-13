@@ -60,20 +60,25 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
     setResendMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/resend-verification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-verification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: registeredEmail }),
         },
-        body: JSON.stringify({ email: registeredEmail }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         setResendMessage(data.message || "Verification email sent!");
       } else {
-        setResendMessage(data.error || "Failed to resend email. Please try again.");
+        setResendMessage(
+          data.error || "Failed to resend email. Please try again.",
+        );
       }
     } catch (err) {
       setResendMessage("Network error. Please try again.");
@@ -130,11 +135,14 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
             </button>
 
             {resendMessage && (
-              <div className={`text-sm p-3 rounded-lg ${
-                resendMessage.includes("sent") || resendMessage.includes("Verification email")
-                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-                  : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
-              }`}>
+              <div
+                className={`text-sm p-3 rounded-lg ${
+                  resendMessage.includes("sent") ||
+                  resendMessage.includes("Verification email")
+                    ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                    : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                }`}
+              >
                 {resendMessage}
               </div>
             )}

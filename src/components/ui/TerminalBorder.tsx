@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface TerminalBorderProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ interface TerminalBorderProps {
 export function TerminalBorder({
   children,
   className,
-  glowOnHover = false
+  glowOnHover = false,
 }: TerminalBorderProps) {
   return (
     <div
@@ -21,10 +21,10 @@ export function TerminalBorder({
         "dark:shadow-[0_0_10px_rgba(0,217,255,0.3),inset_0_0_10px_rgba(0,217,255,0.1)]",
         glowOnHover && [
           "hover:shadow-[0_0_20px_var(--shadow),inset_0_0_15px_var(--terminal-green-glow)]",
-          "dark:hover:shadow-[0_0_20px_rgba(0,217,255,0.5),inset_0_0_15px_rgba(0,217,255,0.2)]"
+          "dark:hover:shadow-[0_0_20px_rgba(0,217,255,0.5),inset_0_0_15px_rgba(0,217,255,0.2)]",
         ],
         "transition-shadow duration-300",
-        className
+        className,
       )}
     >
       {children}

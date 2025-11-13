@@ -1,15 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 export interface CommandHistoryEntry {
   id: string;
   command: string;
   timestamp: Date;
-  type: 'action' | 'navigation' | 'system';
-  result?: 'success' | 'error' | 'info';
+  type: "action" | "navigation" | "system";
+  result?: "success" | "error" | "info";
   metadata?: Record<string, any>;
 }
 
-const STORAGE_KEY = 'commonry_command_history';
+const STORAGE_KEY = "commonry_command_history";
 const MAX_HISTORY_ENTRIES = 100;
 
 export function useCommandHistory() {
@@ -28,7 +28,7 @@ export function useCommandHistory() {
         }));
         setHistory(historyWithDates);
       } catch (error) {
-        console.error('Failed to load command history:', error);
+        console.error("Failed to load command history:", error);
       }
     }
   }, []);
@@ -40,47 +40,59 @@ export function useCommandHistory() {
     }
   }, [history]);
 
-  const addCommand = useCallback((
-    command: string,
-    type: 'action' | 'navigation' | 'system' = 'action',
-    result?: 'success' | 'error' | 'info',
-    metadata?: Record<string, any>
-  ) => {
-    const entry: CommandHistoryEntry = {
-      id: crypto.randomUUID(),
-      command,
-      timestamp: new Date(),
-      type,
-      result,
-      metadata,
-    };
+  const addCommand = useCallback(
+    (
+      command: string,
+      type: "action" | "navigation" | "system" = "action",
+      result?: "success" | "error" | "info",
+      metadata?: Record<string, any>,
+    ) => {
+      const entry: CommandHistoryEntry = {
+        id: crypto.randomUUID(),
+        command,
+        timestamp: new Date(),
+        type,
+        result,
+        metadata,
+      };
 
-    setHistory((prev) => {
-      const newHistory = [entry, ...prev];
-      // Keep only the most recent MAX_HISTORY_ENTRIES
-      return newHistory.slice(0, MAX_HISTORY_ENTRIES);
-    });
-  }, []);
+      setHistory((prev) => {
+        const newHistory = [entry, ...prev];
+        // Keep only the most recent MAX_HISTORY_ENTRIES
+        return newHistory.slice(0, MAX_HISTORY_ENTRIES);
+      });
+    },
+    [],
+  );
 
   const clearHistory = useCallback(() => {
     setHistory([]);
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const getRecentCommands = useCallback((count: number = 10) => {
-    return history.slice(0, count);
-  }, [history]);
+  const getRecentCommands = useCallback(
+    (count: number = 10) => {
+      return history.slice(0, count);
+    },
+    [history],
+  );
 
-  const getCommandsByType = useCallback((type: 'action' | 'navigation' | 'system') => {
-    return history.filter(entry => entry.type === type);
-  }, [history]);
+  const getCommandsByType = useCallback(
+    (type: "action" | "navigation" | "system") => {
+      return history.filter((entry) => entry.type === type);
+    },
+    [history],
+  );
 
-  const searchHistory = useCallback((query: string) => {
-    const lowerQuery = query.toLowerCase();
-    return history.filter(entry =>
-      entry.command.toLowerCase().includes(lowerQuery)
-    );
-  }, [history]);
+  const searchHistory = useCallback(
+    (query: string) => {
+      const lowerQuery = query.toLowerCase();
+      return history.filter((entry) =>
+        entry.command.toLowerCase().includes(lowerQuery),
+      );
+    },
+    [history],
+  );
 
   return {
     history,
@@ -95,13 +107,14 @@ export function useCommandHistory() {
 // Helper functions for common commands
 export const CommandTemplates = {
   navigation: (view: string) => `cd /${view}`,
-  study: (deckName?: string) => deckName ? `./study --deck="${deckName}"` : './study',
+  study: (deckName?: string) =>
+    deckName ? `./study --deck="${deckName}"` : "./study",
   createDeck: (deckName: string) => `./create-deck --name="${deckName}"`,
   importDeck: (filename: string) => `./import-deck "${filename}"`,
   deleteDeck: (deckName: string) => `./delete-deck --force "${deckName}"`,
   reviewCard: (rating: number) => `./review --rating=${rating}`,
-  exportStats: () => './export-stats --format=json',
+  exportStats: () => "./export-stats --format=json",
   login: (username: string) => `./auth login ${username}`,
-  logout: () => './auth logout',
+  logout: () => "./auth logout",
   signup: (username: string) => `./auth signup ${username}`,
 };

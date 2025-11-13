@@ -1,6 +1,6 @@
-import pool from './db.js';
-import { ulid } from 'ulid';
-import dotenv from 'dotenv';
+import pool from "./db.js";
+import { ulid } from "ulid";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -8,11 +8,11 @@ async function addSampleAchievements() {
   try {
     // Get the user ID (moonlitmountains)
     const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = 'moonlitmountains'"
+      "SELECT user_id FROM users WHERE username = 'moonlitmountains'",
     );
 
     if (userResult.rows.length === 0) {
-      console.error('User not found!');
+      console.error("User not found!");
       process.exit(1);
     }
 
@@ -23,56 +23,56 @@ async function addSampleAchievements() {
     const achievements = [
       // UNLOCKED achievements
       {
-        achievementId: 'achv_01', // Week Warrior - 7-day streak
+        achievementId: "achv_01", // Week Warrior - 7-day streak
         progress: 7,
         target: 7,
         unlocked: true,
-        unlockedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // 10 days ago
+        unlockedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
       },
       {
-        achievementId: 'achv_05', // Perfect Week
+        achievementId: "achv_05", // Perfect Week
         progress: 7,
         target: 7,
         unlocked: true,
-        unlockedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
+        unlockedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
       },
       {
-        achievementId: 'achv_06', // First Steps - 100 cards reviewed
+        achievementId: "achv_06", // First Steps - 100 cards reviewed
         progress: 100,
         target: 100,
         unlocked: true,
-        unlockedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) // 20 days ago
+        unlockedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
       },
 
       // IN PROGRESS achievements
       {
-        achievementId: 'achv_02', // Month Master - 30-day streak
+        achievementId: "achv_02", // Month Master - 30-day streak
         progress: 12, // Longest streak so far
         target: 30,
         unlocked: false,
-        unlockedAt: null
+        unlockedAt: null,
       },
       {
-        achievementId: 'achv_07', // Knowledge Seeker - 1,000 cards reviewed
+        achievementId: "achv_07", // Knowledge Seeker - 1,000 cards reviewed
         progress: 342, // Current review count
         target: 1000,
         unlocked: false,
-        unlockedAt: null
+        unlockedAt: null,
       },
       {
-        achievementId: 'achv_10', // Hundred Strong - 100 cards mastered
+        achievementId: "achv_10", // Hundred Strong - 100 cards mastered
         progress: 87, // Current mastered count
         target: 100,
         unlocked: false,
-        unlockedAt: null
+        unlockedAt: null,
       },
       {
-        achievementId: 'achv_03', // Century Scholar - 100-day streak
+        achievementId: "achv_03", // Century Scholar - 100-day streak
         progress: 12, // Same as longest streak
         target: 100,
         unlocked: false,
-        unlockedAt: null
-      }
+        unlockedAt: null,
+      },
     ];
 
     // Insert each achievement
@@ -96,18 +96,18 @@ async function addSampleAchievements() {
           achievement.progress,
           achievement.target,
           achievement.unlocked,
-          achievement.unlockedAt
-        ]
+          achievement.unlockedAt,
+        ],
       );
     }
 
-    console.log('✅ Sample achievements added successfully!\n');
+    console.log("✅ Sample achievements added successfully!\n");
 
     // Display summary
-    const unlockedCount = achievements.filter(a => a.unlocked).length;
-    const inProgressCount = achievements.filter(a => !a.unlocked).length;
+    const unlockedCount = achievements.filter((a) => a.unlocked).length;
+    const inProgressCount = achievements.filter((a) => !a.unlocked).length;
 
-    console.log('Achievement Summary:');
+    console.log("Achievement Summary:");
     console.log(`  Unlocked: ${unlockedCount} achievements`);
     console.log(`    🔥 Week Warrior - 7-day streak`);
     console.log(`    ✨ Perfect Week - Studied every day`);
@@ -121,7 +121,7 @@ async function addSampleAchievements() {
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error adding sample achievements:', error);
+    console.error("❌ Error adding sample achievements:", error);
     process.exit(1);
   }
 }

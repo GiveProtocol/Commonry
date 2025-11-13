@@ -65,7 +65,8 @@ app.use(cors());
 app.use(generalLimiter);
 
 // JWT configuration
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_EXPIRES_IN = "7d";
 
 // Authentication middleware
@@ -94,7 +95,7 @@ const authenticateToken = (req, res, next) => {
 async function getUserByUsername(username) {
   const result = await pool.query(
     "SELECT user_id FROM users WHERE username = $1",
-    [username.toLowerCase()]
+    [username.toLowerCase()],
   );
   return result.rows[0] || null;
 }
@@ -105,7 +106,7 @@ async function getUserByUsername(username) {
 async function checkPrivacySetting(userId, settingName) {
   const result = await pool.query(
     `SELECT ${settingName} FROM privacy_settings WHERE user_id = $1`,
-    [userId]
+    [userId],
   );
   // Default to true if no privacy settings exist
   return result.rows[0]?.[settingName] !== false;
@@ -125,22 +126,26 @@ app.post("/api/auth/signup", async (req, res) => {
   const { username, email, password, displayName } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ error: "Username, email, and password are required" });
+    return res
+      .status(400)
+      .json({ error: "Username, email, and password are required" });
   }
 
   if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 6 characters" });
   }
 
   try {
     // Generate ULID for user
-    const userId = generateULID('usr');
+    const userId = generateULID("usr");
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Generate verification token (random 32-byte hex string)
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     // Set expiration to 24 hours from now
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -151,24 +156,36 @@ app.post("/api/auth/signup", async (req, res) => {
                          email_verified, verification_token, verification_token_expires)
        VALUES ($1, $2, $3, $4, $5, FALSE, $6, $7)
        RETURNING user_id, username, email, display_name, created_at`,
-      [userId, username.toLowerCase(), email.toLowerCase(), passwordHash,
-       displayName || username, verificationToken, expiresAt]
+      [
+        userId,
+        username.toLowerCase(),
+        email.toLowerCase(),
+        passwordHash,
+        displayName || username,
+        verificationToken,
+        expiresAt,
+      ],
     );
 
     const user = result.rows[0];
 
     // Send verification email
     try {
-      await sendVerificationEmail(user.email, user.display_name, verificationToken);
+      await sendVerificationEmail(
+        user.email,
+        user.display_name,
+        verificationToken,
+      );
       console.log(`✅ Verification email sent to ${user.email}`);
     } catch (emailError) {
-      console.error('❌ Failed to send verification email:', emailError);
+      console.error("❌ Failed to send verification email:", emailError);
       // Don't fail signup if email fails, but log it
     }
 
     // Return success without JWT token
     res.status(201).json({
-      message: "Account created successfully. Please check your email to verify your account.",
+      message:
+        "Account created successfully. Please check your email to verify your account.",
       email: user.email,
       requiresVerification: true,
     });
@@ -199,12 +216,13 @@ app.get("/api/auth/verify-email/:token", async (req, res) => {
               verification_token_expires
        FROM users
        WHERE verification_token = $1`,
-      [token]
+      [token],
     );
 
     if (result.rows.length === 0) {
       return res.status(400).json({
-        error: "This verification link is invalid or has already been used. If you already verified your email, please try logging in.",
+        error:
+          "This verification link is invalid or has already been used. If you already verified your email, please try logging in.",
         invalidToken: true,
       });
     }
@@ -237,7 +255,7 @@ app.get("/api/auth/verify-email/:token", async (req, res) => {
            verification_token = NULL,
            verification_token_expires = NULL
        WHERE user_id = $1`,
-      [user.user_id]
+      [user.user_id],
     );
 
     console.log(`✅ Email verified for user: ${user.email}`);
@@ -267,13 +285,14 @@ app.post("/api/auth/resend-verification", async (req, res) => {
       `SELECT user_id, username, email, display_name, email_verified
        FROM users
        WHERE email = $1`,
-      [email.toLowerCase()]
+      [email.toLowerCase()],
     );
 
     if (result.rows.length === 0) {
       // Don't reveal if email exists or not for security
       return res.status(200).json({
-        message: "If an account with that email exists and is not verified, a new verification email will be sent.",
+        message:
+          "If an account with that email exists and is not verified, a new verification email will be sent.",
       });
     }
 
@@ -288,7 +307,7 @@ app.post("/api/auth/resend-verification", async (req, res) => {
     }
 
     // Generate new verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Update token in database
@@ -297,12 +316,16 @@ app.post("/api/auth/resend-verification", async (req, res) => {
        SET verification_token = $1,
            verification_token_expires = $2
        WHERE user_id = $3`,
-      [verificationToken, expiresAt, user.user_id]
+      [verificationToken, expiresAt, user.user_id],
     );
 
     // Send verification email
     try {
-      await sendVerificationEmail(user.email, user.display_name, verificationToken);
+      await sendVerificationEmail(
+        user.email,
+        user.display_name,
+        verificationToken,
+      );
       console.log(`✅ Resent verification email to: ${user.email}`);
     } catch (emailError) {
       console.error("❌ Failed to send verification email:", emailError);
@@ -310,7 +333,8 @@ app.post("/api/auth/resend-verification", async (req, res) => {
     }
 
     res.status(200).json({
-      message: "A new verification email has been sent. Please check your inbox.",
+      message:
+        "A new verification email has been sent. Please check your inbox.",
       email: user.email,
     });
   } catch (error) {
@@ -324,7 +348,9 @@ app.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    return res
+      .status(400)
+      .json({ error: "Username and password are required" });
   }
 
   try {
@@ -332,7 +358,7 @@ app.post("/api/auth/login", async (req, res) => {
       `SELECT user_id, username, email, password_hash, display_name, is_active, email_verified
        FROM users
        WHERE username = $1 OR email = $1`,
-      [username.toLowerCase()]
+      [username.toLowerCase()],
     );
 
     if (result.rows.length === 0) {
@@ -354,7 +380,8 @@ app.post("/api/auth/login", async (req, res) => {
     // Check if email is verified
     if (!user.email_verified) {
       return res.status(403).json({
-        error: "Please verify your email before logging in. Check your inbox for the verification link.",
+        error:
+          "Please verify your email before logging in. Check your inbox for the verification link.",
         emailNotVerified: true,
         email: user.email,
       });
@@ -363,7 +390,7 @@ app.post("/api/auth/login", async (req, res) => {
     // Update last login
     await pool.query(
       "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE user_id = $1",
-      [user.user_id]
+      [user.user_id],
     );
 
     // Generate JWT token
@@ -393,7 +420,7 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
       `SELECT user_id, username, email, display_name, created_at, last_login_at
        FROM users
        WHERE user_id = $1`,
-      [req.userId]
+      [req.userId],
     );
 
     if (result.rows.length === 0) {
@@ -420,7 +447,7 @@ app.get("/api/profile/:username", async (req, res) => {
               avatar_url, learning_topics, created_at
        FROM users
        WHERE username = $1 AND is_active = true`,
-      [username.toLowerCase()]
+      [username.toLowerCase()],
     );
 
     if (userResult.rows.length === 0) {
@@ -435,7 +462,7 @@ app.get("/api/profile/:username", async (req, res) => {
               show_followers, show_achievements, show_goals
        FROM privacy_settings
        WHERE user_id = $1`,
-      [user.user_id]
+      [user.user_id],
     );
 
     const privacy = privacyResult.rows[0] || {
@@ -469,11 +496,14 @@ app.get("/api/profile/:username", async (req, res) => {
 
 // Update current user's profile
 app.put("/api/profile", authenticateToken, async (req, res) => {
-  const { displayName, bio, pronouns, location, avatarUrl, learningTopics } = req.body;
+  const { displayName, bio, pronouns, location, avatarUrl, learningTopics } =
+    req.body;
 
   // Validate bio length
   if (bio && bio.length > 300) {
-    return res.status(400).json({ error: "Bio must be 300 characters or less" });
+    return res
+      .status(400)
+      .json({ error: "Bio must be 300 characters or less" });
   }
 
   try {
@@ -488,7 +518,15 @@ app.put("/api/profile", authenticateToken, async (req, res) => {
        WHERE user_id = $7
        RETURNING user_id, username, display_name, bio, pronouns, location,
                  avatar_url, learning_topics`,
-      [displayName, bio, pronouns, location, avatarUrl, learningTopics, req.userId]
+      [
+        displayName,
+        bio,
+        pronouns,
+        location,
+        avatarUrl,
+        learningTopics,
+        req.userId,
+      ],
     );
 
     if (result.rows.length === 0) {
@@ -517,7 +555,7 @@ app.get("/api/profile/:username/stats", async (req, res) => {
     const userId = user.user_id;
 
     // Check privacy settings
-    const showStats = await checkPrivacySetting(userId, 'show_statistics');
+    const showStats = await checkPrivacySetting(userId, "show_statistics");
 
     if (!showStats) {
       return res.status(403).json({ error: "User statistics are private" });
@@ -526,21 +564,21 @@ app.get("/api/profile/:username/stats", async (req, res) => {
     // Get or create statistics record
     let statsResult = await pool.query(
       "SELECT * FROM user_statistics WHERE user_id = $1",
-      [userId]
+      [userId],
     );
 
     if (statsResult.rows.length === 0) {
       // Create default statistics record
-      const statId = generateULID('stat');
+      const statId = generateULID("stat");
       await pool.query(
         `INSERT INTO user_statistics (stat_id, user_id)
          VALUES ($1, $2)`,
-        [statId, userId]
+        [statId, userId],
       );
 
       statsResult = await pool.query(
         "SELECT * FROM user_statistics WHERE user_id = $1",
-        [userId]
+        [userId],
       );
     }
 
@@ -552,55 +590,61 @@ app.get("/api/profile/:username/stats", async (req, res) => {
 });
 
 // Get user privacy settings
-app.get("/api/profile/:username/privacy", authenticateToken, async (req, res) => {
-  const { username } = req.params;
+app.get(
+  "/api/profile/:username/privacy",
+  authenticateToken,
+  async (req, res) => {
+    const { username } = req.params;
 
-  try {
-    // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1",
-      [username.toLowerCase()]
-    );
-
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const userId = userResult.rows[0].user_id;
-
-    // Only allow users to see their own privacy settings
-    if (userId !== req.userId) {
-      return res.status(403).json({ error: "Cannot view other users' privacy settings" });
-    }
-
-    const result = await pool.query(
-      "SELECT * FROM privacy_settings WHERE user_id = $1",
-      [userId]
-    );
-
-    if (result.rows.length === 0) {
-      // Create default privacy settings
-      const settingId = generateULID('priv');
-      await pool.query(
-        `INSERT INTO privacy_settings (setting_id, user_id)
-         VALUES ($1, $2)`,
-        [settingId, userId]
+    try {
+      // Get user ID from username
+      const userResult = await pool.query(
+        "SELECT user_id FROM users WHERE username = $1",
+        [username.toLowerCase()],
       );
 
-      const newResult = await pool.query(
+      if (userResult.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const userId = userResult.rows[0].user_id;
+
+      // Only allow users to see their own privacy settings
+      if (userId !== req.userId) {
+        return res
+          .status(403)
+          .json({ error: "Cannot view other users' privacy settings" });
+      }
+
+      const result = await pool.query(
         "SELECT * FROM privacy_settings WHERE user_id = $1",
-        [userId]
+        [userId],
       );
 
-      return res.json({ privacy: newResult.rows[0] });
-    }
+      if (result.rows.length === 0) {
+        // Create default privacy settings
+        const settingId = generateULID("priv");
+        await pool.query(
+          `INSERT INTO privacy_settings (setting_id, user_id)
+         VALUES ($1, $2)`,
+          [settingId, userId],
+        );
 
-    res.json({ privacy: result.rows[0] });
-  } catch (error) {
-    console.error("Get privacy settings error:", error);
-    res.status(500).json({ error: "Failed to get privacy settings" });
-  }
-});
+        const newResult = await pool.query(
+          "SELECT * FROM privacy_settings WHERE user_id = $1",
+          [userId],
+        );
+
+        return res.json({ privacy: newResult.rows[0] });
+      }
+
+      res.json({ privacy: result.rows[0] });
+    } catch (error) {
+      console.error("Get privacy settings error:", error);
+      res.status(500).json({ error: "Failed to get privacy settings" });
+    }
+  },
+);
 
 // Update user privacy settings
 app.put("/api/profile/privacy", authenticateToken, async (req, res) => {
@@ -618,14 +662,14 @@ app.put("/api/profile/privacy", authenticateToken, async (req, res) => {
     // Check if privacy settings exist
     const existingResult = await pool.query(
       "SELECT setting_id FROM privacy_settings WHERE user_id = $1",
-      [req.userId]
+      [req.userId],
     );
 
     let result;
 
     if (existingResult.rows.length === 0) {
       // Create new privacy settings
-      const settingId = generateULID('priv');
+      const settingId = generateULID("priv");
       result = await pool.query(
         `INSERT INTO privacy_settings (
            setting_id, user_id, privacy_preset, show_statistics, show_decks,
@@ -636,14 +680,14 @@ app.put("/api/profile/privacy", authenticateToken, async (req, res) => {
         [
           settingId,
           req.userId,
-          privacyPreset || 'community_member',
+          privacyPreset || "community_member",
           showStatistics !== undefined ? showStatistics : true,
           showDecks !== undefined ? showDecks : true,
           showForumActivity !== undefined ? showForumActivity : true,
           showFollowers !== undefined ? showFollowers : true,
           showAchievements !== undefined ? showAchievements : true,
           showGoals !== undefined ? showGoals : false,
-        ]
+        ],
       );
     } else {
       // Update existing privacy settings
@@ -668,7 +712,7 @@ app.put("/api/profile/privacy", authenticateToken, async (req, res) => {
           showAchievements,
           showGoals,
           req.userId,
-        ]
+        ],
       );
     }
 
@@ -686,7 +730,7 @@ app.get("/api/achievements", async (req, res) => {
       `SELECT achievement_id, name, description, category, badge_icon,
               criteria, display_order, rarity
        FROM achievements
-       ORDER BY display_order ASC`
+       ORDER BY display_order ASC`,
     );
 
     res.json({ achievements: result.rows });
@@ -711,7 +755,10 @@ app.get("/api/profile/:username/achievements", async (req, res) => {
     const userId = user.user_id;
 
     // Check privacy settings
-    const showAchievements = await checkPrivacySetting(userId, 'show_achievements');
+    const showAchievements = await checkPrivacySetting(
+      userId,
+      "show_achievements",
+    );
 
     if (!showAchievements) {
       return res.status(403).json({ error: "User achievements are private" });
@@ -726,7 +773,7 @@ app.get("/api/profile/:username/achievements", async (req, res) => {
        JOIN achievements a ON ua.achievement_id = a.achievement_id
        WHERE ua.user_id = $1
        ORDER BY ua.unlocked DESC, a.display_order ASC`,
-      [userId]
+      [userId],
     );
 
     res.json({ achievements: result.rows });
@@ -737,91 +784,99 @@ app.get("/api/profile/:username/achievements", async (req, res) => {
 });
 
 // Follow a user
-app.post("/api/profile/follow/:username", authenticateToken, async (req, res) => {
-  const { username } = req.params;
+app.post(
+  "/api/profile/follow/:username",
+  authenticateToken,
+  async (req, res) => {
+    const { username } = req.params;
 
-  try {
-    // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1 AND is_active = true",
-      [username.toLowerCase()]
-    );
+    try {
+      // Get user ID from username
+      const userResult = await pool.query(
+        "SELECT user_id FROM users WHERE username = $1 AND is_active = true",
+        [username.toLowerCase()],
+      );
 
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      if (userResult.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    const followingId = userResult.rows[0].user_id;
+      const followingId = userResult.rows[0].user_id;
 
-    // Cannot follow yourself
-    if (followingId === req.userId) {
-      return res.status(400).json({ error: "Cannot follow yourself" });
-    }
+      // Cannot follow yourself
+      if (followingId === req.userId) {
+        return res.status(400).json({ error: "Cannot follow yourself" });
+      }
 
-    // Check if already following
-    const existingFollow = await pool.query(
-      "SELECT follow_id FROM user_follows WHERE follower_id = $1 AND following_id = $2",
-      [req.userId, followingId]
-    );
+      // Check if already following
+      const existingFollow = await pool.query(
+        "SELECT follow_id FROM user_follows WHERE follower_id = $1 AND following_id = $2",
+        [req.userId, followingId],
+      );
 
-    if (existingFollow.rows.length > 0) {
-      return res.status(400).json({ error: "Already following this user" });
-    }
+      if (existingFollow.rows.length > 0) {
+        return res.status(400).json({ error: "Already following this user" });
+      }
 
-    // Create follow relationship
-    const followId = generateULID('flw');
-    const result = await pool.query(
-      `INSERT INTO user_follows (follow_id, follower_id, following_id)
+      // Create follow relationship
+      const followId = generateULID("flw");
+      const result = await pool.query(
+        `INSERT INTO user_follows (follow_id, follower_id, following_id)
        VALUES ($1, $2, $3)
        RETURNING follow_id, created_at`,
-      [followId, req.userId, followingId]
-    );
+        [followId, req.userId, followingId],
+      );
 
-    res.status(201).json({
-      success: true,
-      follow: result.rows[0],
-    });
-  } catch (error) {
-    console.error("Follow user error:", error);
-    res.status(500).json({ error: "Failed to follow user" });
-  }
-});
+      res.status(201).json({
+        success: true,
+        follow: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Follow user error:", error);
+      res.status(500).json({ error: "Failed to follow user" });
+    }
+  },
+);
 
 // Unfollow a user
-app.delete("/api/profile/follow/:username", authenticateToken, async (req, res) => {
-  const { username } = req.params;
+app.delete(
+  "/api/profile/follow/:username",
+  authenticateToken,
+  async (req, res) => {
+    const { username } = req.params;
 
-  try {
-    // Get user ID from username
-    const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = $1",
-      [username.toLowerCase()]
-    );
+    try {
+      // Get user ID from username
+      const userResult = await pool.query(
+        "SELECT user_id FROM users WHERE username = $1",
+        [username.toLowerCase()],
+      );
 
-    if (userResult.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      if (userResult.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    const followingId = userResult.rows[0].user_id;
+      const followingId = userResult.rows[0].user_id;
 
-    // Delete follow relationship
-    const result = await pool.query(
-      `DELETE FROM user_follows
+      // Delete follow relationship
+      const result = await pool.query(
+        `DELETE FROM user_follows
        WHERE follower_id = $1 AND following_id = $2
        RETURNING follow_id`,
-      [req.userId, followingId]
-    );
+        [req.userId, followingId],
+      );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Not following this user" });
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Not following this user" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Unfollow user error:", error);
+      res.status(500).json({ error: "Failed to unfollow user" });
     }
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Unfollow user error:", error);
-    res.status(500).json({ error: "Failed to unfollow user" });
-  }
-});
+  },
+);
 
 // Get user's followers
 app.get("/api/profile/:username/followers", async (req, res) => {
@@ -838,7 +893,7 @@ app.get("/api/profile/:username/followers", async (req, res) => {
     const userId = user.user_id;
 
     // Check privacy settings
-    const showFollowers = await checkPrivacySetting(userId, 'show_followers');
+    const showFollowers = await checkPrivacySetting(userId, "show_followers");
 
     if (!showFollowers) {
       return res.status(403).json({ error: "User followers list is private" });
@@ -852,7 +907,7 @@ app.get("/api/profile/:username/followers", async (req, res) => {
        JOIN users u ON uf.follower_id = u.user_id
        WHERE uf.following_id = $1 AND u.is_active = true
        ORDER BY uf.created_at DESC`,
-      [userId]
+      [userId],
     );
 
     res.json({ followers: result.rows });
@@ -877,7 +932,7 @@ app.get("/api/profile/:username/following", async (req, res) => {
     const userId = user.user_id;
 
     // Check privacy settings
-    const showFollowers = await checkPrivacySetting(userId, 'show_followers');
+    const showFollowers = await checkPrivacySetting(userId, "show_followers");
 
     if (!showFollowers) {
       return res.status(403).json({ error: "User following list is private" });
@@ -891,7 +946,7 @@ app.get("/api/profile/:username/following", async (req, res) => {
        JOIN users u ON uf.following_id = u.user_id
        WHERE uf.follower_id = $1 AND u.is_active = true
        ORDER BY uf.created_at DESC`,
-      [userId]
+      [userId],
     );
 
     res.json({ following: result.rows });
@@ -908,7 +963,9 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
   const { cardId, timeSpentMs, rating, difficultyRating } = req.body;
 
   if (!cardId || timeSpentMs === undefined || !rating) {
-    return res.status(400).json({ error: "cardId, timeSpentMs, and rating are required" });
+    return res
+      .status(400)
+      .json({ error: "cardId, timeSpentMs, and rating are required" });
   }
 
   if (rating < 1 || rating > 4) {
@@ -917,13 +974,20 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
 
   try {
     // Generate ULID for session
-    const sessionId = generateULID('rev');
+    const sessionId = generateULID("rev");
 
     const result = await pool.query(
       `INSERT INTO study_sessions (session_id, user_id, card_id, time_spent_ms, rating, difficulty_rating)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING session_id, studied_at, was_correct`,
-      [sessionId, req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
+      [
+        sessionId,
+        req.userId,
+        cardId,
+        timeSpentMs,
+        rating,
+        difficultyRating || null,
+      ],
     );
 
     res.status(201).json({
@@ -953,13 +1017,20 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
       const { cardId, timeSpentMs, rating, difficultyRating } = session;
 
       // Generate ULID for each session
-      const sessionId = generateULID('rev');
+      const sessionId = generateULID("rev");
 
       const result = await client.query(
         `INSERT INTO study_sessions (session_id, user_id, card_id, time_spent_ms, rating, difficulty_rating)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING session_id, studied_at`,
-        [sessionId, req.userId, cardId, timeSpentMs, rating, difficultyRating || null]
+        [
+          sessionId,
+          req.userId,
+          cardId,
+          timeSpentMs,
+          rating,
+          difficultyRating || null,
+        ],
       );
 
       results.push(result.rows[0]);
@@ -997,7 +1068,7 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
                 correct_answers, total_answers, retention_rate
          FROM user_statistics_daily
          WHERE user_id = $1 AND date = CURRENT_DATE`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0] || {
         cards_studied: 0,
@@ -1022,7 +1093,7 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
           END as retention_rate
          FROM user_statistics_daily
          WHERE user_id = $1 AND date >= CURRENT_DATE - INTERVAL '7 days'`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0];
     } else if (period === "month") {
@@ -1040,14 +1111,14 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
           END as retention_rate
          FROM user_statistics_daily
          WHERE user_id = $1 AND date >= CURRENT_DATE - INTERVAL '30 days'`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0];
     } else {
       // All-time stats
       const result = await pool.query(
         `SELECT * FROM user_statistics_total WHERE user_id = $1`,
-        [userId]
+        [userId],
       );
       stats = result.rows[0] || {
         total_cards_studied: 0,
@@ -1068,28 +1139,32 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
 });
 
 // Get daily statistics for a date range
-app.get("/api/statistics/daily/:userId", authenticateToken, async (req, res) => {
-  const { userId } = req.params;
-  const { startDate, endDate } = req.query;
+app.get(
+  "/api/statistics/daily/:userId",
+  authenticateToken,
+  async (req, res) => {
+    const { userId } = req.params;
+    const { startDate, endDate } = req.query;
 
-  try {
-    const result = await pool.query(
-      `SELECT date, cards_studied, unique_cards, total_time_ms,
+    try {
+      const result = await pool.query(
+        `SELECT date, cards_studied, unique_cards, total_time_ms,
               correct_answers, total_answers, retention_rate
        FROM user_statistics_daily
        WHERE user_id = $1
          AND date >= $2
          AND date <= $3
        ORDER BY date ASC`,
-      [userId, startDate || "1970-01-01", endDate || "2099-12-31"]
-    );
+        [userId, startDate || "1970-01-01", endDate || "2099-12-31"],
+      );
 
-    res.json({ dailyStats: result.rows });
-  } catch (error) {
-    console.error("Get daily statistics error:", error);
-    res.status(500).json({ error: "Failed to get daily statistics" });
-  }
-});
+      res.json({ dailyStats: result.rows });
+    } catch (error) {
+      console.error("Get daily statistics error:", error);
+      res.status(500).json({ error: "Failed to get daily statistics" });
+    }
+  },
+);
 
 // ==================== LEADERBOARD ENDPOINTS ====================
 
@@ -1098,14 +1173,22 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
   const { metric } = req.params;
   const { limit } = req.query;
 
-  const validMetrics = ["total_cards", "total_time", "retention_rate", "current_streak"];
+  const validMetrics = [
+    "total_cards",
+    "total_time",
+    "retention_rate",
+    "current_streak",
+  ];
   if (!validMetrics.includes(metric)) {
     return res.status(400).json({ error: "Invalid metric type" });
   }
 
   try {
     // First, refresh the leaderboard cache
-    await pool.query("SELECT refresh_leaderboard($1, $2)", [metric, parseInt(limit) || 100]);
+    await pool.query("SELECT refresh_leaderboard($1, $2)", [
+      metric,
+      parseInt(limit) || 100,
+    ]);
 
     // Then fetch the cached results
     const result = await pool.query(
@@ -1113,7 +1196,7 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
        FROM leaderboard_cache
        WHERE metric_type = $1
        ORDER BY rank ASC`,
-      [metric]
+      [metric],
     );
 
     res.json({
@@ -1127,39 +1210,47 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
 });
 
 // Get user's rank for a specific metric
-app.get("/api/statistics/rank/:userId/:metric", authenticateToken, async (req, res) => {
-  const { userId, metric } = req.params;
+app.get(
+  "/api/statistics/rank/:userId/:metric",
+  authenticateToken,
+  async (req, res) => {
+    const { userId, metric } = req.params;
 
-  const validMetrics = ["total_cards", "total_time", "retention_rate", "current_streak"];
-  if (!validMetrics.includes(metric)) {
-    return res.status(400).json({ error: "Invalid metric type" });
-  }
-
-  try {
-    let column = "";
-    let table = "";
-    let whereClause = "";
-
-    if (metric === "total_cards") {
-      column = "total_cards_studied";
-      table = "user_statistics_total";
-      whereClause = "total_cards_studied > 0";
-    } else if (metric === "total_time") {
-      column = "total_time_ms";
-      table = "user_statistics_total";
-      whereClause = "total_time_ms > 0";
-    } else if (metric === "retention_rate") {
-      column = "retention_rate";
-      table = "user_statistics_total";
-      whereClause = "total_attempts >= 50";
-    } else if (metric === "current_streak") {
-      column = "current_streak";
-      table = "user_statistics_total";
-      whereClause = "current_streak > 0";
+    const validMetrics = [
+      "total_cards",
+      "total_time",
+      "retention_rate",
+      "current_streak",
+    ];
+    if (!validMetrics.includes(metric)) {
+      return res.status(400).json({ error: "Invalid metric type" });
     }
 
-    const result = await pool.query(
-      `WITH ranked_users AS (
+    try {
+      let column = "";
+      let table = "";
+      let whereClause = "";
+
+      if (metric === "total_cards") {
+        column = "total_cards_studied";
+        table = "user_statistics_total";
+        whereClause = "total_cards_studied > 0";
+      } else if (metric === "total_time") {
+        column = "total_time_ms";
+        table = "user_statistics_total";
+        whereClause = "total_time_ms > 0";
+      } else if (metric === "retention_rate") {
+        column = "retention_rate";
+        table = "user_statistics_total";
+        whereClause = "total_attempts >= 50";
+      } else if (metric === "current_streak") {
+        column = "current_streak";
+        table = "user_statistics_total";
+        whereClause = "current_streak > 0";
+      }
+
+      const result = await pool.query(
+        `WITH ranked_users AS (
         SELECT
           user_id,
           ${column} as value,
@@ -1170,23 +1261,24 @@ app.get("/api/statistics/rank/:userId/:metric", authenticateToken, async (req, r
       SELECT rank, value
       FROM ranked_users
       WHERE user_id = $1`,
-      [userId]
-    );
+        [userId],
+      );
 
-    if (result.rows.length === 0) {
-      return res.json({ rank: null, value: 0 });
+      if (result.rows.length === 0) {
+        return res.json({ rank: null, value: 0 });
+      }
+
+      return res.json({
+        metric,
+        rank: result.rows[0].rank,
+        value: result.rows[0].value,
+      });
+    } catch (error) {
+      console.error("Get rank error:", error);
+      return res.status(500).json({ error: "Failed to get rank" });
     }
-
-    return res.json({
-      metric,
-      rank: result.rows[0].rank,
-      value: result.rows[0].value,
-    });
-  } catch (error) {
-    console.error("Get rank error:", error);
-    return res.status(500).json({ error: "Failed to get rank" });
-  }
-});
+  },
+);
 
 // Upload and import Anki deck
 app.post(

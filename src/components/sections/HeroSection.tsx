@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { TerminalBorder } from '../ui/TerminalBorder';
-import { GlowText } from '../ui/GlowText';
-import { TerminalButton } from '../ui/TerminalButton';
-import { StatDisplay } from '../ui/StatDisplay';
-import { TypingText } from '../ui/TypingText';
+import { useState } from "react";
+import { TerminalBorder } from "../ui/TerminalBorder";
+import { GlowText } from "../ui/GlowText";
+import { TerminalButton } from "../ui/TerminalButton";
+import { StatDisplay } from "../ui/StatDisplay";
+import { TypingText } from "../ui/TypingText";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
@@ -49,22 +49,22 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
           {showContent && (
             <>
               <h1 className="text-6xl md:text-8xl font-mono font-bold mb-6 leading-tight animate-[fadeIn_0.5s_ease-in_0.3s] opacity-0 [animation-fill-mode:forwards]">
-                <GlowText color="amber">
-                  A COMMONS
-                </GlowText>
+                <GlowText color="amber">A COMMONS</GlowText>
                 <br />
-                <span className="text-terminal-base dark:text-text-primary">FOR</span>
+                <span className="text-terminal-base dark:text-text-primary">
+                  FOR
+                </span>
                 <br />
-                <GlowText color="cyan">
-                  LIFELONG LEARNING
-                </GlowText>
+                <GlowText color="cyan">LIFELONG LEARNING</GlowText>
               </h1>
 
               <div className="max-w-2xl mx-auto">
                 <div className="text-left font-mono text-terminal-muted space-y-2 mb-8">
                   <div className="flex items-start gap-2 animate-[fadeIn_0.5s_ease-in_0.5s] opacity-0 [animation-fill-mode:forwards]">
                     <span className="terminal-primary">&gt;</span>
-                    <span>Spaced repetition engineered for sustained focus.</span>
+                    <span>
+                      Spaced repetition engineered for sustained focus.
+                    </span>
                   </div>
                   <div className="flex items-start gap-2 animate-[fadeIn_0.5s_ease-in_0.6s] opacity-0 [animation-fill-mode:forwards]">
                     <span className="terminal-primary">&gt;</span>
@@ -80,14 +80,14 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
                 <div className="flex gap-4 justify-center mb-12 animate-[fadeIn_0.5s_ease-in_0.8s] opacity-0 [animation-fill-mode:forwards]">
                   <TerminalButton
                     variant="cyan"
-                    onClick={() => onNavigate('study')}
+                    onClick={() => onNavigate("study")}
                     className="px-8 py-4 text-sm"
                   >
                     $ ./start-learning
                   </TerminalButton>
                   <TerminalButton
                     variant="amber"
-                    onClick={() => onNavigate('browse')}
+                    onClick={() => onNavigate("browse")}
                     className="px-8 py-4 text-sm"
                   >
                     $ ./browse-decks

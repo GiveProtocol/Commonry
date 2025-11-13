@@ -12,7 +12,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<{
+  login: (
+    username: string,
+    password: string,
+  ) => Promise<{
     error?: string;
     emailNotVerified?: boolean;
     email?: string;
