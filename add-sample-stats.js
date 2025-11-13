@@ -1,6 +1,6 @@
-import pool from './db.js';
-import { ulid } from 'ulid';
-import dotenv from 'dotenv';
+import pool from "./db.js";
+import { ulid } from "ulid";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -8,12 +8,12 @@ async function addSampleStats() {
   try {
     // Get the user ID (moonlitmountains)
     const userResult = await pool.query(
-      "SELECT user_id FROM users WHERE username = 'moonlitmountains'"
+      "SELECT user_id FROM users WHERE username = 'moonlitmountains'",
     );
 
     if (userResult.rows.length === 0) {
-      console.error('User not found!');
-      throw new Error('User not found!');
+      console.error("User not found!");
+      throw new Error("User not found!");
     }
 
     const userId = userResult.rows[0].user_id;
@@ -50,40 +50,40 @@ async function addSampleStats() {
       [
         statId,
         userId,
-        5,  // current_streak - 5 day streak
+        5, // current_streak - 5 day streak
         12, // longest_streak - best was 12 days
-        lastStudyDate.toISOString().split('T')[0], // last_study_date
+        lastStudyDate.toISOString().split("T")[0], // last_study_date
         23, // total_study_days - studied 23 different days
         342, // total_cards_reviewed
         87, // total_cards_mastered
-        3,  // active_decks_count
+        3, // active_decks_count
         45, // new_cards_this_week
         156, // new_cards_this_month
         4320000, // total_study_time_ms (72 minutes total)
         1200000, // average_session_time_ms (20 minutes per session)
         JSON.stringify([
-          { subject: 'JavaScript', count: 120 },
-          { subject: 'React', count: 95 },
-          { subject: 'Database Design', count: 127 }
+          { subject: "JavaScript", count: 120 },
+          { subject: "React", count: 95 },
+          { subject: "Database Design", count: 127 },
         ]),
-        false // opted_into_leaderboard
-      ]
+        false, // opted_into_leaderboard
+      ],
     );
 
-    console.log('✅ Sample statistics added successfully!');
-    console.log('\nStatistics Summary:');
-    console.log('  Current Streak: 5 days');
-    console.log('  Longest Streak: 12 days');
-    console.log('  Total Study Days: 23 days');
-    console.log('  Cards Reviewed: 342');
-    console.log('  Cards Mastered: 87');
-    console.log('  Active Decks: 3');
-    console.log('  Total Study Time: 72 minutes');
-    console.log('  Top Subjects: JavaScript, React, Database Design');
+    console.log("✅ Sample statistics added successfully!");
+    console.log("\nStatistics Summary:");
+    console.log("  Current Streak: 5 days");
+    console.log("  Longest Streak: 12 days");
+    console.log("  Total Study Days: 23 days");
+    console.log("  Cards Reviewed: 342");
+    console.log("  Cards Mastered: 87");
+    console.log("  Active Decks: 3");
+    console.log("  Total Study Time: 72 minutes");
+    console.log("  Top Subjects: JavaScript, React, Database Design");
 
     process.exitCode = 0;
   } catch (error) {
-    console.error('❌ Error adding sample stats:', error);
+    console.error("❌ Error adding sample stats:", error);
     throw new Error(`Error adding sample stats: ${error.message}`);
   }
 }
