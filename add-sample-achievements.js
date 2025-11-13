@@ -109,15 +109,15 @@ async function addSampleAchievements() {
 
     console.log('Achievement Summary:');
     console.log(`  Unlocked: ${unlockedCount} achievements`);
-    console.log(`    🔥 Week Warrior - 7-day streak`);
-    console.log(`    ✨ Perfect Week - Studied every day`);
-    console.log(`    🌱 First Steps - 100 cards reviewed\n`);
+    console.log('    🔥 Week Warrior - 7-day streak');
+    console.log('    ✨ Perfect Week - Studied every day');
+    console.log('    🌱 First Steps - 100 cards reviewed\n');
 
     console.log(`  In Progress: ${inProgressCount} achievements`);
-    console.log(`    ⭐ Month Master - 12/30 days`);
-    console.log(`    📚 Knowledge Seeker - 342/1,000 cards`);
-    console.log(`    🌟 Hundred Strong - 87/100 cards mastered`);
-    console.log(`    💎 Century Scholar - 12/100 day streak`);
+    console.log('    ⭐ Month Master - 12/30 days');
+    console.log('    📚 Knowledge Seeker - 342/1,000 cards');
+    console.log('    🌟 Hundred Strong - 87/100 cards mastered');
+    console.log('    💎 Century Scholar - 12/100 day streak');
 
     process.exit(0);
   } catch (error) {

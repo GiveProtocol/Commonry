@@ -35,9 +35,9 @@ async function createTransporter() {
     });
 
     console.log('✅ Using Ethereal test email service');
-    console.log(`📧 Test email credentials:`);
+    console.log('📧 Test email credentials:');
     console.log(`   User: ${testAccount.user}`);
-    console.log(`   Preview emails at: https://ethereal.email`);
+    console.log('   Preview emails at: https://ethereal.email');
   } else {
     // Use configured SMTP
     transporter = nodemailer.createTransport({
