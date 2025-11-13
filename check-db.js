@@ -19,10 +19,11 @@ async function checkDatabase() {
       console.log(`  ${row.column_name}: ${row.data_type}`);
     });
 
-    process.exit(0);
+    process.exitCode = 0;
+    return;
   } catch (error) {
     console.error('Error:', error);
-    process.exit(1);
+    throw new Error(error);
   }
 }
 

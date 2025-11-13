@@ -12,7 +12,7 @@ async function runMigration() {
     if (!migrationFile) {
       console.error('❌ Please provide a migration file path');
       console.log('Usage: node run-migration.js <path-to-migration.sql>');
-      process.exit(1);
+      throw new Error('Please provide a migration file path');
     }
 
     console.log(`Running migration: ${migrationFile}...`);
@@ -23,10 +23,10 @@ async function runMigration() {
 
     console.log('✅ Migration completed successfully!');
 
-    process.exit(0);
+    process.exitCode = 0;
   } catch (error) {
     console.error('❌ Migration failed:', error);
-    process.exit(1);
+    throw error;
   }
 }
 

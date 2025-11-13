@@ -13,7 +13,7 @@ async function addSampleStats() {
 
     if (userResult.rows.length === 0) {
       console.error('User not found!');
-      process.exit(1);
+      throw new Error('User not found!');
     }
 
     const userId = userResult.rows[0].user_id;
@@ -81,10 +81,10 @@ async function addSampleStats() {
     console.log('  Total Study Time: 72 minutes');
     console.log('  Top Subjects: JavaScript, React, Database Design');
 
-    process.exit(0);
+    process.exitCode = 0;
   } catch (error) {
     console.error('❌ Error adding sample stats:', error);
-    process.exit(1);
+    throw new Error(`Error adding sample stats: ${error.message}`);
   }
 }
 
