@@ -6,7 +6,7 @@ export interface CommandHistoryEntry {
   timestamp: Date;
   type: "action" | "navigation" | "system";
   result?: "success" | "error" | "info";
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 const STORAGE_KEY = "commonry_command_history";
@@ -22,10 +22,12 @@ export function useCommandHistory() {
       try {
         const parsed = JSON.parse(stored);
         // Convert timestamp strings back to Date objects
-        const historyWithDates = parsed.map((entry: any) => ({
-          ...entry,
-          timestamp: new Date(entry.timestamp),
-        }));
+        const historyWithDates = parsed.map(
+          (entry: { timestamp: string; [key: string]: unknown }) => ({
+            ...entry,
+            timestamp: new Date(entry.timestamp),
+          }),
+        );
         setHistory(historyWithDates);
       } catch (error) {
         console.error("Failed to load command history:", error);

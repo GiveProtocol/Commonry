@@ -59,7 +59,9 @@ class ApiService {
 
       return { data };
     } catch (error) {
-      return { error: error instanceof Error ? error.message : "Network error" };
+      return {
+        error: error instanceof Error ? error.message : "Network error",
+      };
     }
   }
 
@@ -213,7 +215,7 @@ class ApiService {
   }
 
   async followUser(username: string) {
-    return this.request<{ success: boolean; follow: any }>(
+    return this.request<{ success: boolean; follow: unknown }>(
       `/api/profile/follow/${username}`,
       {
         method: "POST",
@@ -338,7 +340,7 @@ export interface ProfileStatistics {
   newCardsThisMonth: number;
   totalStudyTimeMs: number;
   averageSessionTimeMs: number;
-  topSubjects: any[];
+  topSubjects: unknown[];
   globalRank?: number;
   optedIntoLeaderboard: boolean;
 }
@@ -349,7 +351,7 @@ export interface Achievement {
   description: string;
   category: string;
   badgeIcon: string;
-  criteria: any;
+  criteria: unknown;
   displayOrder: number;
   rarity: string;
 }
@@ -365,7 +367,7 @@ export interface UserAchievement {
   description: string;
   category: string;
   badgeIcon: string;
-  criteria: any;
+  criteria: unknown;
   rarity: string;
 }
 
