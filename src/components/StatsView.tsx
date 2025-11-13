@@ -166,7 +166,7 @@ export function StatsView({ onBack }: StatsViewProps) {
           {(["today", "week", "month", "all"] as TimePeriod[]).map((p) => (
             <button
               key={p}
-              onClick={() => setPeriod(p)}
+              onClick={clickHandlers[p]}
               className={`flex-1 py-2 px-4 rounded-md font-medium font-mono transition-all ${
                 period === p
                   ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"
@@ -339,7 +339,7 @@ export function StatsView({ onBack }: StatsViewProps) {
                 ).map((metric) => (
                   <button
                     key={metric}
-                    onClick={() => setSelectedMetric(metric)}
+                    onClick={handleMetricClick(metric)}
                     className={`py-2 px-4 rounded-md font-medium font-mono whitespace-nowrap transition-all ${
                       selectedMetric === metric
                         ? "bg-cyan text-dark shadow-cyan-glow border border-cyan"

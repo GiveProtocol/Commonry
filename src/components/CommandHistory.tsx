@@ -57,6 +57,24 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
   const [isExpanded, setIsExpanded] = useState(false);
   const [filterType, setFilterType] = useState<'all' | 'action' | 'navigation' | 'system'>('all');
 
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const handleToggleExpanded = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
+
+  const FILTER_TYPES = useMemo(() => ['all', 'action', 'navigation', 'system'] as const, []);
+
+  const filterTypeHandlers = useMemo(() => {
+    const handlers: Record<typeof FILTER_TYPES[number], () => void> = {} as any;
+    FILTER_TYPES.forEach((t) => {
+      handlers[t] = () => setFilterType(t);
+    });
+    return handlers;
+  }, [FILTER_TYPES, setFilterType]);
+
   const filteredHistory = searchQuery
     ? searchHistory(searchQuery)
     : filterType === 'all'
@@ -96,17 +114,17 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="$ grep..."
               className="w-full pl-10 pr-4 py-2 bg-dark border-2 border-cyan/30 rounded text-cyan placeholder-text-muted focus:outline-none focus:border-cyan focus:shadow-cyan-glow font-mono text-sm transition-all"
             />
           </div>
 
           <div className="flex gap-2">
-            {(['all', 'action', 'navigation', 'system'] as const).map((type) => (
+            {FILTER_TYPES.map((type) => (
               <button
                 key={type}
-                onClick={() => setFilterType(type)}
+                onClick={filterTypeHandlers[type]}
                 className={`px-3 py-1 rounded font-mono text-xs transition-all ${
                   filterType === type
                     ? 'bg-cyan text-dark border-2 border-cyan shadow-cyan-glow'
@@ -137,7 +155,7 @@ export function CommandHistory({ maxVisible = 20, showSearch = true }: CommandHi
 
           {filteredHistory.length > maxVisible && (
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={handleToggleExpanded}
               className="w-full py-2 text-cyan hover:text-cyan-dark transition-colors font-mono text-sm flex items-center justify-center gap-2"
             >
               {isExpanded ? (

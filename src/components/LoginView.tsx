@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
 
@@ -65,6 +65,14 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
     setResendLoading(false);
   };
 
+  const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+  }, []);
+
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
       <motion.div
@@ -127,7 +135,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
               id="username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="Enter your username or email"
               required
@@ -146,7 +154,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
               placeholder="Enter your password"
               required

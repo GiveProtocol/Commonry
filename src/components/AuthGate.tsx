@@ -23,6 +23,19 @@ export default function AuthGate({ children }: AuthGateProps) {
     }
   }, []);
 
+  const handleEmailVerificationSuccess = useCallback(() => {
+    setVerificationToken(null);
+    window.history.pushState({}, "", "/");
+  }, [setVerificationToken]);
+
+  const handleSwitchToLogin = useCallback(() => {
+    setShowSignup(false);
+  }, [setShowSignup]);
+
+  const handleSwitchToSignup = useCallback(() => {
+    setShowSignup(true);
+  }, [setShowSignup]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-gray-900 dark:to-gray-800">
@@ -40,19 +53,16 @@ export default function AuthGate({ children }: AuthGateProps) {
     return (
       <EmailVerificationView
         token={verificationToken}
-        onSuccess={() => {
-          setVerificationToken(null);
-          window.history.pushState({}, "", "/");
-        }}
+        onSuccess={handleEmailVerificationSuccess}
       />
     );
   }
 
   if (!isAuthenticated) {
     return showSignup ? (
-      <SignupView onSwitchToLogin={() => setShowSignup(false)} />
+      <SignupView onSwitchToLogin={handleSwitchToLogin} />
     ) : (
-      <LoginView onSwitchToSignup={() => setShowSignup(true)} />
+      <LoginView onSwitchToSignup={handleSwitchToSignup} />
     );
   }
 
