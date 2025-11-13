@@ -115,6 +115,8 @@ export function StatsView({ onBack }: StatsViewProps) {
         return "Retention Rate";
       case "current_streak":
         return "Current Streak";
+      default:
+        return null;
     }
   };
 
@@ -129,6 +131,7 @@ export function StatsView({ onBack }: StatsViewProps) {
       case "all":
         return "All Time";
     }
+    return null;
   };
 
   const cardsStudied =

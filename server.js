@@ -82,6 +82,7 @@ const authenticateToken = (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.userId = decoded.userId;
     next();
+    return null;
   } catch (error) {
     return res.status(403).json({ error: "Invalid or expired token" });
   }
@@ -189,6 +190,7 @@ app.post("/api/auth/signup", async (req, res) => {
       email: user.email,
       requiresVerification: true,
     });
+    return null;
   } catch (error) {
     if (error.constraint === "users_username_key") {
       return res.status(409).json({ error: "Username already taken" });
@@ -198,6 +200,7 @@ app.post("/api/auth/signup", async (req, res) => {
     }
     console.error("Signup error:", error);
     res.status(500).json({ error: "Failed to create user" });
+    return null;
   }
 });
 
@@ -265,9 +268,11 @@ app.get("/api/auth/verify-email/:token", async (req, res) => {
       verified: true,
       username: user.username,
     });
+    return null;
   } catch (error) {
     console.error("Email verification error:", error);
     res.status(500).json({ error: "Failed to verify email" });
+    return null;
   }
 });
 
@@ -341,6 +346,7 @@ app.post("/api/auth/resend-verification", async (req, res) => {
     console.error("Resend verification error:", error);
     res.status(500).json({ error: "Failed to resend verification email" });
   }
+  return null;
 });
 
 // User login
@@ -411,6 +417,8 @@ app.post("/api/auth/login", async (req, res) => {
     console.error("Login error:", error);
     res.status(500).json({ error: "Failed to login" });
   }
+
+  return null;
 });
 
 // Get current user
@@ -428,9 +436,11 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
     }
 
     res.json({ user: result.rows[0] });
+    return null;
   } catch (error) {
     console.error("Get user error:", error);
     res.status(500).json({ error: "Failed to get user" });
+    return null;
   }
 });
 
@@ -488,9 +498,11 @@ app.get("/api/profile/:username", async (req, res) => {
       },
       privacy,
     });
+    return null;
   } catch (error) {
     console.error("Get profile error:", error);
     res.status(500).json({ error: "Failed to get profile" });
+    return null;
   }
 });
 
@@ -534,9 +546,11 @@ app.put("/api/profile", authenticateToken, async (req, res) => {
     }
 
     res.json({ profile: result.rows[0] });
+    return null;
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({ error: "Failed to update profile" });
+    return null;
   }
 });
 
@@ -583,9 +597,11 @@ app.get("/api/profile/:username/stats", async (req, res) => {
     }
 
     res.json({ stats: statsResult.rows[0] });
+    return null;
   } catch (error) {
     console.error("Get user stats error:", error);
     res.status(500).json({ error: "Failed to get statistics" });
+    return null;
   }
 });
 
@@ -777,9 +793,11 @@ app.get("/api/profile/:username/achievements", async (req, res) => {
     );
 
     res.json({ achievements: result.rows });
+    return null;
   } catch (error) {
     console.error("Get user achievements error:", error);
     res.status(500).json({ error: "Failed to get user achievements" });
+    return null;
   }
 });
 
@@ -911,9 +929,11 @@ app.get("/api/profile/:username/followers", async (req, res) => {
     );
 
     res.json({ followers: result.rows });
+    return null;
   } catch (error) {
     console.error("Get followers error:", error);
     res.status(500).json({ error: "Failed to get followers" });
+    return null;
   }
 });
 
@@ -950,9 +970,11 @@ app.get("/api/profile/:username/following", async (req, res) => {
     );
 
     res.json({ following: result.rows });
+    return null;
   } catch (error) {
     console.error("Get following error:", error);
     res.status(500).json({ error: "Failed to get following list" });
+    return null;
   }
 });
 
@@ -998,6 +1020,8 @@ app.post("/api/study-sessions", authenticateToken, async (req, res) => {
     console.error("Record session error:", error);
     res.status(500).json({ error: "Failed to record study session" });
   }
+
+  return null;
 });
 
 // Batch record study sessions
@@ -1043,10 +1067,12 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
       count: results.length,
       sessions: results,
     });
+    return null;
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Batch record error:", error);
     res.status(500).json({ error: "Failed to record study sessions" });
+    return null;
   } finally {
     client.release();
   }
@@ -1207,6 +1233,7 @@ app.get("/api/leaderboard/:metric", async (req, res) => {
     console.error("Get leaderboard error:", error);
     res.status(500).json({ error: "Failed to get leaderboard" });
   }
+  return null;
 });
 
 // Get user's rank for a specific metric

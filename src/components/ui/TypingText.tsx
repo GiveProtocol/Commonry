@@ -46,7 +46,7 @@ export function useTypingEffect(text: string, speed = 50, delay = 0) {
   }, [text]);
 
   useEffect(() => {
-    if (isComplete) return;
+    if (isComplete) return null;
 
     const delayTimer = setTimeout(() => {
       if (currentIndex < text.length) {
@@ -58,7 +58,9 @@ export function useTypingEffect(text: string, speed = 50, delay = 0) {
         return () => clearTimeout(timer);
       } else if (currentIndex === text.length) {
         setIsComplete(true);
+        return null;
       }
+      return null;
     }, delay);
 
     return () => clearTimeout(delayTimer);
