@@ -45,7 +45,7 @@ export function useCommandHistory() {
       command: string,
       type: "action" | "navigation" | "system" = "action",
       result?: "success" | "error" | "info",
-      metadata?: Record<string, any>,
+      metadata?: Record<string, unknown>,
     ) => {
       const entry: CommandHistoryEntry = {
         id: crypto.randomUUID(),

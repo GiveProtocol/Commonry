@@ -72,7 +72,7 @@ export const terminalAnimations = {
   },
 
   // Utility for creating typing effect hook
-  useTypingEffect: (text: string, speed = 50) => {
+  useTypingEffect: (text: string, _speed = 50) => {
     // This would be implemented as a custom React hook
     // For now, returning a simple implementation guide
     return {
