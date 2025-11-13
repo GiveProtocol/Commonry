@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -15,16 +15,18 @@ async function createTransporter() {
   if (transporter) return transporter;
 
   // In development, use Ethereal if email credentials not configured
-  const isDevMode = process.env.NODE_ENV === 'development';
+  const isDevMode = process.env.NODE_ENV === "development";
   const hasEmailConfig = process.env.EMAIL_USER && process.env.EMAIL_PASSWORD;
 
   if (isDevMode && !hasEmailConfig) {
     // Create test account with Ethereal
-    console.log('⚠️  Email credentials not configured. Creating Ethereal test account...');
+    console.log(
+      "⚠️  Email credentials not configured. Creating Ethereal test account...",
+    );
     const testAccount = await nodemailer.createTestAccount();
 
     transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: "smtp.ethereal.email",
       port: 587,
       secure: true, // Use STARTTLS instead of implicit TLS
       requireTLS: true, // Require encrypted connection via STARTTLS
@@ -34,7 +36,7 @@ async function createTransporter() {
       },
     });
 
-    console.log('✅ Using Ethereal test email service');
+    console.log("✅ Using Ethereal test email service");
     console.log(`📧 Test email credentials:`);
     console.log(`   User: ${testAccount.user}`);
     console.log(`   Preview emails at: https://ethereal.email`);
@@ -42,7 +44,7 @@ async function createTransporter() {
     // Use configured SMTP
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || '587'),
+      port: parseInt(process.env.EMAIL_PORT || "587"),
       secure: true,
       requireTLS: true,
       auth: {
@@ -51,7 +53,7 @@ async function createTransporter() {
       },
     });
 
-    console.log('✅ Email service configured with SMTP');
+    console.log("✅ Email service configured with SMTP");
   }
 
   return transporter;
@@ -64,14 +66,20 @@ function getFrontendUrl() {
   const url = process.env.FRONTEND_URL;
 
   if (!url) {
-    console.warn('⚠️  FRONTEND_URL not configured. Using localhost for development only.');
-    console.warn('⚠️  This is insecure for production. Set FRONTEND_URL environment variable.');
-    return 'http://localhost:5173'; // Development fallback only
+    console.warn(
+      "⚠️  FRONTEND_URL not configured. Using localhost for development only.",
+    );
+    console.warn(
+      "⚠️  This is insecure for production. Set FRONTEND_URL environment variable.",
+    );
+    return "http://localhost:5173"; // Development fallback only
   }
 
-  if (process.env.NODE_ENV === 'production' && url.startsWith('http://')) {
-    console.error('❌ SECURITY WARNING: Using http:// in production is insecure!');
-    console.error('❌ Please use https:// for FRONTEND_URL in production.');
+  if (process.env.NODE_ENV === "production" && url.startsWith("http://")) {
+    console.error(
+      "❌ SECURITY WARNING: Using http:// in production is insecure!",
+    );
+    console.error("❌ Please use https:// for FRONTEND_URL in production.");
   }
 
   return url;
@@ -80,15 +88,19 @@ function getFrontendUrl() {
 /**
  * Send verification email to user
  */
-export async function sendVerificationEmail(email, username, verificationToken) {
+export async function sendVerificationEmail(
+  email,
+  username,
+  verificationToken,
+) {
   const transporter = await createTransporter();
 
   const verificationUrl = `${getFrontendUrl()}/verify-email/${verificationToken}`;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || 'Commonry <noreply@commonry.com>',
+    from: process.env.EMAIL_FROM || "Commonry <noreply@commonry.com>",
     to: email,
-    subject: 'Verify Your Email - Commonry',
+    subject: "Verify Your Email - Commonry",
     html: `
       <!DOCTYPE html>
       <html>
@@ -213,11 +225,11 @@ The Commonry Team
 
   const info = await transporter.sendMail(mailOptions);
 
-  console.log('✅ Verification email sent:', info.messageId);
+  console.log("✅ Verification email sent:", info.messageId);
 
   // If using Ethereal, log preview URL
-  if (process.env.NODE_ENV === 'development' && !process.env.EMAIL_USER) {
-    console.log('📧 Preview URL:', nodemailer.getTestMessageUrl(info));
+  if (process.env.NODE_ENV === "development" && !process.env.EMAIL_USER) {
+    console.log("📧 Preview URL:", nodemailer.getTestMessageUrl(info));
   }
 
   return info;
@@ -232,9 +244,9 @@ export async function sendPasswordResetEmail(email, username, resetToken) {
   const resetUrl = `${getFrontendUrl()}/reset-password/${resetToken}`;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || 'Commonry <noreply@commonry.com>',
+    from: process.env.EMAIL_FROM || "Commonry <noreply@commonry.com>",
     to: email,
-    subject: 'Password Reset Request - Commonry',
+    subject: "Password Reset Request - Commonry",
     html: `
       <!DOCTYPE html>
       <html>
@@ -287,10 +299,10 @@ export async function sendPasswordResetEmail(email, username, resetToken) {
   };
 
   const info = await transporter.sendMail(mailOptions);
-  console.log('✅ Password reset email sent:', info.messageId);
+  console.log("✅ Password reset email sent:", info.messageId);
 
-  if (process.env.NODE_ENV === 'development' && !process.env.EMAIL_USER) {
-    console.log('📧 Preview URL:', nodemailer.getTestMessageUrl(info));
+  if (process.env.NODE_ENV === "development" && !process.env.EMAIL_USER) {
+    console.log("📧 Preview URL:", nodemailer.getTestMessageUrl(info));
   }
 
   return info;
