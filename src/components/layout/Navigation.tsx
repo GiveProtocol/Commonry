@@ -10,10 +10,7 @@ interface NavigationProps {
   onSignIn?: () => void;
 }
 
-export function Navigation({
-  onNavigate,
-  onSignIn,
-}: NavigationProps) {
+export function Navigation({ onNavigate, onSignIn }: NavigationProps) {
   const handleNavigateHome = useCallback(() => {
     onNavigate?.("home");
   }, [onNavigate]);
