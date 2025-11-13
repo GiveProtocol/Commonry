@@ -12,7 +12,7 @@ interface NavigationProps {
 }
 
 export function Navigation({
-  currentView,
+  currentView: _currentView,
   onNavigate,
   onSignIn,
 }: NavigationProps) {

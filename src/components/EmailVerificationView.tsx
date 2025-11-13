@@ -66,7 +66,6 @@ export default function EmailVerificationView({
   };
 
   const handleResendVerification = React.useCallback(() => {
-    // TODO: Implement resend verification
   }, []);
 
   return (
