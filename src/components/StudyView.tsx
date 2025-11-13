@@ -232,7 +232,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             className="w-12 h-12 border-2 border-terminal-primary dark:border-cyan border-t-transparent rounded-full mx-auto mb-4"
           />
-          <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Loading cards...</p>
+          <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
+            Loading cards...
+          </p>
         </div>
       </div>
     );
@@ -279,7 +281,11 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   className="px-4 py-2 bg-terminal-surface dark:bg-dark-surface border-2 border-terminal-primary/30 dark:border-cyan/30 rounded terminal-primary dark:text-cyan font-mono focus:outline-none focus:border-terminal-primary dark:focus:border-cyan focus:shadow-terminal-glow dark:focus:shadow-cyan-glow transition-all"
                 >
                   {decks.map((deck) => (
-                    <option key={deck.id} value={deck.id} className="bg-terminal-surface dark:bg-dark terminal-primary dark:text-cyan">
+                    <option
+                      key={deck.id}
+                      value={deck.id}
+                      className="bg-terminal-surface dark:bg-dark terminal-primary dark:text-cyan"
+                    >
                       {deck.name} ({deck.dueCount} due)
                     </option>
                   ))}
@@ -301,29 +307,46 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.2 }}
                 >
-                  <div className="w-20 h-20 terminal-primary dark:text-cyan mx-auto mb-6 text-7xl [text-shadow:0_0_20px_var(--terminal-green)] dark:[text-shadow:0_0_20px_#00d9ff]">✓</div>
+                  <div className="w-20 h-20 terminal-primary dark:text-cyan mx-auto mb-6 text-7xl [text-shadow:0_0_20px_var(--terminal-green)] dark:[text-shadow:0_0_20px_#00d9ff]">
+                    ✓
+                  </div>
                 </motion.div>
-                <h2 className="text-3xl font-bold mb-4 terminal-primary dark:text-cyan font-mono text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]">SESSION_COMPLETE</h2>
+                <h2 className="text-3xl font-bold mb-4 terminal-primary dark:text-cyan font-mono text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+                  SESSION_COMPLETE
+                </h2>
                 <div className="space-y-3 mb-8 font-mono">
                   <p className="text-xl text-terminal-base dark:text-text-primary">
-                    <span className="text-terminal-muted dark:text-text-muted">$ reviewed:</span>{" "}
-                    <span className="font-bold terminal-accent dark:text-amber">{sessionStats.reviewed}</span>{" "}
-                    <span className="text-terminal-muted dark:text-text-muted">cards</span>
+                    <span className="text-terminal-muted dark:text-text-muted">
+                      $ reviewed:
+                    </span>{" "}
+                    <span className="font-bold terminal-accent dark:text-amber">
+                      {sessionStats.reviewed}
+                    </span>{" "}
+                    <span className="text-terminal-muted dark:text-text-muted">
+                      cards
+                    </span>
                   </p>
                   <p className="text-lg text-terminal-muted dark:text-text-muted">
-                    <span className="text-terminal-muted dark:text-text-muted">$ accuracy:</span>{" "}
+                    <span className="text-terminal-muted dark:text-text-muted">
+                      $ accuracy:
+                    </span>{" "}
                     <span className="terminal-primary dark:text-cyan font-bold">
-                    {Math.round(
-                      (sessionStats.correct / sessionStats.reviewed) * 100,
-                    )}
-                    %</span>
+                      {Math.round(
+                        (sessionStats.correct / sessionStats.reviewed) * 100,
+                      )}
+                      %
+                    </span>
                   </p>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-20 h-20 terminal-accent dark:text-amber mx-auto mb-6 text-7xl [text-shadow:0_0_20px_var(--terminal-orange)] dark:[text-shadow:0_0_20px_#fbbf24]">✓</div>
-                <h2 className="text-3xl font-bold mb-4 terminal-accent dark:text-amber font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">ALL_CLEAR</h2>
+                <div className="w-20 h-20 terminal-accent dark:text-amber mx-auto mb-6 text-7xl [text-shadow:0_0_20px_var(--terminal-orange)] dark:[text-shadow:0_0_20px_#fbbf24]">
+                  ✓
+                </div>
+                <h2 className="text-3xl font-bold mb-4 terminal-accent dark:text-amber font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+                  ALL_CLEAR
+                </h2>
                 <p className="text-xl text-terminal-muted dark:text-text-muted mb-8 font-mono">
                   No cards due for review
                 </p>
@@ -359,7 +382,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
                 {allCards.length}
               </p>
-              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Total Cards</p>
+              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
+                Total Cards
+              </p>
             </div>
 
             <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-accent/30 dark:border-amber/30 rounded-lg p-6 text-center hover:border-terminal-accent dark:hover:border-amber hover:shadow-terminal-accent-glow dark:hover:shadow-amber-glow transition-all">
@@ -367,7 +392,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               <p className="text-2xl font-bold terminal-accent dark:text-amber font-mono">
                 {sessionStats.streak}
               </p>
-              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Current Streak</p>
+              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
+                Current Streak
+              </p>
             </div>
 
             <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
@@ -375,7 +402,9 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
                 20
               </p>
-              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">Daily Goal</p>
+              <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
+                Daily Goal
+              </p>
             </div>
           </motion.div>
         </div>
@@ -414,9 +443,13 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                   />
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 text-center cursor-pointer hover:border-emerald-600 transition-colors">
                     {isLoading ? (
-                      <div className="w-12 h-12 text-emerald-600 mx-auto text-5xl animate-spin">⟳</div>
+                      <div className="w-12 h-12 text-emerald-600 mx-auto text-5xl animate-spin">
+                        ⟳
+                      </div>
                     ) : (
-                      <div className="w-12 h-12 text-gray-400 mx-auto mb-3 text-5xl">↑</div>
+                      <div className="w-12 h-12 text-gray-400 mx-auto mb-3 text-5xl">
+                        ↑
+                      </div>
                     )}
                     <p className="text-gray-600 dark:text-gray-300">
                       {isLoading ? "Importing..." : "Click to select file"}

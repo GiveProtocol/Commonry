@@ -68,7 +68,9 @@ function App() {
               _
             </motion.span>
           </div>
-          <p className="text-terminal-muted text-sm mt-2">Initializing database...</p>
+          <p className="text-terminal-muted text-sm mt-2">
+            Initializing database...
+          </p>
         </div>
       </div>
     );
@@ -232,11 +234,15 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
         </div>
 
         <div className="mt-8">
-          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">$ cat status.txt</div>
+          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">
+            $ cat status.txt
+          </div>
           <h1 className="text-3xl font-bold terminal-accent dark:text-amber mb-2 font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
             {title}
           </h1>
-          <p className="text-terminal-muted dark:text-text-muted mb-8 font-mono">{subtitle}</p>
+          <p className="text-terminal-muted dark:text-text-muted mb-8 font-mono">
+            {subtitle}
+          </p>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -252,4 +258,3 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
 }
 
 export default App;
-
