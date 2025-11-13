@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle } from "lucide-react";
 
+// Signup view with email verification flow
 interface SignupViewProps {
   onSwitchToLogin: () => void;
 }

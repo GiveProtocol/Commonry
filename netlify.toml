@@ -5,8 +5,8 @@
 [build.environment]
   NODE_VERSION = "22"
   NPM_VERSION = "10"
-  # Force cache clear
-  NETLIFY_CACHE_ID = "v4"
+  # Force cache clear - 2025-01-12 22:00 UTC
+  NETLIFY_CACHE_ID = "v5"
 
 # Use npm ci to ensure clean installs from package-lock.json
 [context.production]
