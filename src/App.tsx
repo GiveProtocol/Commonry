@@ -68,7 +68,9 @@ function App() {
               _
             </motion.span>
           </div>
-          <p className="text-terminal-muted text-sm mt-2">Initializing database...</p>
+          <p className="text-terminal-muted text-sm mt-2">
+            Initializing database...
+          </p>
         </div>
       </div>
     );
@@ -226,17 +228,21 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
       >
         {/* Terminal header */}
         <div className="absolute top-0 left-0 right-0 h-8 bg-terminal-muted dark:bg-dark-border border-b border-terminal-accent/30 dark:border-amber/30 flex items-center px-4 gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-          <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50"></div>
-          <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50"></div>
+          <div className="w-3 h-3 rounded-full bg-red-500/50" />
+          <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50" />
+          <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50" />
         </div>
 
         <div className="mt-8">
-          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">$ cat status.txt</div>
+          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">
+            $ cat status.txt
+          </div>
           <h1 className="text-3xl font-bold terminal-accent dark:text-amber mb-2 font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
             {title}
           </h1>
-          <p className="text-terminal-muted dark:text-text-muted mb-8 font-mono">{subtitle}</p>
+          <p className="text-terminal-muted dark:text-text-muted mb-8 font-mono">
+            {subtitle}
+          </p>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -252,4 +258,3 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
 }
 
 export default App;
-

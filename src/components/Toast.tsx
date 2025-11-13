@@ -119,13 +119,17 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       transition={{ duration: 0.2 }}
       className="pointer-events-auto"
     >
-      <div className={`${style.bg} border-2 ${style.border} ${style.shadow} rounded-lg overflow-hidden min-w-[320px] max-w-md`}>
+      <div
+        className={`${style.bg} border-2 ${style.border} ${style.shadow} rounded-lg overflow-hidden min-w-[320px] max-w-md`}
+      >
         {/* Terminal header */}
         <div className="h-6 bg-dark-border border-b-2 border-current flex items-center px-3 gap-2 opacity-50">
-          <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
-          <div className="w-2 h-2 rounded-full bg-amber/50"></div>
-          <div className="w-2 h-2 rounded-full bg-cyan/50"></div>
-          <span className="ml-1 text-[10px] font-mono text-text-muted">notification</span>
+          <div className="w-2 h-2 rounded-full bg-red-500/50" />
+          <div className="w-2 h-2 rounded-full bg-amber/50" />
+          <div className="w-2 h-2 rounded-full bg-cyan/50" />
+          <span className="ml-1 text-[10px] font-mono text-text-muted">
+            notification
+          </span>
         </div>
 
         <div className="p-4">

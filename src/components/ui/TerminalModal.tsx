@@ -23,13 +23,15 @@ export function TerminalModal({
 }: TerminalModalProps) {
   const borderColors = {
     cyan: "border-terminal-primary shadow-terminal-glow dark:border-cyan dark:shadow-[0_0_40px_rgba(0,217,255,0.3)]",
-    amber: "border-terminal-accent shadow-terminal-accent-glow dark:border-amber dark:shadow-[0_0_40px_rgba(251,191,36,0.3)]",
+    amber:
+      "border-terminal-accent shadow-terminal-accent-glow dark:border-amber dark:shadow-[0_0_40px_rgba(251,191,36,0.3)]",
     red: "border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.3)]",
   };
 
   const titleColors = {
     cyan: "terminal-primary text-shadow-terminal dark:text-cyan dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]",
-    amber: "terminal-accent text-shadow-terminal-accent dark:text-amber dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]",
+    amber:
+      "terminal-accent text-shadow-terminal-accent dark:text-amber dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]",
     red: "text-red-400 [text-shadow:0_0_15px_rgba(239,68,68,0.5)]",
   };
 
@@ -50,14 +52,18 @@ export function TerminalModal({
     cyan: {
       main: "bg-green/50 dark:bg-cyan/50",
       secondary: "bg-orange/50 dark:bg-amber/50",
-      close: "bg-red-500/50"
+      close: "bg-red-500/50",
     },
     amber: {
       main: "bg-orange/50 dark:bg-amber/50",
       secondary: "bg-green/50 dark:bg-cyan/50",
-      close: "bg-red-500/50"
+      close: "bg-red-500/50",
     },
-    red: { main: "bg-red-500", secondary: "bg-red-500/50", close: "bg-red-500/50" },
+    red: {
+      main: "bg-red-500",
+      secondary: "bg-red-500/50",
+      close: "bg-red-500/50",
+    },
   };
 
   return (
@@ -68,13 +74,23 @@ export function TerminalModal({
           className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-terminal-surface dark:bg-dark-surface rounded-lg p-0 w-full ${maxWidthClasses[maxWidth]} border-2 ${borderColors[variant]} overflow-hidden animate-[fadeIn_0.2s_ease-in]`}
         >
           {/* Terminal header */}
-          <div className={`h-8 bg-terminal-muted dark:bg-dark-border border-b-2 ${headerBorderColors[variant]} flex items-center justify-between px-4`}>
+          <div
+            className={`h-8 bg-terminal-muted dark:bg-dark-border border-b-2 ${headerBorderColors[variant]} flex items-center justify-between px-4`}
+          >
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${dotColors[variant].close}`}></div>
-              <div className={`w-3 h-3 rounded-full ${dotColors[variant].secondary}`}></div>
-              <div className={`w-3 h-3 rounded-full ${dotColors[variant].main}`}></div>
+              <div
+                className={`w-3 h-3 rounded-full ${dotColors[variant].close}`}
+              />
+              <div
+                className={`w-3 h-3 rounded-full ${dotColors[variant].secondary}`}
+              />
+              <div
+                className={`w-3 h-3 rounded-full ${dotColors[variant].main}`}
+              />
               {commandName && (
-                <span className="ml-2 text-xs font-mono text-terminal-muted dark:text-text-muted">{commandName}</span>
+                <span className="ml-2 text-xs font-mono text-terminal-muted dark:text-text-muted">
+                  {commandName}
+                </span>
               )}
             </div>
             <Dialog.Close asChild>
@@ -88,7 +104,9 @@ export function TerminalModal({
           </div>
 
           <div className="p-6">
-            <Dialog.Title className={`text-xl font-bold mb-4 font-mono ${titleColors[variant]}`}>
+            <Dialog.Title
+              className={`text-xl font-bold mb-4 font-mono ${titleColors[variant]}`}
+            >
               {title}
             </Dialog.Title>
             {children}
@@ -105,7 +123,10 @@ interface TerminalModalFooterProps {
   align?: "left" | "center" | "right";
 }
 
-export function TerminalModalFooter({ children, align = "right" }: TerminalModalFooterProps) {
+export function TerminalModalFooter({
+  children,
+  align = "right",
+}: TerminalModalFooterProps) {
   const alignClasses = {
     left: "justify-start",
     center: "justify-center",
@@ -113,8 +134,6 @@ export function TerminalModalFooter({ children, align = "right" }: TerminalModal
   };
 
   return (
-    <div className={`flex gap-3 mt-6 ${alignClasses[align]}`}>
-      {children}
-    </div>
+    <div className={`flex gap-3 mt-6 ${alignClasses[align]}`}>{children}</div>
   );
 }
