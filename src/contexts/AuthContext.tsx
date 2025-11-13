@@ -37,18 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load user on mount if token exists
-  useEffect(() => {
-    const storedToken = localStorage.getItem("auth_token");
-    if (storedToken) {
-      api.setToken(storedToken);
-      setToken(storedToken);
-      refreshUser();
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
   const refreshUser = async () => {
     setIsLoading(true);
     const response = await api.getCurrentUser();
@@ -63,6 +51,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setIsLoading(false);
   };
+
+  // Load user on mount if token exists
+  useEffect(() => {
+    const storedToken = localStorage.getItem("auth_token");
+    if (storedToken) {
+      api.setToken(storedToken);
+      setToken(storedToken);
+      refreshUser();
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   const login = async (username: string, password: string) => {
     const response = await api.login(username, password);

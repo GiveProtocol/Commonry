@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle } from "lucide-react";
 

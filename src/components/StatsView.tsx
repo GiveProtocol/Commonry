@@ -27,14 +27,6 @@ export function StatsView({ onBack }: StatsViewProps) {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadStatistics();
-  }, [period]);
-
-  useEffect(() => {
-    loadLeaderboard();
-  }, [selectedMetric]);
-
   const loadStatistics = async () => {
     if (!user) return;
 
@@ -82,6 +74,14 @@ export function StatsView({ onBack }: StatsViewProps) {
       console.error("Failed to load leaderboard:", error);
     }
   };
+
+  useEffect(() => {
+    loadStatistics();
+  }, [period]);
+
+  useEffect(() => {
+    loadLeaderboard();
+  }, [selectedMetric]);
 
   const formatTime = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
