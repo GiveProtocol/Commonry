@@ -60,20 +60,25 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
     setResendMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/resend-verification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3000/api/auth/resend-verification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: registeredEmail }),
         },
-        body: JSON.stringify({ email: registeredEmail }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         setResendMessage(data.message || "Verification email sent!");
       } else {
-        setResendMessage(data.error || "Failed to resend email. Please try again.");
+        setResendMessage(
+          data.error || "Failed to resend email. Please try again.",
+        );
       }
     } catch (err) {
       setResendMessage("Network error. Please try again.");
@@ -110,7 +115,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
                   Verify Your Email
                 </p>
                 <p className="text-sm text-cyan-700 dark:text-cyan-300">
-                  We've sent a verification link to{" "}
+                  We&apos;ve sent a verification link to{" "}
                   <span className="font-semibold">{registeredEmail}</span>
                 </p>
                 <p className="text-sm text-cyan-600 dark:text-cyan-400 mt-2">
@@ -130,17 +135,20 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
             </button>
 
             {resendMessage && (
-              <div className={`text-sm p-3 rounded-lg ${
-                resendMessage.includes("sent") || resendMessage.includes("Verification email")
-                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-                  : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
-              }`}>
+              <div
+                className={`text-sm p-3 rounded-lg ${
+                  resendMessage.includes("sent") ||
+                  resendMessage.includes("Verification email")
+                    ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                    : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+                }`}
+              >
                 {resendMessage}
               </div>
             )}
 
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Didn't receive the email? Check your spam folder or{" "}
+              Didn&apos;t receive the email? Check your spam folder or{" "}
               <button
                 onClick={handleResendVerification}
                 disabled={resendLoading}

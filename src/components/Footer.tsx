@@ -8,7 +8,8 @@ export function Footer({ onNavigate }: FooterProps) {
       <div className="max-w-7xl mx-auto px-8 py-6">
         <div className="text-center">
           <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">
-            $ echo "Infrastructure, not a product" | ./commit-to-commons
+            $ echo &quot;Infrastructure, not a product&quot; |
+            ./commit-to-commons
           </div>
           <div className="font-mono text-terminal-muted dark:text-text-muted text-xs">
             └─ Operated by Give Protocol Foundation • MIT License
