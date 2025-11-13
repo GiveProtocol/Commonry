@@ -38,6 +38,9 @@ export interface StudySession {
   timestamp: Date;
 }
 
+/**
+ * SRSDatabase manages storage of spaced repetition cards, decks, and study sessions using IndexedDB via Dexie.
+ */
 export class SRSDatabase extends Dexie {
   cards!: Table<Card>;
   decks!: Table<Deck>;
@@ -59,30 +62,47 @@ export class SRSDatabase extends Dexie {
 
     // Version 2: Add import mapping support
     this.version(2).stores({
-      cards: "id, deckId, due, status, interval, easeFactor, importSource, externalId",
+      cards:
+        "id, deckId, due, status, interval, easeFactor, importSource, externalId",
       decks: "id, name, importSource, externalId",
       sessions: "++id, cardId, timestamp",
-      importMappings: "++id, [sourceSystem+sourceId+entityType], internalId, importBatchId",
+      importMappings:
+        "++id, [sourceSystem+sourceId+entityType], internalId, importBatchId",
       importBatches: "id, sourceSystem, importedAt, status",
     });
 
     // Version 3: Add HTML content fields for formatted Anki cards
     this.version(3).stores({
-      cards: "id, deckId, due, status, interval, easeFactor, importSource, externalId",
+      cards:
+        "id, deckId, due, status, interval, easeFactor, importSource, externalId",
       decks: "id, name, importSource, externalId",
       sessions: "++id, cardId, timestamp",
-      importMappings: "++id, [sourceSystem+sourceId+entityType], internalId, importBatchId",
+      importMappings:
+        "++id, [sourceSystem+sourceId+entityType], internalId, importBatchId",
       importBatches: "id, sourceSystem, importedAt, status",
     });
 
     this.srsEngine = new SRSEngine();
   }
 
+  /**
+   * Retrieves cards due for review from a given deck.
+   * @param deckId - The ID of the deck to get cards for.
+   * @param limit - Maximum number of cards to retrieve.
+   * @returns A promise that resolves to an array of cards for review.
+   */
   async getCardsForReview(deckId: DeckId, limit = 20): Promise<Card[]> {
     const allCards = await this.cards.where("deckId").equals(deckId).toArray();
     return SRSEngine.getCardsForReview(allCards, limit);
   }
 
+  /**
+   * Records a review session for a card and updates its scheduling info.
+   * @param cardId - The ID of the card being reviewed.
+   * @param rating - The rating given during review.
+   * @param duration - Time taken for review in milliseconds.
+   * @returns A promise that resolves to the review result.
+   */
   async recordReview(
     cardId: CardId,
     rating: number,
@@ -114,6 +134,17 @@ export class SRSDatabase extends Dexie {
     return result;
   }
 
+  /**
+   * Creates a new card in the database.
+   * @param front - The front content of the card.
+   * @param back - The back content of the card.
+   * @param deckId - The ID of the deck to add the card to.
+   * @param frontAudio - Optional audio URL for the front side.
+   * @param backAudio - Optional audio URL for the back side.
+   * @param frontImage - Optional image URL for the front side.
+   * @param backImage - Optional image URL for the back side.
+   * @returns A promise that resolves to the new card's ID.
+   */
   async createCard(
     front: string,
     back: string,
@@ -132,6 +163,12 @@ export class SRSDatabase extends Dexie {
     return newCard.id;
   }
 
+  /**
+   * Creates a new deck in the database.
+   * @param name - The name of the deck.
+   * @param description - Optional description of the deck.
+   * @returns A promise that resolves to the new deck's ID.
+   */
   async createDeck(name: string, description?: string): Promise<DeckId> {
     const newDeck: Deck = {
       id: IdService.generateDeckId(),
@@ -146,6 +183,11 @@ export class SRSDatabase extends Dexie {
     return newDeck.id;
   }
 
+  /**
+   * Updates the statistics for a deck, including counts of total, new, and due cards.
+   * @param deckId - The ID of the deck to update.
+   * @returns A promise that resolves when the update is complete.
+   */
   async updateDeckStats(deckId: DeckId): Promise<void> {
     const now = new Date();
     const cards = await this.cards.where("deckId").equals(deckId).toArray();
@@ -161,27 +203,56 @@ export class SRSDatabase extends Dexie {
     });
   }
 
-  // Additional utility methods
+  /**
+   * Retrieves all decks from the database.
+   * @returns A promise that resolves to an array of decks.
+   */
   async getAllDecks(): Promise<Deck[]> {
     return await this.decks.toArray();
   }
 
+  /**
+   * Retrieves a deck by its ID.
+   * @param deckId - The ID of the deck to retrieve.
+   * @returns A promise that resolves to the deck or undefined if not found.
+   */
   async getDeck(deckId: DeckId): Promise<Deck | undefined> {
     return await this.decks.get(deckId);
   }
 
+  /**
+   * Retrieves a card by its ID.
+   * @param cardId - The ID of the card to retrieve.
+   * @returns A promise that resolves to the card or undefined if not found.
+   */
   async getCard(cardId: CardId): Promise<Card | undefined> {
     return await this.cards.get(cardId);
   }
 
+  /**
+   * Updates a card's properties.
+   * @param cardId - The ID of the card to update.
+   * @param updates - Partial card properties to update.
+   * @returns A promise that resolves when the update is complete.
+   */
   async updateCard(cardId: CardId, updates: Partial<Card>): Promise<void> {
     await this.cards.update(cardId, updates);
   }
 
+  /**
+   * Deletes a card by its ID.
+   * @param cardId - The ID of the card to delete.
+   * @returns A promise that resolves when the deletion is complete.
+   */
   async deleteCard(cardId: CardId): Promise<void> {
     await this.cards.delete(cardId);
   }
 
+  /**
+   * Deletes a deck and all its cards.
+   * @param deckId - The ID of the deck to delete.
+   * @returns A promise that resolves when the deletion is complete.
+   */
   async deleteDeck(deckId: DeckId): Promise<void> {
     // Delete all cards in the deck first
     await this.cards.where("deckId").equals(deckId).delete();
@@ -189,11 +260,22 @@ export class SRSDatabase extends Dexie {
     await this.decks.delete(deckId);
   }
 
+  /**
+   * Gets the next scheduled review time for a card.
+   * @param cardId - The ID of the card.
+   * @returns A promise that resolves to an ISO string of the next review time or "Unknown".
+   */
   async getNextReviewTime(cardId: CardId): Promise<string> {
     const card = await this.getCard(cardId);
     return card ? SRSEngine.getNextReviewTime(card) : "Unknown";
   }
 
+  /**
+   * Retrieves the review history for a card.
+   * @param cardId - The ID of the card.
+   * @param limit - Maximum number of history entries to retrieve.
+   * @returns A promise that resolves to an array of study sessions.
+   */
   async getReviewHistory(cardId: CardId, limit = 10): Promise<StudySession[]> {
     return await this.sessions
       .where("cardId")
@@ -203,6 +285,10 @@ export class SRSDatabase extends Dexie {
       .toArray();
   }
 
+  /**
+   * Adds a set of sample cards to a default or existing deck and updates deck stats.
+   * @returns A promise that resolves when sample cards are added.
+   */
   async addSampleCards(): Promise<void> {
     const sampleCards = [
       { front: "What is the capital of France?", back: "Paris" },
@@ -223,7 +309,10 @@ export class SRSDatabase extends Dexie {
     let defaultDeckId: DeckId;
 
     if (existingDecks.length === 0) {
-      defaultDeckId = await this.createDeck('Default Deck', 'Sample flashcards for testing');
+      defaultDeckId = await this.createDeck(
+        "Default Deck",
+        "Sample flashcards for testing",
+      );
     } else {
       defaultDeckId = existingDecks[0].id;
     }
