@@ -1,6 +1,6 @@
-import { TerminalButton } from '../ui/TerminalButton';
-import { TypingCursor } from '../ui/TypingCursor';
-import { Github } from 'lucide-react';
+import { TerminalButton } from "../ui/TerminalButton";
+import { TypingCursor } from "../ui/TypingCursor";
+import { Github } from "lucide-react";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
@@ -10,9 +10,13 @@ interface NavigationProps {
   onSignIn?: () => void;
 }
 
-export function Navigation({ currentView, onNavigate, onSignIn }: NavigationProps) {
+export function Navigation({
+  currentView,
+  onNavigate,
+  onSignIn,
+}: NavigationProps) {
   const handleNavigateHome = useCallback(() => {
-    onNavigate?.('home');
+    onNavigate?.("home");
   }, [onNavigate]);
 
   return (

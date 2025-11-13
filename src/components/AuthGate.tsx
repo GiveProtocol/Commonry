@@ -12,7 +12,9 @@ interface AuthGateProps {
 export default function AuthGate({ children }: AuthGateProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const [showSignup, setShowSignup] = useState(false);
-  const [verificationToken, setVerificationToken] = useState<string | null>(null);
+  const [verificationToken, setVerificationToken] = useState<string | null>(
+    null,
+  );
 
   // Check URL for verification token on mount
   useEffect(() => {
