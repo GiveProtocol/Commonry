@@ -9,6 +9,9 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+/**
+ * Service for making HTTP requests to the backend API, handling authentication tokens and response parsing.
+ */
 class ApiService {
   private baseUrl: string;
   private token: string | null = null;
@@ -19,6 +22,10 @@ class ApiService {
     this.token = localStorage.getItem("auth_token");
   }
 
+  /**
+   * Sets the authentication token and updates localStorage.
+   * @param token - The token string or null to clear it.
+   */
   setToken(token: string | null) {
     this.token = token;
     if (token) {
@@ -28,10 +35,21 @@ class ApiService {
     }
   }
 
+  /**
+   * Retrieves the current authentication token.
+   * @returns The stored token or null if not set.
+   */
   getToken(): string | null {
     return this.token;
   }
 
+  /**
+   * Sends an HTTP request to the specified endpoint.
+   * @template T - The expected response data type.
+   * @param endpoint - The API endpoint path.
+   * @param options - Request initialization options.
+   * @returns A promise resolving to the API response containing data or error.
+   */
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
@@ -67,18 +85,12 @@ class ApiService {
 
   // ==================== AUTH ENDPOINTS ====================
 
-  async signup(
-    username: string,
-    email: string,
-    password: string,
-    displayName?: string,
-  ) {
-    return this.request<{ user: User; token: string }>("/api/auth/signup", {
-      method: "POST",
-      body: JSON.stringify({ username, email, password, displayName }),
-    });
-  }
-
+  /**
+   * Logs in a user with provided credentials.
+   * @param username - The user's username.
+   * @param password - The user's password.
+   * @returns A promise resolving to the API response with user data and token.
+   */
   async login(username: string, password: string) {
     return this.request<{ user: User; token: string }>("/api/auth/login", {
       method: "POST",
@@ -86,6 +98,10 @@ class ApiService {
     });
   }
 
+  /**
+   * Retrieves the currently authenticated user's information.
+   * @returns A promise resolving to the API response with user data.
+   */
   async getCurrentUser() {
     return this.request<{ user: User }>("/api/auth/me");
   }
@@ -107,6 +123,11 @@ class ApiService {
     );
   }
 
+  /**
+   * Records multiple study sessions in a batch.
+   * @param sessions - Array of study session objects to record.
+   * @returns A promise resolving to the API response with success status and count.
+   */
   async recordStudySessionsBatch(
     sessions: Array<{
       cardId: string;
@@ -123,6 +144,7 @@ class ApiService {
       },
     );
   }
+}
 
   // ==================== STATISTICS ENDPOINTS ====================
 
@@ -135,6 +157,13 @@ class ApiService {
     );
   }
 
+  /**
+   * Fetches daily statistics for a user within an optional date range.
+   * @param userId - The ID of the user to fetch statistics for.
+   * @param startDate - Optional start date (ISO string) to filter the statistics.
+   * @param endDate - Optional end date (ISO string) to filter the statistics.
+   * @returns A promise resolving to an object containing an array of daily statistics.
+   */
   async getDailyStatistics(
     userId: string,
     startDate?: string,
@@ -149,6 +178,13 @@ class ApiService {
     );
   }
 
+  /**
+   * Retrieves the rank of a user for a specific leaderboard metric.
+   *
+   * @param userId - The unique identifier of the user.
+   * @param metric - The leaderboard metric to query.
+   * @returns A promise resolving to an object containing the metric name, the user's rank (or null if unavailable), and the metric value.
+   */
   async getUserRank(userId: string, metric: LeaderboardMetric) {
     return this.request<{ metric: string; rank: number | null; value: number }>(
       `/api/statistics/rank/${userId}/${metric}`,
@@ -171,6 +207,18 @@ class ApiService {
     );
   }
 
+  /**
+   * Updates the user's profile.
+   *
+   * @param {Object} profile - The profile fields to update.
+   * @param {string} [profile.displayName] - The user's display name.
+   * @param {string} [profile.bio] - The user's biography.
+   * @param {string} [profile.pronouns] - The user's pronouns.
+   * @param {string} [profile.location] - The user's location.
+   * @param {string} [profile.avatarUrl] - The URL of the user's avatar.
+   * @param {string[]} [profile.learningTopics] - The list of topics the user is learning.
+   * @returns {Promise<{ profile: UserProfile }>} The updated user profile.
+   */
   async updateProfile(profile: {
     displayName?: string;
     bio?: string;
@@ -185,18 +233,34 @@ class ApiService {
     });
   }
 
+  /**
+   * Retrieves profile statistics for a given user.
+   * @param username - The username of the profile to fetch stats for.
+   * @returns A Promise resolving with an object containing profile statistics.
+   */
   async getProfileStats(username: string) {
     return this.request<{ stats: ProfileStatistics }>(
       `/api/profile/${username}/stats`,
     );
   }
 
+  /**
+   * Retrieves the privacy settings for a given user.
+   * @param username - The username whose privacy settings to fetch.
+   * @returns A promise resolving to an object containing the user's privacy settings.
+   */
   async getPrivacySettings(username: string) {
     return this.request<{ privacy: PrivacySettings }>(
       `/api/profile/${username}/privacy`,
     );
   }
 
+  /**
+   * Updates the user's privacy settings by sending a PUT request to the profile privacy endpoint.
+   *
+   * @param settings Partial<PrivacySettings> object containing the fields to update.
+   * @returns A promise that resolves with an object containing the updated privacy settings.
+   */
   async updatePrivacySettings(settings: Partial<PrivacySettings>) {
     return this.request<{ privacy: PrivacySettings }>("/api/profile/privacy", {
       method: "PUT",
@@ -204,16 +268,32 @@ class ApiService {
     });
   }
 
+  /**
+   * Retrieves achievements from the API.
+   *
+   * @returns {Promise<{ achievements: Achievement[] }>} A promise that resolves with achievements data.
+   */
   async getAchievements() {
     return this.request<{ achievements: Achievement[] }>("/api/achievements");
   }
 
+  /**
+   * Retrieves the achievements for a given user.
+   * @param username - The username of the profile to fetch achievements for.
+   * @returns A promise resolving to an object containing the user's achievements.
+   */
   async getUserAchievements(username: string) {
     return this.request<{ achievements: UserAchievement[] }>(
       `/api/profile/${username}/achievements`,
     );
   }
 
+  /**
+   * Follows a user with the given username.
+   *
+   * @param username - The username of the user to follow.
+   * @returns Promise<{ success: boolean; follow: unknown }> - The API response indicating success and follow data.
+   */
   async followUser(username: string) {
     return this.request<{ success: boolean; follow: unknown }>(
       `/api/profile/follow/${username}`,
@@ -223,6 +303,12 @@ class ApiService {
     );
   }
 
+  /**
+   * Unfollows a user by removing the follow relationship.
+   *
+   * @param username - The username of the user to unfollow.
+   * @returns A promise that resolves with an object indicating success.
+   */
   async unfollowUser(username: string) {
     return this.request<{ success: boolean }>(
       `/api/profile/follow/${username}`,
@@ -232,12 +318,22 @@ class ApiService {
     );
   }
 
+  /**
+   * Retrieves followers for a user by username.
+   * @param {string} username - The username for which to fetch followers.
+   * @returns {Promise<{ followers: FollowUser[] }>} A promise resolving to an object containing an array of followers.
+   */
   async getFollowers(username: string) {
     return this.request<{ followers: FollowUser[] }>(
       `/api/profile/${username}/followers`,
     );
   }
 
+  /**
+   * Retrieves the list of users that the specified user is following.
+   * @param username - The username of the user whose following list is to be fetched.
+   * @returns A promise resolving to an object containing the following array of FollowUser.
+   */
   async getFollowing(username: string) {
     return this.request<{ following: FollowUser[] }>(
       `/api/profile/${username}/following`,

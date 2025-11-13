@@ -25,30 +25,60 @@ export class IdService {
     return this.generate('note') as NoteId;
   }
 
+  /**
+   * Generates a unique identifier for a card.
+   * @returns {CardId} A unique card identifier.
+   */
   static generateCardId(): CardId {
     return this.generate('card') as CardId;
   }
 
+  /**
+   * Generates a unique identifier for a deck.
+   * @returns {DeckId} The generated deck identifier.
+   */
   static generateDeckId(): DeckId {
     return this.generate('deck') as DeckId;
   }
 
+  /**
+   * Generates a unique review identifier.
+   * @returns {ReviewId} A newly generated review ID.
+   */
   static generateReviewId(): ReviewId {
     return this.generate('review') as ReviewId;
   }
 
+  /**
+   * Generates a unique media identifier.
+   *
+   * @returns {MediaId} A unique MediaId for media resources.
+   */
   static generateMediaId(): MediaId {
     return this.generate('media') as MediaId;
   }
 
+  /**
+   * Generates a unique identifier for a user.
+   * @returns {UserId} A new user ID.
+   */
   static generateUserId(): UserId {
     return this.generate('user') as UserId;
   }
 
+  /**
+   * Generates a unique identifier for a card model.
+   * @returns {CardModelId} The generated CardModelId.
+   */
   static generateCardModelId(): CardModelId {
     return this.generate('cardModel') as CardModelId;
   }
 
+  /**
+   * Generates a new CardTemplateId.
+   *
+   * @returns A unique CardTemplateId.
+   */
   static generateCardTemplateId(): CardTemplateId {
     return this.generate('cardTemplate') as CardTemplateId;
   }
@@ -80,26 +110,58 @@ export class IdService {
     return ulidRegex.test(ulidPart);
   }
 
+  /**
+   * Determines whether the provided string is a NoteId.
+   * Checks if the id starts with the note entity prefix and is valid.
+   * @param id - The id string to evaluate.
+   * @returns True if the id is a valid NoteId, otherwise false.
+   */
   static isNoteId(id: string): id is NoteId {
     return id.startsWith(ENTITY_PREFIXES.note + '_') && this.isValidId(id);
   }
 
+  /**
+   * Determines whether the provided id is a valid CardId.
+   *
+   * @param id - The identifier to test as a CardId.
+   * @returns True if the id starts with the card prefix and is a valid id.
+   */
   static isCardId(id: string): id is CardId {
     return id.startsWith(ENTITY_PREFIXES.card + '_') && this.isValidId(id);
   }
 
+  /**
+   * Checks if the given id is a valid DeckId.
+   * @param id - The id to check.
+   * @returns True if the id starts with the deck prefix and is a valid id.
+   */
   static isDeckId(id: string): id is DeckId {
     return id.startsWith(ENTITY_PREFIXES.deck + '_') && this.isValidId(id);
   }
 
+  /**
+   * Checks if the provided id is a ReviewId.
+   * @param id - The identifier string to check.
+   * @returns True if the id starts with the review entity prefix and is a valid id.
+   */
   static isReviewId(id: string): id is ReviewId {
     return id.startsWith(ENTITY_PREFIXES.review + '_') && this.isValidId(id);
   }
 
+  /**
+   * Checks if the given id is a MediaId.
+   * @param {string} id - The identifier to check.
+   * @returns {boolean} True if the id starts with the media prefix and is valid.
+   */
   static isMediaId(id: string): id is MediaId {
     return id.startsWith(ENTITY_PREFIXES.media + '_') && this.isValidId(id);
   }
 
+  /**
+   * Checks if the given id is a valid UserId.
+   * @param id - The id string to validate.
+   * @returns True if the id is a UserId; otherwise, false.
+   */
   static isUserId(id: string): id is UserId {
     return id.startsWith(ENTITY_PREFIXES.user + '_') && this.isValidId(id);
   }
@@ -285,6 +347,11 @@ export class IdService {
     return { valid, type, prefix, ulid: ulidPart, timestamp, age };
   }
 
+  /**
+   * Formats a duration given in milliseconds into a human-readable age string.
+   * @param ms - The duration in milliseconds.
+   * @returns A string representing the time elapsed (e.g., "5m ago").
+   */
   private static formatAge(ms: number): string {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);

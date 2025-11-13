@@ -64,6 +64,12 @@ export class SRSEngine {
   private readonly EASY_BONUS = 1.3;
   private readonly INTERVAL_MODIFIER = 1.0;
 
+  /**
+   * Calculates the next review details for a card based on the given rating.
+   * @param {Card} card - The card being reviewed.
+   * @param {number} rating - The rating given by the user (1 = again, 2 = hard, 3 = good, 4 = easy).
+   * @returns {ReviewResult} - The review result containing the updated card, next review date, and interval.
+   */
   calculateNextReview(card: Card, rating: number): ReviewResult {
     const updatedCard = { ...card };
     const now = new Date();
@@ -138,6 +144,15 @@ export class SRSEngine {
     };
   }
 
+  /**
+   * Retrieves cards that are due for review up to the specified limit.
+   * Filters cards whose due date is on or before the current time, then sorts them
+   * by priority (new cards first) and due date.
+   *
+   * @param {Card[]} cards - The list of cards to filter and sort.
+   * @param {number} [limit=20] - The maximum number of cards to return.
+   * @returns {Card[]} An array of cards ready for review, sorted by priority and due date.
+   */
   static getCardsForReview(cards: Card[], limit = 20): Card[] {
     const now = new Date();
     const nowTime = now.getTime();
