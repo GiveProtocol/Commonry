@@ -6,7 +6,7 @@
   NODE_VERSION = "22"
   NPM_VERSION = "10"
   # Force cache clear
-  NETLIFY_CACHE_ID = "v2"
+  NETLIFY_CACHE_ID = "v3"
 
 # Use npm ci to ensure clean installs from package-lock.json
 [context.production]
