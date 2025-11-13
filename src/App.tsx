@@ -226,9 +226,9 @@ function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
       >
         {/* Terminal header */}
         <div className="absolute top-0 left-0 right-0 h-8 bg-terminal-muted dark:bg-dark-border border-b border-terminal-accent/30 dark:border-amber/30 flex items-center px-4 gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-          <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50"></div>
-          <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50"></div>
+          <div className="w-3 h-3 rounded-full bg-red-500/50" />
+          <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50" />
+          <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50" />
         </div>
 
         <div className="mt-8">

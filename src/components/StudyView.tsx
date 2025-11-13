@@ -490,7 +490,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                       style={{
                         width: `${(sessionStats.reviewed / (sessionStats.reviewed + dueCards.length)) * 100}%`,
                       }}
-                    ></div>
+                    />
                   </div>
                   <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                     {Math.round(

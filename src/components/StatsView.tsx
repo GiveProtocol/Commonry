@@ -155,7 +155,7 @@ export function StatsView({ onBack }: StatsViewProps) {
 
         <h1 className="text-2xl font-bold text-cyan font-mono [text-shadow:0_0_15px_rgba(0,217,255,0.5)]">[STATISTICS]</h1>
 
-        <div></div>
+        <div />
       </div>
 
       <div className="p-8 max-w-7xl mx-auto">

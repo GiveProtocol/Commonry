@@ -77,7 +77,7 @@ export function ProfileView({ onBack }: ProfileViewProps) {
           animate={{ opacity: 1 }}
           className="text-center"
         >
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Loading profile...</p>
         </motion.div>
       </div>
@@ -177,7 +177,6 @@ export function ProfileView({ onBack }: ProfileViewProps) {
           {profile.bio && (
             <div className="px-8 py-6 border-b border-border">
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                About
               </h2>
               <p className="text-foreground leading-relaxed">
                 {profile.bio}
