@@ -120,6 +120,44 @@ function generateULID(prefix) {
   return `${prefix}_${ulid()}`;
 }
 
+/**
+ * Get user and check privacy setting - common pattern in profile routes
+ * @returns {object|null} Returns user object or null, sends response if error
+ */
+async function getUserWithPrivacyCheck(
+  username,
+  privacySetting,
+  res,
+  errorMessage,
+) {
+  const user = await getUserByUsername(username);
+
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return null;
+  }
+
+  const showContent = await checkPrivacySetting(user.user_id, privacySetting);
+
+  if (!showContent) {
+    res.status(403).json({ error: errorMessage });
+    return null;
+  }
+
+  return user;
+}
+
+/**
+ * Get active user by username (includes is_active check)
+ */
+async function getActiveUserByUsername(username) {
+  const result = await pool.query(
+    "SELECT user_id FROM users WHERE username = $1 AND is_active = true",
+    [username.toLowerCase()],
+  );
+  return result.rows[0] || null;
+}
+
 // ==================== AUTHENTICATION ENDPOINTS ====================
 
 // User signup
@@ -810,16 +848,13 @@ app.post(
 
     try {
       // Get user ID from username
-      const userResult = await pool.query(
-        "SELECT user_id FROM users WHERE username = $1 AND is_active = true",
-        [username.toLowerCase()],
-      );
+      const user = await getActiveUserByUsername(username);
 
-      if (userResult.rows.length === 0) {
+      if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const followingId = userResult.rows[0].user_id;
+      const followingId = user.user_id;
 
       // Cannot follow yourself
       if (followingId === req.userId) {
@@ -865,16 +900,13 @@ app.delete(
 
     try {
       // Get user ID from username
-      const userResult = await pool.query(
-        "SELECT user_id FROM users WHERE username = $1",
-        [username.toLowerCase()],
-      );
+      const user = await getUserByUsername(username);
 
-      if (userResult.rows.length === 0) {
+      if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const followingId = userResult.rows[0].user_id;
+      const followingId = user.user_id;
 
       // Delete follow relationship
       const result = await pool.query(
@@ -901,21 +933,13 @@ app.get("/api/profile/:username/followers", async (req, res) => {
   const { username } = req.params;
 
   try {
-    // Get user ID from username
-    const user = await getUserByUsername(username);
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const userId = user.user_id;
-
-    // Check privacy settings
-    const showFollowers = await checkPrivacySetting(userId, "show_followers");
-
-    if (!showFollowers) {
-      return res.status(403).json({ error: "User followers list is private" });
-    }
+    const user = await getUserWithPrivacyCheck(
+      username,
+      "show_followers",
+      res,
+      "User followers list is private",
+    );
+    if (!user) return;
 
     // Get followers
     const result = await pool.query(
@@ -925,15 +949,13 @@ app.get("/api/profile/:username/followers", async (req, res) => {
        JOIN users u ON uf.follower_id = u.user_id
        WHERE uf.following_id = $1 AND u.is_active = true
        ORDER BY uf.created_at DESC`,
-      [userId],
+      [user.user_id],
     );
 
-    res.json({ followers: result.rows });
-    return null;
+    return res.json({ followers: result.rows });
   } catch (error) {
     console.error("Get followers error:", error);
-    res.status(500).json({ error: "Failed to get followers" });
-    return null;
+    return res.status(500).json({ error: "Failed to get followers" });
   }
 });
 
@@ -942,21 +964,13 @@ app.get("/api/profile/:username/following", async (req, res) => {
   const { username } = req.params;
 
   try {
-    // Get user ID from username
-    const user = await getUserByUsername(username);
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const userId = user.user_id;
-
-    // Check privacy settings
-    const showFollowers = await checkPrivacySetting(userId, "show_followers");
-
-    if (!showFollowers) {
-      return res.status(403).json({ error: "User following list is private" });
-    }
+    const user = await getUserWithPrivacyCheck(
+      username,
+      "show_followers",
+      res,
+      "User following list is private",
+    );
+    if (!user) return;
 
     // Get following
     const result = await pool.query(
@@ -966,15 +980,13 @@ app.get("/api/profile/:username/following", async (req, res) => {
        JOIN users u ON uf.following_id = u.user_id
        WHERE uf.follower_id = $1 AND u.is_active = true
        ORDER BY uf.created_at DESC`,
-      [userId],
+      [user.user_id],
     );
 
-    res.json({ following: result.rows });
-    return null;
+    return res.json({ following: result.rows });
   } catch (error) {
     console.error("Get following error:", error);
-    res.status(500).json({ error: "Failed to get following list" });
-    return null;
+    return res.status(500).json({ error: "Failed to get following list" });
   }
 });
 
