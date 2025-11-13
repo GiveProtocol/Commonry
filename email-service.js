@@ -26,7 +26,7 @@ async function createTransporter() {
     transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
-      secure: false, // Use STARTTLS instead of implicit TLS
+      secure: true, // Use STARTTLS instead of implicit TLS
       requireTLS: true, // Require encrypted connection via STARTTLS
       auth: {
         user: testAccount.user,
@@ -43,8 +43,8 @@ async function createTransporter() {
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: process.env.EMAIL_PORT === '465', // Use implicit TLS for port 465
-      requireTLS: process.env.EMAIL_PORT !== '465', // Require STARTTLS for other ports
+      secure: true,
+      requireTLS: true,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
