@@ -99,7 +99,7 @@ export async function sendVerificationEmail(
   username,
   verificationToken,
 ) {
-  const transporter = await createTransporter();
+  const mailTransporter = await createTransporter();
 
   const verificationUrl = `${getFrontendUrl()}/verify-email/${verificationToken}`;
 
@@ -229,7 +229,7 @@ The Commonry Team
     `,
   };
 
-  const info = await transporter.sendMail(mailOptions);
+  const info = await mailTransporter.sendMail(mailOptions);
 
   console.log("✅ Verification email sent:", info.messageId);
 
@@ -245,7 +245,7 @@ The Commonry Team
  * Send password reset email
  */
 export async function sendPasswordResetEmail(email, username, resetToken) {
-  const transporter = await createTransporter();
+  const mailTransporter = await createTransporter();
 
   const resetUrl = `${getFrontendUrl()}/reset-password/${resetToken}`;
 
@@ -304,7 +304,7 @@ export async function sendPasswordResetEmail(email, username, resetToken) {
     text: `Password Reset Request\n\nHi ${username},\n\nClick this link to reset your password: ${resetUrl}\n\nThis link expires in 1 hour.`,
   };
 
-  const info = await transporter.sendMail(mailOptions);
+  const info = await mailTransporter.sendMail(mailOptions);
   console.log("✅ Password reset email sent:", info.messageId);
 
   if (process.env.NODE_ENV === "development" && !process.env.EMAIL_USER) {
