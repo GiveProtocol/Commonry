@@ -7,7 +7,8 @@
  * @see https://docs.discourse.org/#tag/Posts
  */
 
-const API_BASE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commonry.app';
+const API_BASE_URL =
+  import.meta.env.VITE_DISCOURSE_URL || "https://forum.commonry.app";
 const API_KEY = import.meta.env.VITE_DISCOURSE_API_KEY; // Optional, for higher rate limits
 
 export interface DiscoursePost {
@@ -57,29 +58,31 @@ export interface DiscourseCategory {
  * @param limit - Number of posts to fetch (default: 10)
  * @returns Promise resolving to array of recent posts
  */
-export async function getRecentPosts(limit: number = 10): Promise<DiscoursePost[]> {
+export async function getRecentPosts(
+  limit: number = 10,
+): Promise<DiscoursePost[]> {
   try {
     const url = new URL(`${API_BASE_URL}/posts.json`);
 
     const headers: HeadersInit = {
-      'Accept': 'application/json',
+      Accept: "application/json",
     };
 
     if (API_KEY) {
-      headers['Api-Key'] = API_KEY;
+      headers["Api-Key"] = API_KEY;
     }
 
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse posts:', response.statusText);
+      console.error("Failed to fetch Discourse posts:", response.statusText);
       return [];
     }
 
     const data = await response.json();
     return data.latest_posts?.slice(0, limit) || [];
   } catch (error) {
-    console.error('Error fetching Discourse posts:', error);
+    console.error("Error fetching Discourse posts:", error);
     return [];
   }
 }
@@ -90,29 +93,31 @@ export async function getRecentPosts(limit: number = 10): Promise<DiscoursePost[
  * @param limit - Number of topics to fetch (default: 10)
  * @returns Promise resolving to array of latest topics
  */
-export async function getLatestTopics(limit: number = 10): Promise<DiscourseTopic[]> {
+export async function getLatestTopics(
+  limit: number = 10,
+): Promise<DiscourseTopic[]> {
   try {
     const url = new URL(`${API_BASE_URL}/latest.json`);
 
     const headers: HeadersInit = {
-      'Accept': 'application/json',
+      Accept: "application/json",
     };
 
     if (API_KEY) {
-      headers['Api-Key'] = API_KEY;
+      headers["Api-Key"] = API_KEY;
     }
 
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse topics:', response.statusText);
+      console.error("Failed to fetch Discourse topics:", response.statusText);
       return [];
     }
 
     const data = await response.json();
     return data.topic_list?.topics.slice(0, limit) || [];
   } catch (error) {
-    console.error('Error fetching Discourse topics:', error);
+    console.error("Error fetching Discourse topics:", error);
     return [];
   }
 }
@@ -127,24 +132,27 @@ export async function getCategories(): Promise<DiscourseCategory[]> {
     const url = new URL(`${API_BASE_URL}/categories.json`);
 
     const headers: HeadersInit = {
-      'Accept': 'application/json',
+      Accept: "application/json",
     };
 
     if (API_KEY) {
-      headers['Api-Key'] = API_KEY;
+      headers["Api-Key"] = API_KEY;
     }
 
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse categories:', response.statusText);
+      console.error(
+        "Failed to fetch Discourse categories:",
+        response.statusText,
+      );
       return [];
     }
 
     const data = await response.json();
     return data.category_list?.categories || [];
   } catch (error) {
-    console.error('Error fetching Discourse categories:', error);
+    console.error("Error fetching Discourse categories:", error);
     return [];
   }
 }
@@ -156,8 +164,11 @@ export async function getCategories(): Promise<DiscourseCategory[]> {
  * @param size - Avatar size (default: 45)
  * @returns Complete avatar URL
  */
-export function getAvatarUrl(avatarTemplate: string, size: number = 45): string {
-  return `${API_BASE_URL}${avatarTemplate.replace('{size}', size.toString())}`;
+export function getAvatarUrl(
+  avatarTemplate: string,
+  size: number = 45,
+): string {
+  return `${API_BASE_URL}${avatarTemplate.replace("{size}", size.toString())}`;
 }
 
 /**
@@ -179,6 +190,6 @@ export function getTopicUrl(topicId: number, slug: string): string {
  */
 export function loginToForum(token: string): void {
   // Redirect to our backend SSO endpoint with auth token
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
   window.location.href = `${apiBaseUrl}/api/discourse/sso?token=${encodeURIComponent(token)}`;
 }

@@ -13,7 +13,8 @@ interface SquareViewProps {
   onBack: () => void;
 }
 
-const DISCOURSE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commonry.app';
+const DISCOURSE_URL =
+  import.meta.env.VITE_DISCOURSE_URL || "https://forum.commonry.app";
 
 export function SquareView({ onBack }: SquareViewProps) {
   const { token } = useAuth();
@@ -39,12 +40,13 @@ export function SquareView({ onBack }: SquareViewProps) {
   const handleVisitForum = useCallback(() => {
     if (token) {
       // Redirect to SSO endpoint which will handle Discourse login
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const apiBaseUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:3000";
       const ssoUrl = `${apiBaseUrl}/api/discourse/sso`;
       window.location.href = ssoUrl;
     } else {
       // If not logged in, just open Discourse (they'll need to create account there)
-      window.open(DISCOURSE_URL, '_blank');
+      window.open(DISCOURSE_URL, "_blank");
     }
   }, [token]);
 
@@ -57,7 +59,7 @@ export function SquareView({ onBack }: SquareViewProps) {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (seconds < 60) return 'just now';
+    if (seconds < 60) return "just now";
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
