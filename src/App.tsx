@@ -11,7 +11,6 @@ import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
 import { SkipToMain } from "./components/ui/SkipToMain";
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
-import { useAuth } from "./contexts/AuthContext";
 import { DeckId } from "./types/ids";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
