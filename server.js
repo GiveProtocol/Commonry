@@ -952,10 +952,10 @@ app.get("/api/profile/:username/followers", async (req, res) => {
       [user.user_id],
     );
 
-    return res.json({ followers: result.rows });
+    res.json({ followers: result.rows });
   } catch (error) {
     console.error("Get followers error:", error);
-    return res.status(500).json({ error: "Failed to get followers" });
+    res.status(500).json({ error: "Failed to get followers" });
   }
 });
 
@@ -983,10 +983,10 @@ app.get("/api/profile/:username/following", async (req, res) => {
       [user.user_id],
     );
 
-    return res.json({ following: result.rows });
+    res.json({ following: result.rows });
   } catch (error) {
     console.error("Get following error:", error);
-    return res.status(500).json({ error: "Failed to get following list" });
+    res.status(500).json({ error: "Failed to get following list" });
   }
 });
 
