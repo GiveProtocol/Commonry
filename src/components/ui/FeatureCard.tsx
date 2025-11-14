@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface FeatureCardProps {
   moduleNumber: string;
@@ -15,7 +15,7 @@ export function FeatureCard({
   title,
   description,
   features,
-  className
+  className,
 }: FeatureCardProps) {
   return (
     <div
@@ -24,15 +24,13 @@ export function FeatureCard({
         "bg-terminal-surface dark:bg-dark-lighter border-2 border-terminal-muted dark:border-dark-border p-8 rounded",
         "hover:border-terminal-primary dark:hover:border-cyan transition-all duration-300",
         "group",
-        className
+        className,
       )}
     >
       <div className="text-terminal-muted dark:text-text-muted text-xs font-mono mb-4">
         [{moduleNumber}]
       </div>
-      <div className="text-6xl mb-4">
-        {icon}
-      </div>
+      <div className="text-6xl mb-4">{icon}</div>
       <h3 className="terminal-primary dark:text-cyan text-2xl font-mono font-bold mb-4 whitespace-pre-line group-hover:text-shadow-terminal dark:group-hover:[text-shadow:0_0_10px_#00d9ff] transition-all">
         {title}
       </h3>
@@ -41,7 +39,10 @@ export function FeatureCard({
       </p>
       <div className="space-y-2">
         {features.map((feature, index) => (
-          <div key={feature} className="text-terminal-muted dark:text-text-muted text-sm font-mono">
+          <div
+            key={feature}
+            className="text-terminal-muted dark:text-text-muted text-sm font-mono"
+          >
             → {feature}
           </div>
         ))}
