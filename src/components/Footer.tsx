@@ -2,7 +2,7 @@ interface FooterProps {
   onNavigate?: (view: "home") => void;
 }
 
-export function Footer({ onNavigate }: FooterProps) {
+export function Footer({ onNavigate: _onNavigate }: FooterProps) {
   return (
     <footer className="border-t-2 border-terminal-muted dark:border-dark-border bg-terminal-base mt-auto">
       <div className="max-w-7xl mx-auto px-8 py-6">
