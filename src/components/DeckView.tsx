@@ -113,7 +113,7 @@ export function DeckView({ deckId, onBack }: DeckViewProps) {
     loadDeckAndCards();
   }, [deckId]);
 
-  const handleAddCard = async () => {
+  const handleAddCard = useCallback(async () => {
     if (!cardFront.trim() || !cardBack.trim()) return;
 
     await db.createCard(cardFront, cardBack, deckId);
@@ -121,9 +121,9 @@ export function DeckView({ deckId, onBack }: DeckViewProps) {
     setCardBack("");
     setShowAddDialog(false);
     await loadDeckAndCards();
-  };
+  }, [cardFront, cardBack, deckId]);
 
-  const handleEditCard = async () => {
+  const handleEditCard = useCallback(async () => {
     if (!selectedCard || !cardFront.trim() || !cardBack.trim()) return;
 
     await db.cards.update(selectedCard.id, {
@@ -136,18 +136,18 @@ export function DeckView({ deckId, onBack }: DeckViewProps) {
     setSelectedCard(null);
     setShowEditDialog(false);
     await loadDeckAndCards();
-  };
+  }, [selectedCard, cardFront, cardBack]);
 
-  const handleDeleteCard = async () => {
+  const handleDeleteCard = useCallback(async () => {
     if (!selectedCard) return;
 
     await db.cards.delete(selectedCard.id);
     setSelectedCard(null);
     setShowDeleteDialog(false);
     await loadDeckAndCards();
-  };
+  }, [selectedCard]);
 
-  const handleRetireCard = async () => {
+  const handleRetireCard = useCallback(async () => {
     if (!selectedCard) return;
 
     // Set card due date far in the future to effectively retire it
@@ -162,7 +162,7 @@ export function DeckView({ deckId, onBack }: DeckViewProps) {
     setSelectedCard(null);
     setShowRetireDialog(false);
     await loadDeckAndCards();
-  };
+  }, [selectedCard]);
 
   const openEditDialog = (card: Card) => {
     setSelectedCard(card);

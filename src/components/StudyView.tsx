@@ -184,21 +184,24 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
     [currentCard, dueCards, sessionStats, cardStartTime, user],
   );
 
-  const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileImport = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    setIsLoading(true);
+      setIsLoading(true);
 
-    // TODO: Implement actual Anki import
-    // For now, we'll simulate it
-    setTimeout(() => {
-      setIsLoading(false);
-      setShowImport(false);
-      // Reload cards after import
-      loadCards();
-    }, 2000);
-  };
+      // TODO: Implement actual Anki import
+      // For now, we'll simulate it
+      setTimeout(() => {
+        setIsLoading(false);
+        setShowImport(false);
+        // Reload cards after import
+        loadCards();
+      }, 2000);
+    },
+    [],
+  );
 
   const handleDeckChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {

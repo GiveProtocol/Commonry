@@ -44,10 +44,10 @@ function App() {
     initializeApp();
   }, []);
 
-  const handleStartStudy = (deckId?: DeckId) => {
+  const handleStartStudy = useCallback((deckId?: DeckId) => {
     setSelectedDeckId(deckId);
     setCurrentView("study");
-  };
+  }, []);
 
   if (!isInitialized) {
     return (

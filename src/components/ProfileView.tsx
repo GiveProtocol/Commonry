@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
 import {
@@ -61,10 +61,10 @@ export function ProfileView({ onBack }: ProfileViewProps) {
     fetchProfile();
   }, [user?.username]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     onBack();
-  };
+  }, [logout, onBack]);
 
   const formatMemberSince = (dateString: string) => {
     const date = new Date(dateString);
