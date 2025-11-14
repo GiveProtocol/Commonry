@@ -14,6 +14,7 @@ import dotenv from "dotenv";
 import { ulid } from "ulid";
 import crypto from "crypto";
 import { sendVerificationEmail } from "./email-service.js";
+import { handleDiscourseSSORequest } from "./discourse-sso.js";
 
 dotenv.config();
 
@@ -68,6 +69,10 @@ app.use(generalLimiter);
 const JWT_SECRET =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_EXPIRES_IN = "7d";
+
+// Discourse SSO configuration
+const DISCOURSE_SSO_SECRET = process.env.DISCOURSE_SSO_SECRET;
+const DISCOURSE_URL = process.env.DISCOURSE_URL; // e.g., https://forum.commonry.app
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
@@ -478,6 +483,88 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Get user error:", error);
     res.status(500).json({ error: "Failed to get user" });
+    return null;
+  }
+});
+
+// ==================== DISCOURSE SSO ENDPOINT ====================
+
+/**
+ * Discourse SSO (DiscourseConnect) Endpoint
+ *
+ * This endpoint handles Single Sign-On requests from Discourse forum.
+ * When users click "Login" on Discourse, they're redirected here with a signed payload.
+ * We validate the request, authenticate the user, and redirect them back with user data.
+ *
+ * Flow:
+ * 1. Discourse redirects to this endpoint with sso and sig query params
+ * 2. We validate the signature using our shared secret
+ * 3. We verify the user is logged into Commonry (via JWT)
+ * 4. We generate a signed response with user data
+ * 5. We redirect back to Discourse with the signed response
+ *
+ * @see https://meta.discourse.org/t/discourseconnect-official-single-sign-on-for-discourse-sso/13045
+ */
+app.get("/api/discourse/sso", authenticateToken, async (req, res) => {
+  const { sso, sig } = req.query;
+
+  // Validate required parameters
+  if (!sso || !sig) {
+    return res.status(400).json({
+      error: "Missing SSO parameters. Required: sso and sig query params.",
+    });
+  }
+
+  // Validate Discourse SSO secret is configured
+  if (!DISCOURSE_SSO_SECRET) {
+    console.error("DISCOURSE_SSO_SECRET not configured");
+    return res.status(500).json({
+      error: "SSO not configured on server",
+    });
+  }
+
+  try {
+    // Get the authenticated user's full profile
+    const userResult = await pool.query(
+      `SELECT user_id, username, email, display_name, avatar_url, bio, email_verified
+       FROM users
+       WHERE user_id = $1 AND is_active = true`,
+      [req.userId],
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+
+    // Ensure email is verified before allowing SSO
+    if (!user.email_verified) {
+      return res.status(403).json({
+        error: "Email must be verified before accessing the forum",
+      });
+    }
+
+    // Handle the SSO request and generate redirect URL
+    const ssoResponse = handleDiscourseSSORequest(
+      sso,
+      sig,
+      user,
+      DISCOURSE_SSO_SECRET,
+    );
+
+    if (!ssoResponse) {
+      return res.status(400).json({
+        error: "Invalid SSO signature or payload",
+      });
+    }
+
+    // Redirect user back to Discourse with signed response
+    res.redirect(ssoResponse.redirectUrl);
+    return null;
+  } catch (error) {
+    console.error("Discourse SSO error:", error);
+    res.status(500).json({ error: "Failed to process SSO request" });
     return null;
   }
 });

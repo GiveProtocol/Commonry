@@ -4,6 +4,7 @@ import { StudyView } from "./components/StudyView";
 import { DeckBrowser } from "./components/DeckBrowser";
 import { StatsView } from "./components/StatsView";
 import { ProfileView } from "./components/ProfileView";
+import { SquareView } from "./components/SquareView";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
 import { FeaturesSection } from "./components/sections/FeaturesSection";
@@ -91,13 +92,7 @@ function App() {
       case "stats":
         return <StatsView onBack={navigateToHome} />;
       case "square":
-        return (
-          <PlaceholderView
-            title="The Square"
-            subtitle="Community forum coming soon"
-            onBack={navigateToHome}
-          />
-        );
+        return <SquareView onBack={navigateToHome} />;
       case "profile":
         return <ProfileView onBack={navigateToHome} />;
       default:
