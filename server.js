@@ -1459,7 +1459,10 @@ app.post(
           let uploadedFileRealPath = null;
           try {
             // Always resolve the file path as a child of UPLOADS_DIR to prevent traversal
-            const absUploadedPath = path.resolve(UPLOADS_DIR, path.basename(req.file.path));
+            const absUploadedPath = path.resolve(
+              UPLOADS_DIR,
+              path.basename(req.file.path),
+            );
             // Get the canonical path for symlink protection
             uploadedFileRealPath = fs.realpathSync(absUploadedPath);
           } catch (e) {
