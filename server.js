@@ -1458,8 +1458,13 @@ app.post(
           // Initialize variable on declaration to satisfy DeepSource JS-0119
           let uploadedFileRealPath = null;
           try {
-            // Resolve the real path to handle symlinks (addresses CodeQL path injection)
-            uploadedFileRealPath = fs.realpathSync(req.file.path);
+            // Always resolve the file path as a child of UPLOADS_DIR to prevent traversal
+            const absUploadedPath = path.resolve(
+              UPLOADS_DIR,
+              path.basename(req.file.path),
+            );
+            // Get the canonical path for symlink protection
+            uploadedFileRealPath = fs.realpathSync(absUploadedPath);
           } catch (e) {
             // If realpathSync fails, keep as null
             uploadedFileRealPath = null;
