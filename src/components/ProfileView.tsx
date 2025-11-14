@@ -220,9 +220,9 @@ export function ProfileView({ onBack }: ProfileViewProps) {
                 Learning Topics
               </h2>
               <div className="flex flex-wrap gap-2">
-                {profile.learningTopics.map((topic, index) => (
+                {profile.learningTopics.map((topic) => (
                   <span
-                    key={index}
+                    key={topic}
                     className="px-3 py-1.5 bg-cyan/10 text-cyan rounded-full text-sm font-medium border border-cyan/20"
                   >
                     {topic}

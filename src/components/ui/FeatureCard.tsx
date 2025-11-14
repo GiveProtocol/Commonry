@@ -40,8 +40,8 @@ export function FeatureCard({
         {description}
       </p>
       <div className="space-y-2">
-        {features.map((feature, index) => (
-          <div key={index} className="text-terminal-muted dark:text-text-muted text-sm font-mono">
+        {features.map((feature) => (
+          <div key={feature} className="text-terminal-muted dark:text-text-muted text-sm font-mono">
             → {feature}
           </div>
         ))}

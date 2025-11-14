@@ -17,27 +17,30 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setEmailNotVerified(false);
-    setResendMessage("");
-    setIsLoading(true);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
+      setEmailNotVerified(false);
+      setResendMessage("");
+      setIsLoading(true);
 
-    const result = await login(username, password);
+      const result = await login(username, password);
 
-    if (result.error) {
-      setError(result.error);
-      if (result.emailNotVerified && result.email) {
-        setEmailNotVerified(true);
-        setUnverifiedEmail(result.email);
+      if (result.error) {
+        setError(result.error);
+        if (result.emailNotVerified && result.email) {
+          setEmailNotVerified(true);
+          setUnverifiedEmail(result.email);
+        }
       }
-    }
 
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    },
+    [login, username, password],
+  );
 
-  const handleResendVerification = async () => {
+  const handleResendVerification = useCallback(async () => {
     setResendLoading(true);
     setResendMessage("");
 
@@ -68,7 +71,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
     }
 
     setResendLoading(false);
-  };
+  }, [unverifiedEmail]);
 
   const handleUsernameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

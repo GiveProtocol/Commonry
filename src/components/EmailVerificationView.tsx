@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, Loader2, Mail } from "lucide-react";
 
@@ -65,13 +65,13 @@ export default function EmailVerificationView({
     }
   }, [token]);
 
-  const handleContinue = () => {
+  const handleContinue = useCallback(() => {
     if (status === "success" || status === "already-verified") {
       onSuccess();
     }
-  };
+  }, [status, onSuccess]);
 
-  const handleResendVerification = async () => {
+  const handleResendVerification = useCallback(async () => {
     if (!userEmail) {
       setMessage("Email address not available. Please try signing up again.");
       return;
@@ -106,7 +106,7 @@ export default function EmailVerificationView({
     } finally {
       setResending(false);
     }
-  };
+  }, [userEmail]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
