@@ -112,6 +112,7 @@ VITE_DISCOURSE_API_KEY=optional_discourse_api_key_for_reading_posts
 ```
 
 **Notes**:
+
 - `DISCOURSE_SSO_SECRET` must match the secret you set in Discourse
 - `DISCOURSE_URL` is your forum's base URL
 - `VITE_DISCOURSE_API_KEY` is optional - only needed if you want to display recent posts on The Square
@@ -144,18 +145,18 @@ To fetch recent forum posts for display on The Square:
 
 ### Backend (.env)
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `DISCOURSE_SSO_SECRET` | ✅ Yes | Shared secret for SSO signing | `a1b2c3d4e5f6...` (64 chars) |
-| `DISCOURSE_URL` | ✅ Yes | Your Discourse forum base URL | `https://forum.commonry.app` |
+| Variable               | Required | Description                   | Example                      |
+| ---------------------- | -------- | ----------------------------- | ---------------------------- |
+| `DISCOURSE_SSO_SECRET` | ✅ Yes   | Shared secret for SSO signing | `a1b2c3d4e5f6...` (64 chars) |
+| `DISCOURSE_URL`        | ✅ Yes   | Your Discourse forum base URL | `https://forum.commonry.app` |
 
 ### Frontend (Vite .env)
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `VITE_DISCOURSE_URL` | ✅ Yes | Forum URL (for frontend API calls) | `https://forum.commonry.app` |
-| `VITE_DISCOURSE_API_KEY` | ⚪ Optional | API key for reading posts | `your-api-key-here` |
-| `VITE_API_URL` | ✅ Yes | Commonry backend URL | `https://api.commonry.app` |
+| Variable                 | Required    | Description                        | Example                      |
+| ------------------------ | ----------- | ---------------------------------- | ---------------------------- |
+| `VITE_DISCOURSE_URL`     | ✅ Yes      | Forum URL (for frontend API calls) | `https://forum.commonry.app` |
+| `VITE_DISCOURSE_API_KEY` | ⚪ Optional | API key for reading posts          | `your-api-key-here`          |
+| `VITE_API_URL`           | ✅ Yes      | Commonry backend URL               | `https://api.commonry.app`   |
 
 ## 🔄 How It Works
 
@@ -265,6 +266,7 @@ Check that user profile data syncs correctly:
 **Cause**: `DISCOURSE_SSO_SECRET` environment variable not set
 
 **Solution**:
+
 1. Ensure `.env` file contains `DISCOURSE_SSO_SECRET`
 2. Restart your backend server
 3. Verify with: `console.log(process.env.DISCOURSE_SSO_SECRET)` in server.js
@@ -274,6 +276,7 @@ Check that user profile data syncs correctly:
 **Cause**: SSO secret mismatch between Discourse and Commonry
 
 **Solution**:
+
 1. Verify both systems use the exact same secret
 2. Check for extra whitespace in environment variables
 3. Regenerate secret and update both systems
@@ -283,6 +286,7 @@ Check that user profile data syncs correctly:
 **Cause**: User hasn't verified their email in Commonry
 
 **Solution**:
+
 1. Check user's `email_verified` status in database
 2. Resend verification email from login page
 3. Complete email verification flow
@@ -292,6 +296,7 @@ Check that user profile data syncs correctly:
 **Cause**: Discourse API endpoint not accessible or API key invalid
 
 **Solution**:
+
 1. Test API endpoint manually: `curl https://forum.commonry.app/latest.json`
 2. Check CORS settings on Discourse if getting blocked
 3. Verify `VITE_DISCOURSE_URL` is correct
@@ -302,6 +307,7 @@ Check that user profile data syncs correctly:
 **Cause**: Email not verified or account not active
 
 **Solution**:
+
 1. Verify user's `email_verified = true` in database:
    ```sql
    SELECT username, email_verified FROM users WHERE username = 'username';
@@ -314,6 +320,7 @@ Check that user profile data syncs correctly:
 **Cause**: Misconfigured `discourse_connect_url` in Discourse
 
 **Solution**:
+
 1. Verify `discourse_connect_url` ends with `/api/discourse/sso`
 2. Ensure URL uses HTTPS (not HTTP) in production
 3. Check for trailing slashes
