@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" aria-labelledby="clock_dark_idsvg" role="img">
+  <defs>
+    <filter id="glow_clock_dark_svg" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <title id="clock_dark_idsvg">Clock — dark (cyan)</title>
+  <rect x="20" y="20" width="216" height="216" rx="20" ry="20" fill="rgba(0,230,230,0.02)" stroke="#00e6e6" stroke-width="6" filter="url(#glow_clock_dark_svg)" />
+  <g stroke="#00e6e6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow_clk_dark)">
+    <circle cx="128" cy="128" r="68"/>
+    <circle cx="128" cy="128" r="5" fill="#00e6e6" />
+    <path d="M128 70 V125" stroke="#00e6e6" stroke-width="8" />
+    <path d="M128 128 L170 160" stroke="#00e6e6" stroke-width="8" />
+  </g>
+</svg>
