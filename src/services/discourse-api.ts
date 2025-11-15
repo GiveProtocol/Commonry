@@ -77,7 +77,7 @@ export async function getRecentPosts(
     if (!response.ok) {
       console.error(
         "Failed to fetch Discourse posts:",
-        response.statusText.replace(/[^\n\r]/g, ""),
+        response.statusText.replace(/[\n\r]/g, ""),
       );
       return [];
     }
@@ -87,7 +87,7 @@ export async function getRecentPosts(
   } catch (error) {
     console.error(
       "Error fetching Discourse posts:",
-      error?.toString().replace(/[^\n\r]/g, ""),
+      error?.toString().replace(/[\n\r]/g, ""),
     );
     return [];
   }
@@ -116,8 +116,7 @@ export async function getLatestTopics(
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      const sanitizedStatusText = response.statusText.replace(/[
-\n]/g, "");
+      const sanitizedStatusText = response.statusText.replace(/[\n\r]/g, "");
       console.error("Failed to fetch Discourse topics:", sanitizedStatusText);
       return [];
     }
@@ -126,8 +125,7 @@ export async function getLatestTopics(
     return data.topic_list?.topics.slice(0, limit) || [];
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    const sanitizedErrorMsg = errorMsg.replace(/[
-\n]/g, "");
+    const sanitizedErrorMsg = errorMsg.replace(/[\n\r]/g, "");
     console.error("Error fetching Discourse topics:", sanitizedErrorMsg);
     return [];
   }
