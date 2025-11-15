@@ -333,7 +333,7 @@ export function ProfileView({ onBack }: ProfileViewProps) {
                       className="w-6 h-6 hidden dark:block"
                     />
                     <div className="text-sm font-semibold text-muted-foreground uppercase">
-                      Today's Session
+                      Today&apos;s Session
                     </div>
                   </div>
                   <div className="text-2xl font-bold text-cyan">

@@ -5,7 +5,6 @@ import "./globals.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastProvider } from "./components/Toast";
-import AuthGate from "./components/AuthGate";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -17,9 +16,7 @@ ReactDOM.createRoot(rootElement).render(
     <ThemeProvider>
       <AuthProvider>
         <ToastProvider>
-          <AuthGate>
-            <App />
-          </AuthGate>
+          <App />
         </ToastProvider>
       </AuthProvider>
     </ThemeProvider>

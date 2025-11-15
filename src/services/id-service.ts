@@ -18,6 +18,7 @@ import {
  * Service for generating and managing entity IDs
  * Uses prefixed ULIDs for type safety and chronological sorting
  */
+// skipcq: JS-0327 - Using class for consistency with service pattern
 export class IdService {
   // ===== Generation Methods =====
 

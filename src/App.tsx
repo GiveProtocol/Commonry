@@ -13,6 +13,7 @@ import { SkipToMain } from "./components/ui/SkipToMain";
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { DeckId } from "./types/ids";
+import ProtectedView from "./components/ProtectedView";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
@@ -80,7 +81,9 @@ function App() {
     switch (currentView) {
       case "study":
         return (
-          <StudyView onBack={navigateToHome} initialDeckId={selectedDeckId} />
+          <ProtectedView>
+            <StudyView onBack={navigateToHome} initialDeckId={selectedDeckId} />
+          </ProtectedView>
         );
       case "browse":
         return (
@@ -90,11 +93,23 @@ function App() {
           />
         );
       case "stats":
-        return <StatsView onBack={navigateToHome} />;
+        return (
+          <ProtectedView>
+            <StatsView onBack={navigateToHome} />
+          </ProtectedView>
+        );
       case "square":
-        return <SquareView onBack={navigateToHome} />;
+        return (
+          <ProtectedView>
+            <SquareView onBack={navigateToHome} />
+          </ProtectedView>
+        );
       case "profile":
-        return <ProfileView onBack={navigateToHome} />;
+        return (
+          <ProtectedView>
+            <ProfileView onBack={navigateToHome} />
+          </ProtectedView>
+        );
       default:
         return <HomeView onNavigate={setCurrentView} />;
     }
@@ -212,7 +227,7 @@ interface PlaceholderViewProps {
   onBack: () => void;
 }
 
-function PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
+function _PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
   return (
     <div className="flex items-center justify-center flex-1 px-6">
       <motion.div

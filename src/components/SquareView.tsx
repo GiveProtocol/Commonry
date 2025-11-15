@@ -4,7 +4,6 @@ import { MessageCircle, Users, TrendingUp, ExternalLink } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import {
   getLatestTopics,
-  getAvatarUrl,
   getTopicUrl,
   type DiscourseTopic,
 } from "../services/discourse-api";
