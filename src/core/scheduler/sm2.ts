@@ -75,6 +75,7 @@ export class SM2Scheduler implements Scheduler {
    * @param {number} rating - The rating from the review (1=Again, 2=Hard, 3=Good, 4=Easy).
    * @returns {number} The number of days until the next review.
    */
+  // skipcq: JS-0105 - Method must be instance method to implement Scheduler interface
   getNextInterval(card: Card, rating: number): number {
     if (rating < 3) {
       return rating === 1 ? 1 : Math.max(1, Math.floor(card.interval * 0.6));
@@ -95,6 +96,7 @@ export class SM2Scheduler implements Scheduler {
    * @param {number} rating - The rating from the review (1=Again, 2=Hard, 3=Good, 4=Easy).
    * @returns {number} The updated ease factor, clamped between 1.3 and 2.5.
    */
+  // skipcq: JS-0105 - Method must be instance method to implement Scheduler interface
   getNextEaseFactor(card: Card, rating: number): number {
     // EF' = EF + (0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02))
     const ef =
