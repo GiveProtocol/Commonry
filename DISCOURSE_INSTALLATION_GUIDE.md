@@ -18,12 +18,14 @@ This guide walks you through installing Discourse to work with your Commonry int
 ## 🎯 Installation Options
 
 ### Option 1: Self-Hosted (Docker) ⭐ **Recommended**
+
 - **Pros**: Full control, free hosting (except server costs), easy updates
 - **Cons**: Requires server management knowledge
 - **Cost**: Server costs only (~$10-40/month depending on traffic)
 - **Best for**: Technical users, cost-conscious projects
 
 ### Option 2: Managed Discourse Hosting
+
 - **Pros**: Zero maintenance, professional support, automatic updates
 - **Cons**: Monthly subscription fee
 - **Cost**: $100+/month
@@ -31,6 +33,7 @@ This guide walks you through installing Discourse to work with your Commonry int
 - **URL**: https://www.discourse.org/pricing
 
 ### Option 3: Digital Ocean One-Click
+
 - **Pros**: Fast setup, managed infrastructure
 - **Cons**: Less customization than Docker
 - **Cost**: $12+/month
@@ -43,6 +46,7 @@ This guide walks you through installing Discourse to work with your Commonry int
 Before installing Discourse, ensure you have:
 
 ### Required:
+
 - ✅ **A server** with:
   - **2 GB RAM minimum** (4 GB+ recommended for production)
   - **2 CPU cores minimum**
@@ -61,13 +65,13 @@ Before installing Discourse, ensure you have:
 
 ### Recommended Server Providers:
 
-| Provider | Plan | Cost | Notes |
-|----------|------|------|-------|
-| **DigitalOcean** | Basic Droplet (2 GB) | $12/month | Best for beginners |
-| **Linode** | Nanode (4 GB) | $24/month | Excellent performance |
-| **AWS Lightsail** | 2 GB instance | $10/month | Good AWS integration |
-| **Hetzner** | CX21 | €5.83/month | Best price/performance |
-| **Vultr** | High Frequency (2 GB) | $12/month | Good global locations |
+| Provider          | Plan                  | Cost        | Notes                  |
+| ----------------- | --------------------- | ----------- | ---------------------- |
+| **DigitalOcean**  | Basic Droplet (2 GB)  | $12/month   | Best for beginners     |
+| **Linode**        | Nanode (4 GB)         | $24/month   | Excellent performance  |
+| **AWS Lightsail** | 2 GB instance         | $10/month   | Good AWS integration   |
+| **Hetzner**       | CX21                  | €5.83/month | Best price/performance |
+| **Vultr**         | High Frequency (2 GB) | $12/month   | Good global locations  |
 
 ---
 
@@ -80,6 +84,7 @@ This is the **official Discourse installation method** and what we'll focus on.
 #### Using DigitalOcean (Example):
 
 1. **Create a new Droplet**:
+
    ```
    - Image: Ubuntu 22.04 LTS
    - Plan: Basic (2 GB RAM / 2 CPUs)
@@ -165,36 +170,43 @@ The wizard will ask you several questions:
 #### Configuration Questions:
 
 **1. Hostname for your Discourse?**
+
 ```
 forum.commonry.app
 ```
 
 **2. Email address for admin account?**
+
 ```
 your-email@example.com
 ```
-*This will be your admin login email*
+
+_This will be your admin login email_
 
 **3. SMTP server address?**
 
 Choose based on your email provider:
 
 **For Gmail:**
+
 ```
 smtp.gmail.com
 ```
 
 **For SendGrid:**
+
 ```
 smtp.sendgrid.net
 ```
 
 **For Mailgun:**
+
 ```
 smtp.mailgun.org
 ```
 
 **For Amazon SES (us-east-1):**
+
 ```
 email-smtp.us-east-1.amazonaws.com
 ```
@@ -204,26 +216,31 @@ email-smtp.us-east-1.amazonaws.com
 ```
 587
 ```
-*Use 587 for TLS (most common)*
+
+_Use 587 for TLS (most common)_
 
 **5. SMTP user name?**
 
 **For Gmail:**
+
 ```
 your-email@gmail.com
 ```
 
 **For SendGrid:**
+
 ```
 apikey
 ```
 
 **For Mailgun:**
+
 ```
 postmaster@your-domain.mailgun.org
 ```
 
 **For Amazon SES:**
+
 ```
 Your AWS SMTP username
 ```
@@ -231,26 +248,33 @@ Your AWS SMTP username
 **6. SMTP password?**
 
 **For Gmail:**
+
 - Use an **App Password** (not your regular password)
 - Generate at: https://myaccount.google.com/apppasswords
 - Enter the 16-character app password
 
 **For SendGrid:**
+
 - Use your SendGrid API key
 
 **For Mailgun:**
+
 - Use your Mailgun SMTP password
 
 **For Amazon SES:**
+
 - Use your AWS SMTP password
 
 **7. Let's Encrypt account email?**
+
 ```
 your-email@example.com
 ```
-*For SSL certificate notifications*
+
+_For SSL certificate notifications_
 
 **8. Optional Maxmind License key?**
+
 ```
 (Press Enter to skip - not needed)
 ```
@@ -265,6 +289,7 @@ After answering questions, the installer will:
 4. Start the application
 
 **This takes 10-20 minutes**. You'll see:
+
 ```
 Pups Successfully Completed!
 Discourse launched!
@@ -273,6 +298,7 @@ Discourse launched!
 ### Step 8: Verify Installation
 
 Once complete, visit your domain:
+
 ```
 https://forum.commonry.app
 ```
@@ -290,6 +316,7 @@ You should see the Discourse setup wizard!
 In your domain registrar (e.g., Cloudflare, Namecheap, GoDaddy):
 
 **Create an A record:**
+
 ```
 Type: A
 Name: forum
@@ -298,6 +325,7 @@ TTL: 300 (or Auto)
 ```
 
 **Alternatively, if using subdomain:**
+
 ```
 Type: CNAME
 Name: forum
@@ -305,6 +333,7 @@ Value: commonry.app
 ```
 
 **Verify DNS propagation:**
+
 ```bash
 # Check if DNS is resolving
 dig forum.commonry.app
@@ -341,15 +370,18 @@ Navigate to **Admin → Settings**:
 #### Required Settings:
 
 **1. Site Settings** (`/admin/site_settings/category/required`):
+
 - ✅ `title`: "Commonry Community"
 - ✅ `site_description`: "A commons for lifelong learning"
 - ✅ `contact_email`: your support email
 - ✅ `notification_email`: your no-reply email
 
 **2. Login Settings** (`/admin/site_settings/category/login`):
+
 - ⚠️ **Don't configure SSO yet** - we'll do that in the next section
 
 **3. Email Settings**:
+
 - Already configured during installation
 - Test by: Admin → Emails → Send Test Email
 
@@ -360,6 +392,7 @@ Create initial forum categories:
 **Admin → Categories → + New Category**
 
 Suggested categories for Commonry:
+
 - 📚 **Learning Strategies** - Study techniques and methods
 - 🎯 **Spaced Repetition** - SRS tips and discussions
 - 💬 **General Discussion** - Community chat
@@ -396,6 +429,7 @@ openssl rand -hex 32
 ```
 
 **Example output:**
+
 ```
 a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
 ```
@@ -407,22 +441,27 @@ a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
 1. **Navigate to**: Admin → Settings → Login
 
 2. **Enable DiscourseConnect**:
+
    ```
    enable_discourse_connect = ✅ true
    ```
 
 3. **Set SSO URL**:
+
    ```
    discourse_connect_url = https://commonry.app/api/discourse/sso
    ```
-   *Replace with your actual Commonry domain*
+
+   _Replace with your actual Commonry domain_
 
 4. **Set SSO Secret**:
+
    ```
    discourse_connect_secret = a1b2c3d4e5f6...  (the secret you generated)
    ```
 
 5. **Optional - Override Settings**:
+
    ```
    discourse_connect_overrides_avatar = true
    discourse_connect_overrides_email = false
@@ -431,6 +470,7 @@ a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
    ```
 
 6. **Disable other login methods** (recommended):
+
    ```
    enable_local_logins = false
    enable_google_oauth2_logins = false
@@ -487,6 +527,7 @@ If it works - congratulations! SSO is configured!
 **Cause**: Discourse not running or firewall blocking
 
 **Solution**:
+
 ```bash
 # Check if Discourse is running
 cd /var/discourse
@@ -506,6 +547,7 @@ sudo ufw allow 443/tcp
 **Cause**: Let's Encrypt SSL not properly configured
 
 **Solution**:
+
 ```bash
 # Rebuild Discourse with SSL
 cd /var/discourse
@@ -517,6 +559,7 @@ sudo ./launcher rebuild app
 **Cause**: SMTP configuration incorrect
 
 **Solution**:
+
 ```bash
 # Edit configuration
 cd /var/discourse
@@ -532,6 +575,7 @@ sudo ./launcher rebuild app
 **Cause**: Secret mismatch between Discourse and Commonry
 
 **Solution**:
+
 1. Verify `DISCOURSE_SSO_SECRET` in Commonry `.env` matches `discourse_connect_secret` in Discourse
 2. Check for extra whitespace
 3. Restart both services
@@ -598,6 +642,7 @@ docker stats
 3. **Download backup** to your local machine
 
 **Automated backups:**
+
 - Admin → Settings → Backups
 - `backup_frequency`: 1 (daily)
 - `maximum_backups`: 7 (keep 7 days)
@@ -627,6 +672,7 @@ docker stats
 Skip server management entirely:
 
 **Discourse Hosting**: https://www.discourse.org/pricing
+
 - Starting at $100/month
 - Includes hosting, updates, backups, support
 
