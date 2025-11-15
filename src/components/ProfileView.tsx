@@ -240,11 +240,20 @@ export function ProfileView({ onBack }: ProfileViewProps) {
               </h2>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 {/* Current Streak */}
                 <div className="bg-gradient-to-br from-amber/20 to-amber-dark/20 border border-amber/30 rounded-xl p-4 hover:shadow-lg hover:shadow-amber-glow transition-all">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">🔥</span>
+                    <img
+                      src="/icons/fire_white.png"
+                      alt="Streak"
+                      className="w-8 h-8 dark:hidden"
+                    />
+                    <img
+                      src="/icons/fire_black.png"
+                      alt="Streak"
+                      className="w-8 h-8 hidden dark:block"
+                    />
                     <span className="text-xs font-semibold text-muted-foreground uppercase">
                       Streak
                     </span>
@@ -260,7 +269,16 @@ export function ProfileView({ onBack }: ProfileViewProps) {
                 {/* Cards Reviewed */}
                 <div className="bg-gradient-to-br from-cyan/20 to-cyan-dark/20 border border-cyan/30 rounded-xl p-4 hover:shadow-lg hover:shadow-cyan-glow transition-all">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">📚</span>
+                    <img
+                      src="/icons/chart_white.png"
+                      alt="Reviewed"
+                      className="w-8 h-8 dark:hidden"
+                    />
+                    <img
+                      src="/icons/chart_black.png"
+                      alt="Reviewed"
+                      className="w-8 h-8 hidden dark:block"
+                    />
                     <span className="text-xs font-semibold text-muted-foreground uppercase">
                       Reviewed
                     </span>
@@ -276,7 +294,16 @@ export function ProfileView({ onBack }: ProfileViewProps) {
                 {/* Cards Mastered */}
                 <div className="bg-gradient-to-br from-cyan/20 to-cyan-dark/20 border border-cyan/30 rounded-xl p-4 hover:shadow-lg hover:shadow-cyan-glow transition-all">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">⭐</span>
+                    <img
+                      src="/icons/target_white.png"
+                      alt="Mastered"
+                      className="w-8 h-8 dark:hidden"
+                    />
+                    <img
+                      src="/icons/target_black.png"
+                      alt="Mastered"
+                      className="w-8 h-8 hidden dark:block"
+                    />
                     <span className="text-xs font-semibold text-muted-foreground uppercase">
                       Mastered
                     </span>
@@ -288,33 +315,42 @@ export function ProfileView({ onBack }: ProfileViewProps) {
                     cards learned
                   </div>
                 </div>
-
-                {/* Study Days */}
-                <div className="bg-gradient-to-br from-amber/20 to-amber-dark/20 border border-amber/30 rounded-xl p-4 hover:shadow-lg hover:shadow-amber-glow transition-all">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">📅</span>
-                    <span className="text-xs font-semibold text-muted-foreground uppercase">
-                      Active Days
-                    </span>
-                  </div>
-                  <div className="text-3xl font-bold text-amber">
-                    {stats.totalStudyDays}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {stats.totalStudyDays === 1 ? "day" : "days"} learning
-                  </div>
-                </div>
               </div>
 
               {/* Additional Stats Row */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Study Time */}
+                {/* Today's Study Time */}
+                <div className="bg-gradient-to-br from-cyan/10 to-cyan-dark/10 border border-cyan/30 rounded-lg p-4 hover:shadow-lg hover:shadow-cyan-glow transition-all">
+                  <div className="flex items-center gap-2 mb-2">
+                    <img
+                      src="/icons/sundial_white.png"
+                      alt="Study Time"
+                      className="w-6 h-6 dark:hidden"
+                    />
+                    <img
+                      src="/icons/sundial_black.png"
+                      alt="Study Time"
+                      className="w-6 h-6 hidden dark:block"
+                    />
+                    <div className="text-sm font-semibold text-muted-foreground uppercase">
+                      Today's Session
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-cyan">
+                    {Math.floor((stats.totalStudyTimeMs || 0) / 60000)} min
+                  </div>
+                </div>
+
+                {/* Total Study Time */}
                 <div className="bg-muted/50 rounded-lg p-4 border border-border">
                   <div className="text-sm text-muted-foreground mb-1">
                     Total Study Time
                   </div>
                   <div className="text-xl font-bold text-foreground">
                     {Math.floor(stats.totalStudyTimeMs / 60000)} min
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    all sessions
                   </div>
                 </div>
 
@@ -326,16 +362,6 @@ export function ProfileView({ onBack }: ProfileViewProps) {
                   <div className="text-xl font-bold text-foreground">
                     {stats.longestStreak}{" "}
                     {stats.longestStreak === 1 ? "day" : "days"}
-                  </div>
-                </div>
-
-                {/* Active Decks */}
-                <div className="bg-muted/50 rounded-lg p-4 border border-border">
-                  <div className="text-sm text-muted-foreground mb-1">
-                    Active Decks
-                  </div>
-                  <div className="text-xl font-bold text-foreground">
-                    {stats.activeDecksCount}
                   </div>
                 </div>
               </div>
