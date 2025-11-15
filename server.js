@@ -72,7 +72,6 @@ const JWT_EXPIRES_IN = "7d";
 
 // Discourse SSO configuration
 const DISCOURSE_SSO_SECRET = process.env.DISCOURSE_SSO_SECRET;
-const DISCOURSE_URL = process.env.DISCOURSE_URL; // e.g., https://forum.commonry.app
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
