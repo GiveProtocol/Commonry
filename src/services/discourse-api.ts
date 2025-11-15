@@ -58,9 +58,7 @@ export interface DiscourseCategory {
  * @param limit - Number of posts to fetch (default: 10)
  * @returns Promise resolving to array of recent posts
  */
-export async function getRecentPosts(
-  limit = 10,
-): Promise<DiscoursePost[]> {
+export async function getRecentPosts(limit = 10): Promise<DiscoursePost[]> {
   try {
     const url = new URL(`${API_BASE_URL}/posts.json`);
 
@@ -99,9 +97,7 @@ export async function getRecentPosts(
  * @param limit - Number of topics to fetch (default: 10)
  * @returns Promise resolving to array of latest topics
  */
-export async function getLatestTopics(
-  limit = 10,
-): Promise<DiscourseTopic[]> {
+export async function getLatestTopics(limit = 10): Promise<DiscourseTopic[]> {
   try {
     const url = new URL(`${API_BASE_URL}/latest.json`);
 
@@ -175,10 +171,7 @@ export async function getCategories(): Promise<DiscourseCategory[]> {
  * @param size - Avatar size (default: 45)
  * @returns Complete avatar URL
  */
-export function getAvatarUrl(
-  avatarTemplate: string,
-  size = 45,
-): string {
+export function getAvatarUrl(avatarTemplate: string, size = 45): string {
   return `${API_BASE_URL}${avatarTemplate.replace("{size}", size.toString())}`;
 }
 
