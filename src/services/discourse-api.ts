@@ -72,18 +72,14 @@ export async function getRecentPosts(limit: number = 10): Promise<DiscoursePost[
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse posts:', response.statusText.replace(/[
-
-]/g, ''));
+      console.error('Failed to fetch Discourse posts:', response.statusText.replace(/[\n\r]/g, ''));
       return [];
     }
 
     const data = await response.json();
     return data.latest_posts?.slice(0, limit) || [];
   } catch (error) {
-    console.error('Error fetching Discourse posts:', error?.toString().replace(/[
-
-]/g, ''));
+    console.error('Error fetching Discourse posts:', error?.toString().replace(/[\n\r]/g, ''));
     return [];
   }
 }
@@ -144,9 +140,7 @@ export async function getCategories(): Promise<DiscourseCategory[]> {
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      const sanitizedStatusText = response.statusText.replace(/[
-
-]/g, '');
+      const sanitizedStatusText = response.statusText.replace(/[\n\r]/g, '');
       console.error('Failed to fetch Discourse categories:', sanitizedStatusText);
       return [];
     }
