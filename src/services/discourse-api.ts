@@ -72,14 +72,18 @@ export async function getRecentPosts(limit: number = 10): Promise<DiscoursePost[
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse posts:', response.statusText);
+      console.error('Failed to fetch Discourse posts:', response.statusText.replace(/[
+
+]/g, ''));
       return [];
     }
 
     const data = await response.json();
     return data.latest_posts?.slice(0, limit) || [];
   } catch (error) {
-    console.error('Error fetching Discourse posts:', error);
+    console.error('Error fetching Discourse posts:', error?.toString().replace(/[
+
+]/g, ''));
     return [];
   }
 }
@@ -105,14 +109,17 @@ export async function getLatestTopics(limit: number = 10): Promise<DiscourseTopi
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse topics:', response.statusText);
+      const sanitizedStatusText = response.statusText.replace(/[\r\n]/g, '');
+      console.error('Failed to fetch Discourse topics:', sanitizedStatusText);
       return [];
     }
 
     const data = await response.json();
     return data.topic_list?.topics.slice(0, limit) || [];
   } catch (error) {
-    console.error('Error fetching Discourse topics:', error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const sanitizedErrorMsg = errorMsg.replace(/[\r\n]/g, '');
+    console.error('Error fetching Discourse topics:', sanitizedErrorMsg);
     return [];
   }
 }
@@ -137,14 +144,18 @@ export async function getCategories(): Promise<DiscourseCategory[]> {
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error('Failed to fetch Discourse categories:', response.statusText);
+      const sanitizedStatusText = response.statusText.replace(/[
+
+]/g, '');
+      console.error('Failed to fetch Discourse categories:', sanitizedStatusText);
       return [];
     }
 
     const data = await response.json();
     return data.category_list?.categories || [];
   } catch (error) {
-    console.error('Error fetching Discourse categories:', error);
+    const sanitizedError = String(error).replace(/[\n\r]/g, '');
+    console.error('Error fetching Discourse categories:', sanitizedError);
     return [];
   }
 }
