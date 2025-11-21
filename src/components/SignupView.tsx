@@ -1,6 +1,6 @@
 import { useState, useCallback, ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { Mail, CheckCircle } from "lucide-react";
+import { TerminalBorder } from "./ui/TerminalBorder";
 
 // Signup view with email verification flow
 interface SignupViewProps {
@@ -120,195 +120,222 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
   // Show success message after registration
   if (showSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
+      <div className="min-h-screen flex items-center justify-center bg-terminal-base px-4 relative overflow-hidden">
+        {/* Grid background */}
+        <div className="absolute inset-0 grid-bg opacity-30" />
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-card dark:card-border rounded-2xl card-shadow-deep p-8 w-full max-w-md text-center"
+          className="relative z-10 w-full max-w-md"
         >
-          <div className="flex justify-center mb-6">
-            <div className="bg-green-100 dark:bg-green-900/20 rounded-full p-4">
-              <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400" />
+          <TerminalBorder className="bg-terminal-surface dark:bg-dark-surface p-8 text-center">
+            {/* Success indicator */}
+            <div className="mb-6">
+              <div className="inline-block bg-green-500/10 border-2 border-green-500/30 p-6">
+                <div className="text-6xl font-mono terminal-accent dark:text-cyan text-shadow-terminal dark:[text-shadow:0_0_20px_rgba(0,217,255,0.5)]">
+                  ✓
+                </div>
+              </div>
             </div>
-          </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Account Created! 🎉
-          </h2>
+            <h2 className="text-2xl font-mono font-bold terminal-accent dark:text-amber mb-4 text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
+              ACCOUNT CREATED
+            </h2>
 
-          <div className="bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
-              <div className="text-left">
-                <p className="font-semibold text-cyan-900 dark:text-cyan-100 mb-1">
-                  Verify Your Email
+            <div className="bg-terminal-primary/10 dark:bg-cyan/10 border border-terminal-primary/30 dark:border-cyan/30 p-4 mb-6 text-left">
+              <div className="font-mono text-sm space-y-2">
+                <p className="terminal-primary dark:text-cyan">
+                  <span className="text-terminal-muted dark:text-text-muted">
+                    &gt;
+                  </span>{" "}
+                  VERIFICATION REQUIRED
                 </p>
-                <p className="text-sm text-cyan-700 dark:text-cyan-300">
-                  We&apos;ve sent a verification link to{" "}
-                  <span className="font-semibold">{registeredEmail}</span>
+                <p className="text-terminal-muted dark:text-text-muted text-xs">
+                  Email sent to:{" "}
+                  <span className="terminal-primary dark:text-cyan">
+                    {registeredEmail}
+                  </span>
                 </p>
-                <p className="text-sm text-cyan-600 dark:text-cyan-400 mt-2">
-                  Please check your inbox and click the link to activate your
-                  account.
+                <p className="text-terminal-muted dark:text-text-muted text-xs">
+                  Check your inbox and click the verification link to activate
+                  your account.
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-3">
-            <button
-              onClick={onSwitchToLogin}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition"
-            >
-              Go to Login
-            </button>
-
-            {resendMessage && (
-              <div
-                className={`text-sm p-3 rounded-lg ${
-                  resendMessage.includes("sent") ||
-                  resendMessage.includes("Verification email")
-                    ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-                    : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"
-                }`}
-              >
-                {resendMessage}
-              </div>
-            )}
-
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Didn&apos;t receive the email? Check your spam folder or{" "}
+            <div className="space-y-3">
               <button
-                onClick={handleResendVerification}
-                disabled={resendLoading}
-                className="text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={onSwitchToLogin}
+                className="w-full font-mono bg-terminal-primary dark:bg-cyan hover:bg-terminal-primary/90 dark:hover:bg-cyan-dark text-paper dark:text-dark font-bold py-3 px-4 border border-terminal-primary dark:border-cyan transition shadow-terminal-glow dark:shadow-cyan-glow"
               >
-                {resendLoading ? "Sending..." : "resend verification"}
+                ./login
               </button>
-            </p>
-          </div>
+
+              {resendMessage && (
+                <div
+                  className={`text-sm p-3 font-mono border ${
+                    resendMessage.includes("sent") ||
+                    resendMessage.includes("Verification email")
+                      ? "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400"
+                      : "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {resendMessage}
+                </div>
+              )}
+
+              <p className="text-xs font-mono text-terminal-muted dark:text-text-muted">
+                No email?{" "}
+                <button
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                  className="terminal-accent dark:text-amber hover:text-terminal-accent/80 dark:hover:text-amber-light font-bold underline disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {resendLoading ? "[SENDING...]" : "./resend"}
+                </button>
+              </p>
+            </div>
+          </TerminalBorder>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-subtle-gradient px-4">
+    <div className="min-h-screen flex items-center justify-center bg-terminal-base px-4 relative overflow-hidden">
+      {/* Grid background */}
+      <div className="absolute inset-0 grid-bg opacity-30" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-card dark:card-border rounded-2xl card-shadow-deep p-8 w-full max-w-md"
+        className="relative z-10 w-full max-w-md"
       >
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Create Account
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Start your learning journey today
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm">
-              {error}
+        <TerminalBorder className="bg-terminal-surface dark:bg-dark-surface p-8">
+          {/* Terminal Header */}
+          <div className="mb-8">
+            <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-4">
+              <span className="terminal-primary dark:text-cyan">
+                commonry@localhost
+              </span>
+              :~$ ./register
             </div>
-          )}
-
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={handleUsernameChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-              placeholder="Choose a username"
-              required
-              autoComplete="username"
-            />
+            <h1 className="text-3xl font-mono font-bold terminal-primary dark:text-cyan mb-2 text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]">
+              CREATE ACCOUNT
+            </h1>
+            <p className="font-mono text-terminal-muted dark:text-text-muted text-sm">
+              &gt; Join the learning commons
+            </p>
           </div>
 
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-              placeholder="your.email@example.com"
-              required
-              autoComplete="email"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 p-3 font-mono text-sm">
+                <span className="text-red-500">ERROR:</span> {error}
+              </div>
+            )}
 
-          <div>
-            <label
-              htmlFor="displayName"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Display Name (Optional)
-            </label>
-            <input
-              id="displayName"
-              type="text"
-              value={displayName}
-              onChange={handleDisplayNameChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-              placeholder="How should we call you?"
-              autoComplete="name"
-            />
-          </div>
+            <div>
+              <label
+                htmlFor="username"
+                className="block font-mono text-sm font-medium text-terminal-muted dark:text-text-muted mb-2"
+              >
+                --username=
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={handleUsernameChange}
+                className="w-full px-4 py-3 font-mono bg-terminal-surface dark:bg-dark border-2 border-terminal-primary/30 dark:border-cyan/30 terminal-primary dark:text-cyan focus:outline-none focus:border-terminal-primary dark:focus:border-cyan focus:shadow-terminal-glow dark:focus:shadow-cyan-glow transition-all placeholder:text-terminal-muted/50 dark:placeholder:text-text-muted/50"
+                placeholder="choose a username"
+                required
+                autoComplete="username"
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-              placeholder="At least 6 characters"
-              required
-              autoComplete="new-password"
-            />
-          </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="block font-mono text-sm font-medium text-terminal-muted dark:text-text-muted mb-2"
+              >
+                --email=
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={handleEmailChange}
+                className="w-full px-4 py-3 font-mono bg-terminal-surface dark:bg-dark border-2 border-terminal-primary/30 dark:border-cyan/30 terminal-primary dark:text-cyan focus:outline-none focus:border-terminal-primary dark:focus:border-cyan focus:shadow-terminal-glow dark:focus:shadow-cyan-glow transition-all placeholder:text-terminal-muted/50 dark:placeholder:text-text-muted/50"
+                placeholder="your.email@example.com"
+                required
+                autoComplete="email"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Creating account..." : "Create Account"}
-          </button>
-        </form>
+            <div>
+              <label
+                htmlFor="displayName"
+                className="block font-mono text-sm font-medium text-terminal-muted dark:text-text-muted mb-2"
+              >
+                --name= <span className="text-xs">(optional)</span>
+              </label>
+              <input
+                id="displayName"
+                type="text"
+                value={displayName}
+                onChange={handleDisplayNameChange}
+                className="w-full px-4 py-3 font-mono bg-terminal-surface dark:bg-dark border-2 border-terminal-primary/30 dark:border-cyan/30 terminal-primary dark:text-cyan focus:outline-none focus:border-terminal-primary dark:focus:border-cyan focus:shadow-terminal-glow dark:focus:shadow-cyan-glow transition-all placeholder:text-terminal-muted/50 dark:placeholder:text-text-muted/50"
+                placeholder="display name"
+                autoComplete="name"
+              />
+            </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Already have an account?{" "}
+            <div>
+              <label
+                htmlFor="password"
+                className="block font-mono text-sm font-medium text-terminal-muted dark:text-text-muted mb-2"
+              >
+                --password=
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+                className="w-full px-4 py-3 font-mono bg-terminal-surface dark:bg-dark border-2 border-terminal-primary/30 dark:border-cyan/30 terminal-primary dark:text-cyan focus:outline-none focus:border-terminal-primary dark:focus:border-cyan focus:shadow-terminal-glow dark:focus:shadow-cyan-glow transition-all placeholder:text-terminal-muted/50 dark:placeholder:text-text-muted/50"
+                placeholder="min. 6 characters"
+                required
+                autoComplete="new-password"
+              />
+            </div>
+
             <button
-              onClick={onSwitchToLogin}
-              className="text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 font-medium"
+              type="submit"
+              disabled={isLoading}
+              className="w-full font-mono bg-terminal-primary dark:bg-cyan hover:bg-terminal-primary/90 dark:hover:bg-cyan-dark text-paper dark:text-dark font-bold py-3 px-4 border border-terminal-primary dark:border-cyan transition disabled:opacity-50 disabled:cursor-not-allowed shadow-terminal-glow dark:shadow-cyan-glow"
             >
-              Sign in
+              {isLoading ? "[CREATING...]" : "./create-account"}
             </button>
-          </p>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="font-mono text-terminal-muted dark:text-text-muted text-sm">
+              &gt; Already registered?{" "}
+              <button
+                onClick={onSwitchToLogin}
+                className="terminal-accent dark:text-amber hover:text-terminal-accent/80 dark:hover:text-amber-light font-bold underline"
+              >
+                ./login
+              </button>
+            </p>
+          </div>
+        </TerminalBorder>
+
+        {/* Command hint */}
+        <div className="mt-4 text-center font-mono text-terminal-muted dark:text-text-muted text-xs opacity-60">
+          Press ENTER to execute
         </div>
       </motion.div>
     </div>

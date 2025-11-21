@@ -187,6 +187,50 @@ export function getTopicUrl(topicId: number, slug: string): string {
 }
 
 /**
+ * Fetch forum statistics
+ *
+ * @returns Promise resolving to forum stats object
+ */
+export async function getForumStats(): Promise<{
+  topicCount: number;
+  postCount: number;
+  userCount: number;
+  activeUsers: number;
+} | null> {
+  try {
+    const url = new URL(`${API_BASE_URL}/site.json`);
+
+    const headers: HeadersInit = {
+      Accept: "application/json",
+    };
+
+    if (API_KEY) {
+      headers["Api-Key"] = API_KEY;
+    }
+
+    const response = await fetch(url.toString(), { headers });
+
+    if (!response.ok) {
+      console.error("Failed to fetch forum stats:", response.statusText.replace(/[\n\r]/g, ""));
+      return null;
+    }
+
+    const data = await response.json();
+
+    return {
+      topicCount: data.topic_count || 0,
+      postCount: data.post_count || 0,
+      userCount: data.user_count || 0,
+      activeUsers: data.active_user_count || 0,
+    };
+  } catch (error) {
+    const sanitizedError = String(error).replace(/[\n\r]/g, "");
+    console.error("Error fetching forum stats:", sanitizedError);
+    return null;
+  }
+}
+
+/**
  * Initiates the SSO login flow to Discourse
  * Redirects user to backend SSO endpoint which handles the Discourse auth
  *

@@ -13,6 +13,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { ulid } from "ulid";
 import crypto from "crypto";
+import session from "express-session";
 import { sendVerificationEmail } from "./email-service.js";
 import { handleDiscourseSSORequest } from "./discourse-sso.js";
 
@@ -62,8 +63,24 @@ const uploadLimiter = rateLimit({
 });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true // Allow cookies to be sent
+}));
 app.use(generalLimiter);
+
+// Session middleware for Discourse SSO
+app.use(session({
+  secret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    httpOnly: true,
+    sameSite: 'lax', // Allow cookie to be sent on redirects from Discourse
+    maxAge: 10 * 60 * 1000 // 10 minutes - enough time for SSO flow
+  }
+}));
 
 // JWT configuration
 const JWT_SECRET =
@@ -486,7 +503,41 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
   }
 });
 
-// ==================== DISCOURSE SSO ENDPOINT ====================
+// ==================== DISCOURSE SSO ENDPOINTS ====================
+
+/**
+ * Prepare SSO Endpoint
+ *
+ * This endpoint is called before redirecting to Discourse to establish a session.
+ * The frontend calls this with the JWT token to store the user ID in the session,
+ * then redirects to Discourse. When Discourse redirects back to the SSO endpoint,
+ * we can identify the user from the session.
+ *
+ * Flow:
+ * 1. Frontend calls this endpoint with JWT token
+ * 2. We validate token and store userId in session
+ * 3. Frontend redirects to Discourse
+ * 4. Discourse redirects to /api/discourse/sso with sso/sig params
+ * 5. We read userId from session to complete SSO
+ */
+app.post("/api/discourse/prepare-sso", authenticateToken, async (req, res) => {
+  try {
+    // Store user ID in session
+    req.session.userId = req.userId;
+    console.log(`[SSO] Preparing session for user: ${req.userId}, Session ID: ${req.sessionID}`);
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.status(500).json({ error: "Failed to create session" });
+      }
+      console.log(`[SSO] Session saved successfully for user: ${req.userId}`);
+      res.json({ success: true, message: "Session established" });
+    });
+  } catch (error) {
+    console.error("Prepare SSO error:", error);
+    res.status(500).json({ error: "Failed to prepare SSO" });
+  }
+});
 
 /**
  * Discourse SSO (DiscourseConnect) Endpoint
@@ -498,14 +549,28 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
  * Flow:
  * 1. Discourse redirects to this endpoint with sso and sig query params
  * 2. We validate the signature using our shared secret
- * 3. We verify the user is logged into Commonry (via JWT)
+ * 3. We read the userId from the session (set by prepare-sso endpoint)
  * 4. We generate a signed response with user data
  * 5. We redirect back to Discourse with the signed response
  *
  * @see https://meta.discourse.org/t/discourseconnect-official-single-sign-on-for-discourse-sso/13045
  */
-app.get("/api/discourse/sso", authenticateToken, async (req, res) => {
+app.get("/api/discourse/sso", async (req, res) => {
   const { sso, sig } = req.query;
+
+  console.log(`[SSO] Received SSO request - Session ID: ${req.sessionID}`);
+  console.log(`[SSO] Session userId: ${req.session.userId}`);
+  console.log(`[SSO] Session data:`, req.session);
+
+  // Authenticate user - read userId from session
+  const userId = req.session.userId;
+
+  if (!userId) {
+    console.log(`[SSO] No userId in session - authentication failed`);
+    return res.status(401).json({
+      error: "Not authenticated. Please log in to Commonry first."
+    });
+  }
 
   // Validate required parameters
   if (!sso || !sig) {
@@ -528,7 +593,7 @@ app.get("/api/discourse/sso", authenticateToken, async (req, res) => {
       `SELECT user_id, username, email, display_name, avatar_url, bio, email_verified
        FROM users
        WHERE user_id = $1 AND is_active = true`,
-      [req.userId],
+      [userId],
     );
 
     if (userResult.rows.length === 0) {

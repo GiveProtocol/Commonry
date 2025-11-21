@@ -8,6 +8,7 @@ import { SquareView } from "./components/SquareView";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
 import { FeaturesSection } from "./components/sections/FeaturesSection";
+import { SharedNavigation } from "./components/layout/SharedNavigation";
 import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
 import { SkipToMain } from "./components/ui/SkipToMain";
 import { db } from "./storage/database";
@@ -120,72 +121,12 @@ function App() {
       <SkipToMain />
       <ScanlineOverlay />
 
-      {/* Navigation Bar */}
+      {/* Shared Navigation Bar */}
       {currentView !== "home" && (
-        <nav className="border-b-2 border-terminal-primary bg-terminal-base sticky top-0 z-40 shadow-terminal-glow">
-          <div className="px-8 py-4">
-            {/* Logo and Brand */}
-            <button
-              onClick={navigateToHome}
-              className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
-            >
-              <div className="text-4xl">🏛️</div>
-              <div className="font-mono">
-                <div className="text-terminal-muted text-xs">$ cd ~</div>
-                <div className="terminal-primary text-2xl font-bold group-hover:text-shadow-terminal transition-all">
-                  COMMONRY
-                </div>
-              </div>
-            </button>
-
-            {/* Navigation Links - Second Row */}
-            <div className="flex items-center gap-6 font-mono text-sm">
-              <button
-                onClick={navigateToStudy}
-                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
-                  currentView === "study"
-                    ? "terminal-primary font-bold text-shadow-terminal"
-                    : "text-terminal-muted hover:terminal-primary"
-                }`}
-              >
-                [Study]
-              </button>
-              <span className="text-terminal-muted">|</span>
-              <button
-                onClick={navigateToBrowse}
-                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
-                  currentView === "browse"
-                    ? "terminal-primary font-bold text-shadow-terminal"
-                    : "text-terminal-muted hover:terminal-primary"
-                }`}
-              >
-                [Commons]
-              </button>
-              <span className="text-terminal-muted">|</span>
-              <button
-                onClick={navigateToSquare}
-                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
-                  currentView === "square"
-                    ? "terminal-primary font-bold text-shadow-terminal"
-                    : "text-terminal-muted hover:terminal-primary"
-                }`}
-              >
-                [The Square]
-              </button>
-              <span className="text-terminal-muted">|</span>
-              <button
-                onClick={navigateToProfile}
-                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] ${
-                  currentView === "profile"
-                    ? "terminal-primary font-bold text-shadow-terminal"
-                    : "text-terminal-muted hover:terminal-primary"
-                }`}
-              >
-                [Profile]
-              </button>
-            </div>
-          </div>
-        </nav>
+        <SharedNavigation
+          currentView={currentView}
+          onNavigate={setCurrentView}
+        />
       )}
 
       {/* Theme Toggle Button */}

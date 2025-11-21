@@ -4,6 +4,7 @@ import { MessageCircle, Users, TrendingUp, ExternalLink } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import {
   getLatestTopics,
+  getForumStats,
   getTopicUrl,
   type DiscourseTopic,
 } from "../services/discourse-api";
@@ -12,20 +13,29 @@ interface SquareViewProps {
   onBack: () => void;
 }
 
-const DISCOURSE_URL =
-  import.meta.env.VITE_DISCOURSE_URL || "https://forum.commonry.app";
+const DISCOURSE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commonry.app';
 
 export function SquareView({ onBack }: SquareViewProps) {
   const { token } = useAuth();
   const [topics, setTopics] = useState<DiscourseTopic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<{
+    topicCount: number;
+    postCount: number;
+    userCount: number;
+    activeUsers: number;
+  } | null>(null);
 
   useEffect(() => {
     const loadForumData = async () => {
       setIsLoading(true);
       try {
-        const latestTopics = await getLatestTopics(6);
+        const [latestTopics, forumStats] = await Promise.all([
+          getLatestTopics(6),
+          getForumStats(),
+        ]);
         setTopics(latestTopics);
+        setStats(forumStats);
       } catch (error) {
         console.error("Failed to load forum data:", error);
       } finally {
@@ -36,16 +46,38 @@ export function SquareView({ onBack }: SquareViewProps) {
     loadForumData();
   }, []);
 
-  const handleVisitForum = useCallback(() => {
+  const handleVisitForum = useCallback(async () => {
     if (token) {
-      // Redirect to SSO endpoint which will handle Discourse login
-      const apiBaseUrl =
-        import.meta.env.VITE_API_URL || "http://localhost:3000";
-      const ssoUrl = `${apiBaseUrl}/api/discourse/sso`;
-      window.location.href = ssoUrl;
+      try {
+        // Step 1: Establish session with backend by calling prepare-sso endpoint
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const response = await fetch(`${apiBaseUrl}/api/discourse/prepare-sso`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include' // Important: include cookies in request
+        });
+
+        if (!response.ok) {
+          console.error('Failed to prepare SSO session');
+          // Fall back to opening Discourse directly
+          window.open(DISCOURSE_URL, '_blank');
+          return;
+        }
+
+        // Step 2: Redirect to Discourse forum
+        // Discourse will detect user is not logged in and redirect to our SSO endpoint
+        window.location.href = DISCOURSE_URL;
+      } catch (error) {
+        console.error('Error preparing SSO:', error);
+        // Fall back to opening Discourse directly
+        window.open(DISCOURSE_URL, '_blank');
+      }
     } else {
       // If not logged in, just open Discourse (they'll need to create account there)
-      window.open(DISCOURSE_URL, "_blank");
+      window.open(DISCOURSE_URL, '_blank');
     }
   }, [token]);
 
@@ -58,7 +90,7 @@ export function SquareView({ onBack }: SquareViewProps) {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (seconds < 60) return "just now";
+    if (seconds < 60) return 'just now';
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
@@ -132,30 +164,30 @@ export function SquareView({ onBack }: SquareViewProps) {
           <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
             <MessageCircle className="w-10 h-10 terminal-accent dark:text-amber mx-auto mb-3" />
             <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
-              Active
+              {stats?.topicCount.toLocaleString() || '—'}
             </p>
             <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
-              Discussions
+              Topics
             </p>
           </div>
 
           <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
             <Users className="w-10 h-10 terminal-accent dark:text-amber mx-auto mb-3" />
             <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
-              Growing
+              {stats?.userCount.toLocaleString() || '—'}
             </p>
             <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
-              Community
+              Members
             </p>
           </div>
 
           <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
             <TrendingUp className="w-10 h-10 terminal-accent dark:text-amber mx-auto mb-3" />
             <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
-              Open
+              {stats?.postCount.toLocaleString() || '—'}
             </p>
             <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
-              Knowledge
+              Posts
             </p>
           </div>
         </motion.div>
