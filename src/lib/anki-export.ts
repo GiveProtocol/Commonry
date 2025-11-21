@@ -92,7 +92,10 @@ export async function exportAnkiDeck(
       const card = cards[cardIndex];
 
       // Try to get original Anki card ID from mapping service
-      let ankiCardExternalId = await ImportMappingService.getExternalId(card.id, "anki");
+      let ankiCardExternalId = await ImportMappingService.getExternalId(
+        card.id,
+        "anki",
+      );
 
       // Fall back to externalId field if mapping not found
       if (!ankiCardExternalId && card.externalId) {
@@ -115,7 +118,9 @@ export async function exportAnkiDeck(
           noteId = ankiCardExternalId;
           // Try to parse as integer, or generate new one
           const parsedId = parseInt(ankiCardExternalId);
-          ankiCardIdInt = isNaN(parsedId) ? baseTimestamp + cardIndex : parsedId;
+          ankiCardIdInt = isNaN(parsedId)
+            ? baseTimestamp + cardIndex
+            : parsedId;
         }
       } else {
         // Generate new IDs for cards that were never imported
@@ -279,7 +284,11 @@ function initializeAnkiSchema(database: Database, _deck: Deck): void {
 /**
  * Insert deck into Anki database
  */
-function insertDeck(database: Database, deckId: string, deckName: string): void {
+function insertDeck(
+  database: Database,
+  deckId: string,
+  deckName: string,
+): void {
   const now = Math.floor(Date.now() / 1000);
 
   // Get existing decks JSON
@@ -305,7 +314,9 @@ function insertDeck(database: Database, deckId: string, deckName: string): void 
   };
 
   // Update col table
-  database.run("UPDATE col SET decks = ? WHERE id = 1", [JSON.stringify(decks)]);
+  database.run("UPDATE col SET decks = ? WHERE id = 1", [
+    JSON.stringify(decks),
+  ]);
 }
 
 /**
@@ -366,7 +377,9 @@ function insertBasicModel(database: Database, modelId: string): void {
   };
 
   // Update col table
-  database.run("UPDATE col SET models = ? WHERE id = 1", [JSON.stringify(models)]);
+  database.run("UPDATE col SET models = ? WHERE id = 1", [
+    JSON.stringify(models),
+  ]);
 }
 
 /**
@@ -444,7 +457,8 @@ function insertCard(
  * Generate a GUID for Anki note
  */
 function generateGUID(): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < 10; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));

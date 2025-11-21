@@ -7,7 +7,7 @@
  * @see https://meta.discourse.org/t/discourseconnect-official-single-sign-on-for-discourse-sso/13045
  */
 
-import crypto from 'crypto';
+import crypto from "crypto";
 
 /**
  * Validates the incoming SSO payload signature from Discourse
@@ -19,13 +19,13 @@ import crypto from 'crypto';
  */
 export function validateDiscourseSignature(payload, signature, secret) {
   const expectedSignature = crypto
-    .createHmac('sha256', secret)
+    .createHmac("sha256", secret)
     .update(payload)
-    .digest('hex');
+    .digest("hex");
 
   return crypto.timingSafeEqual(
-    Buffer.from(signature, 'hex'),
-    Buffer.from(expectedSignature, 'hex')
+    Buffer.from(signature, "hex"),
+    Buffer.from(expectedSignature, "hex"),
   );
 }
 
@@ -36,12 +36,12 @@ export function validateDiscourseSignature(payload, signature, secret) {
  * @returns {Object} - Decoded SSO parameters including nonce and return_sso_url
  */
 export function parseDiscoursePayload(payload) {
-  const decoded = Buffer.from(payload, 'base64').toString('utf8');
+  const decoded = Buffer.from(payload, "base64").toString("utf8");
   const params = new URLSearchParams(decoded);
 
   return {
-    nonce: params.get('nonce'),
-    return_sso_url: params.get('return_sso_url'),
+    nonce: params.get("nonce"),
+    return_sso_url: params.get("return_sso_url"),
   };
 }
 
@@ -71,19 +71,19 @@ export function generateDiscoursePayload(user, nonce, secret) {
     ...(user.avatar_url && { avatar_url: user.avatar_url }),
     ...(user.bio && { bio: user.bio }),
     // Require email activation (users are already verified in Commonry)
-    require_activation: 'false',
+    require_activation: "false",
     // Suppress welcome email since they already have a Commonry account
-    suppress_welcome_message: 'true',
+    suppress_welcome_message: "true",
   });
 
   // Convert to string and encode as base64
-  const base64Payload = Buffer.from(payload.toString()).toString('base64');
+  const base64Payload = Buffer.from(payload.toString()).toString("base64");
 
   // Generate HMAC signature
   const signature = crypto
-    .createHmac('sha256', secret)
+    .createHmac("sha256", secret)
     .update(base64Payload)
-    .digest('hex');
+    .digest("hex");
 
   return {
     sso: base64Payload,
@@ -101,8 +101,8 @@ export function generateDiscoursePayload(user, nonce, secret) {
  */
 export function buildDiscourseRedirectUrl(returnUrl, ssoPayload, signature) {
   const url = new URL(returnUrl);
-  url.searchParams.set('sso', ssoPayload);
-  url.searchParams.set('sig', signature);
+  url.searchParams.set("sso", ssoPayload);
+  url.searchParams.set("sig", signature);
   return url.toString();
 }
 
@@ -135,7 +135,7 @@ export function handleDiscourseSSORequest(ssoPayload, signature, user, secret) {
   const redirectUrl = buildDiscourseRedirectUrl(
     return_sso_url,
     response.sso,
-    response.sig
+    response.sig,
   );
 
   return {

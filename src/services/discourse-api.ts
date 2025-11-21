@@ -211,7 +211,10 @@ export async function getForumStats(): Promise<{
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      console.error("Failed to fetch forum stats:", response.statusText.replace(/[\n\r]/g, ""));
+      console.error(
+        "Failed to fetch forum stats:",
+        response.statusText.replace(/[\n\r]/g, ""),
+      );
       return null;
     }
 
