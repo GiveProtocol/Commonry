@@ -28,10 +28,6 @@ function App() {
 
   // All hooks must be called before any early returns
   const navigateToHome = useCallback(() => setCurrentView("home"), []);
-  const navigateToStudy = useCallback(() => setCurrentView("study"), []);
-  const navigateToBrowse = useCallback(() => setCurrentView("browse"), []);
-  const navigateToSquare = useCallback(() => setCurrentView("square"), []);
-  const navigateToProfile = useCallback(() => setCurrentView("profile"), []);
 
   useEffect(() => {
     const initializeApp = async () => {

@@ -44,6 +44,17 @@ function isPathSafe(filePath, baseDir) {
   );
 }
 
+/**
+ * Sanitize user input before logging to prevent log injection attacks
+ * Removes newlines and carriage returns that could be used to forge log entries
+ */
+function sanitizeForLog(input) {
+  if (input === null || input === undefined) {
+    return String(input);
+  }
+  return String(input).replace(/[\n\r]/g, '');
+}
+
 // General rate limiter: 100 requests per 15 minutes per IP
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -524,13 +535,13 @@ app.post("/api/discourse/prepare-sso", authenticateToken, async (req, res) => {
   try {
     // Store user ID in session
     req.session.userId = req.userId;
-    console.log(`[SSO] Preparing session for user: ${req.userId}, Session ID: ${req.sessionID}`);
+    console.log(`[SSO] Preparing session for user: ${sanitizeForLog(req.userId)}, Session ID: ${sanitizeForLog(req.sessionID)}`);
     req.session.save((err) => {
       if (err) {
         console.error("Session save error:", err);
         return res.status(500).json({ error: "Failed to create session" });
       }
-      console.log(`[SSO] Session saved successfully for user: ${req.userId}`);
+      console.log(`[SSO] Session saved successfully for user: ${sanitizeForLog(req.userId)}`);
       res.json({ success: true, message: "Session established" });
     });
   } catch (error) {
@@ -558,8 +569,8 @@ app.post("/api/discourse/prepare-sso", authenticateToken, async (req, res) => {
 app.get("/api/discourse/sso", async (req, res) => {
   const { sso, sig } = req.query;
 
-  console.log(`[SSO] Received SSO request - Session ID: ${req.sessionID}`);
-  console.log(`[SSO] Session userId: ${req.session.userId}`);
+  console.log(`[SSO] Received SSO request - Session ID: ${sanitizeForLog(req.sessionID)}`);
+  console.log(`[SSO] Session userId: ${sanitizeForLog(req.session.userId)}`);
   console.log(`[SSO] Session data:`, req.session);
 
   // Authenticate user - read userId from session
