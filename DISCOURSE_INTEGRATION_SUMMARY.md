@@ -3,12 +3,14 @@
 ## ✅ Completed Tasks
 
 ### 1. Enhanced SquareView with Real Forum Statistics
+
 - ✅ Added `getForumStats()` function to discourse-api.ts
 - ✅ Updated SquareView to fetch and display real statistics
 - ✅ Stats now show: Topics count, Members count, Posts count
 - ✅ All data pulled from live Discourse API (`https://forum.commonry.app/site.json`)
 
 ### 2. Created Shared Navigation Component
+
 - ✅ Built `SharedNavigation.tsx` with commons metaphor labels
 - ✅ Navigation items: Your Plot, The Commons, The Square, Profile
 - ✅ Supports both light and dark modes
@@ -17,12 +19,14 @@
 - ✅ Terminal-style aesthetic matching your design system
 
 ### 3. Updated App.tsx Navigation
+
 - ✅ Replaced inline navigation with SharedNavigation component
 - ✅ Simplified routing logic
 - ✅ Navigation appears on all views except home
 - ✅ Uses commons metaphor consistently
 
 ### 4. Generated Discourse Theme Code
+
 - ✅ Created complete HTML + CSS for Discourse header
 - ✅ Exactly mirrors Commonry navigation styling
 - ✅ Light/dark mode support
@@ -31,6 +35,7 @@
 - ✅ All links point back to commonry.app
 
 ### 5. Documentation
+
 - ✅ Created NAVIGATION_SYNC_GUIDE.md with:
   - Complete design tokens reference
   - Step-by-step sync instructions
@@ -77,9 +82,11 @@
 ## 🚀 Installation Instructions
 
 ### Part 1: Commonry App (Already Done!)
+
 The React app has been updated automatically. Just verify it's working:
 
 1. **Start dev server** (if not running):
+
    ```bash
    npm run dev
    ```
@@ -132,26 +139,31 @@ The React app has been updated automatically. Just verify it's working:
 ## 🎨 Design Verification
 
 ### Colors Match
+
 The navigation uses these colors consistently:
 
 **Light Mode:**
+
 - Primary (links): `#00a86b` (terminal-green)
 - Background: `#fafaf9` (paper)
 - Border: `#00a86b` with glow
 - Text muted: `#44403c`
 
 **Dark Mode:**
+
 - Primary (links): `#00d9ff` (cyan)
 - Background: `#0d1117` (dark)
 - Border: `#00d9ff` with glow
 - Text muted: `#8b949e`
 
 ### Typography Match
+
 - Font: IBM Plex Mono (navigation links and prompts)
 - Logo size: 1.5rem (24px)
 - Link size: 0.875rem (14px)
 
 ### Spacing Match
+
 - Padding: 1rem vertical, 2rem horizontal
 - Link gap: 1.5rem between items
 - Logo margin: 1rem below logo
@@ -216,15 +228,18 @@ The navigation uses these colors consistently:
 ### SquareView (The Square page)
 
 **Real Data from Discourse API:**
+
 - ✅ Topic count (number of discussion topics)
 - ✅ Member count (total users)
 - ✅ Post count (total posts)
 - ✅ Recent topics list (title, post count, views, time)
 
 **Static/Placeholder:**
+
 - None! Everything is now live data
 
 ### API Endpoints Used
+
 ```
 https://forum.commonry.app/latest.json    → Recent topics
 https://forum.commonry.app/site.json      → Forum statistics
@@ -237,6 +252,7 @@ https://forum.commonry.app/site.json      → Forum statistics
 ### When to Update Navigation
 
 Update **both** places when you:
+
 - Add a new main section (rare)
 - Change branding or logo
 - Adjust color scheme
@@ -245,19 +261,23 @@ Update **both** places when you:
 ### Where to Update
 
 **Commonry App:**
+
 - File: `/src/components/layout/SharedNavigation.tsx`
 - Update navItems array
 
 **Discourse Theme:**
+
 - Location: Discourse Admin > Customize > Themes > Edit CSS/HTML > Header
 - Update navigation links HTML
 
 **Design Tokens:**
+
 - File: `/src/globals.css`
 - Update CSS variables
 - Copy hex values to Discourse theme CSS
 
 ### Full Sync Instructions
+
 See `/NAVIGATION_SYNC_GUIDE.md` for complete step-by-step process.
 
 ---
@@ -309,16 +329,19 @@ Elements that make it feel like one site:
 ## 🐛 Known Issues & Limitations
 
 ### State-Based Routing
+
 - Commonry uses state-based routing (no URL changes)
 - External links to specific views will redirect to home first
 - Solution: Eventually migrate to React Router or Next.js for URL-based routing
 
 ### Discourse URL Structure
+
 - Discourse has its own URL patterns (/t/topic-name/123)
 - Can't fully hide that users are on a different domain
 - Mitigated by: consistent navigation and breadcrumb
 
 ### Dark Mode Sync
+
 - Dark mode preference is stored separately in app and Discourse
 - Users may need to toggle dark mode twice (once per site)
 - Discourse uses its own dark mode detection
@@ -328,16 +351,19 @@ Elements that make it feel like one site:
 ## 📝 Next Steps (Optional Enhancements)
 
 ### Short Term
+
 1. Add user avatar to navigation (from auth context)
 2. Show notification badge for unread forum posts
 3. Add search bar to navigation
 
 ### Medium Term
+
 1. Migrate app to URL-based routing (React Router)
 2. Add more granular navigation (sub-sections)
 3. Create custom Discourse theme matching full Commonry design
 
 ### Long Term
+
 1. Consider embedding Discourse in an iframe with custom routing
 2. Build custom forum solution to fully control UX
 3. Add real-time sync of forum activity to SquareView
@@ -364,6 +390,7 @@ Users will experience Commonry and the forum as **one unified platform** rather 
 ## 📞 Questions?
 
 Refer to:
+
 - **NAVIGATION_SYNC_GUIDE.md** for detailed sync instructions
 - **discourse-theme-navigation.html** for the complete theme code
 - **Design tokens** in `/src/globals.css` for color/spacing values

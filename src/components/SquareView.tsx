@@ -13,7 +13,8 @@ interface SquareViewProps {
   onBack: () => void;
 }
 
-const DISCOURSE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commonry.app';
+const DISCOURSE_URL =
+  import.meta.env.VITE_DISCOURSE_URL || "https://forum.commonry.app";
 
 export function SquareView({ onBack }: SquareViewProps) {
   const { token } = useAuth();
@@ -50,20 +51,24 @@ export function SquareView({ onBack }: SquareViewProps) {
     if (token) {
       try {
         // Step 1: Establish session with backend by calling prepare-sso endpoint
-        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-        const response = await fetch(`${apiBaseUrl}/api/discourse/prepare-sso`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        const apiBaseUrl =
+          import.meta.env.VITE_API_URL || "http://localhost:3000";
+        const response = await fetch(
+          `${apiBaseUrl}/api/discourse/prepare-sso`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Important: include cookies in request
           },
-          credentials: 'include' // Important: include cookies in request
-        });
+        );
 
         if (!response.ok) {
-          console.error('Failed to prepare SSO session');
+          console.error("Failed to prepare SSO session");
           // Fall back to opening Discourse directly
-          window.open(DISCOURSE_URL, '_blank');
+          window.open(DISCOURSE_URL, "_blank");
           return;
         }
 
@@ -71,13 +76,13 @@ export function SquareView({ onBack }: SquareViewProps) {
         // Discourse will detect user is not logged in and redirect to our SSO endpoint
         window.location.href = DISCOURSE_URL;
       } catch (error) {
-        console.error('Error preparing SSO:', error);
+        console.error("Error preparing SSO:", error);
         // Fall back to opening Discourse directly
-        window.open(DISCOURSE_URL, '_blank');
+        window.open(DISCOURSE_URL, "_blank");
       }
     } else {
       // If not logged in, just open Discourse (they'll need to create account there)
-      window.open(DISCOURSE_URL, '_blank');
+      window.open(DISCOURSE_URL, "_blank");
     }
   }, [token]);
 
@@ -90,7 +95,7 @@ export function SquareView({ onBack }: SquareViewProps) {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (seconds < 60) return 'just now';
+    if (seconds < 60) return "just now";
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
@@ -164,7 +169,7 @@ export function SquareView({ onBack }: SquareViewProps) {
           <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
             <MessageCircle className="w-10 h-10 terminal-accent dark:text-amber mx-auto mb-3" />
             <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
-              {stats?.topicCount.toLocaleString() || '—'}
+              {stats?.topicCount.toLocaleString() || "—"}
             </p>
             <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
               Topics
@@ -174,7 +179,7 @@ export function SquareView({ onBack }: SquareViewProps) {
           <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
             <Users className="w-10 h-10 terminal-accent dark:text-amber mx-auto mb-3" />
             <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
-              {stats?.userCount.toLocaleString() || '—'}
+              {stats?.userCount.toLocaleString() || "—"}
             </p>
             <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
               Members
@@ -184,7 +189,7 @@ export function SquareView({ onBack }: SquareViewProps) {
           <div className="bg-terminal-surface dark:bg-dark-surface border border-terminal-primary/30 dark:border-cyan/30 rounded-lg p-6 text-center hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all">
             <TrendingUp className="w-10 h-10 terminal-accent dark:text-amber mx-auto mb-3" />
             <p className="text-2xl font-bold terminal-primary dark:text-cyan font-mono">
-              {stats?.postCount.toLocaleString() || '—'}
+              {stats?.postCount.toLocaleString() || "—"}
             </p>
             <p className="text-terminal-muted dark:text-text-muted font-mono text-sm">
               Posts

@@ -24,7 +24,11 @@ interface NavigationProps {
  * - Works in both light and dark modes
  * - Accessible with keyboard navigation and ARIA labels
  */
-export function SharedNavigation({ currentView = "home", onNavigate, isExternal = false }: NavigationProps) {
+export function SharedNavigation({
+  currentView = "home",
+  onNavigate,
+  isExternal = false,
+}: NavigationProps) {
   const handleNavigate = (view: string, externalUrl?: string) => {
     if (isExternal && externalUrl) {
       // For Discourse, navigate to Commonry app
@@ -40,26 +44,26 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
       view: "study",
       label: "Your Plot",
       url: "https://commonry.app/study",
-      ariaLabel: "Navigate to Your Plot - Personal study area"
+      ariaLabel: "Navigate to Your Plot - Personal study area",
     },
     {
       view: "browse",
       label: "The Commons",
       url: "https://commonry.app/browse",
-      ariaLabel: "Navigate to The Commons - Browse public decks"
+      ariaLabel: "Navigate to The Commons - Browse public decks",
     },
     {
       view: "square",
       label: "The Square",
       url: "https://forum.commonry.app",
-      ariaLabel: "Navigate to The Square - Community forum"
+      ariaLabel: "Navigate to The Square - Community forum",
     },
     {
       view: "profile",
       label: "Profile",
       url: "https://commonry.app/profile",
-      ariaLabel: "Navigate to your profile"
-    }
+      ariaLabel: "Navigate to your profile",
+    },
   ];
 
   return (
@@ -75,9 +79,16 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
           className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
           aria-label="Go to Commonry home"
         >
-          <div className="text-4xl" role="img" aria-label="Commonry logo">🏛️</div>
+          <div className="text-4xl" role="img" aria-label="Commonry logo">
+            🏛️
+          </div>
           <div className="font-mono">
-            <div className="text-terminal-muted dark:text-text-muted text-xs" aria-hidden="true">$ cd ~</div>
+            <div
+              className="text-terminal-muted dark:text-text-muted text-xs"
+              aria-hidden="true"
+            >
+              $ cd ~
+            </div>
             <div className="terminal-primary dark:text-cyan text-2xl font-bold group-hover:text-shadow-terminal dark:group-hover:[text-shadow:0_0_20px_rgba(0,217,255,0.5)] transition-all">
               COMMONRY
             </div>
@@ -85,7 +96,10 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
         </button>
 
         {/* Navigation Links */}
-        <div className="flex items-center gap-6 font-mono text-sm" role="menubar">
+        <div
+          className="flex items-center gap-6 font-mono text-sm"
+          role="menubar"
+        >
           {navItems.map((item, index) => (
             <>
               {index > 0 && (
@@ -129,7 +143,13 @@ interface MobileNavigationProps extends NavigationProps {
   onToggle: () => void;
 }
 
-export function MobileNavigation({ currentView = "home", onNavigate, isExternal = false, isOpen, onToggle }: MobileNavigationProps) {
+export function MobileNavigation({
+  currentView = "home",
+  onNavigate,
+  isExternal = false,
+  isOpen,
+  onToggle,
+}: MobileNavigationProps) {
   const handleNavigate = (view: string, externalUrl?: string) => {
     onToggle(); // Close menu
     if (isExternal && externalUrl) {
@@ -141,9 +161,13 @@ export function MobileNavigation({ currentView = "home", onNavigate, isExternal 
 
   const navItems = [
     { view: "study", label: "Your Plot", url: "https://commonry.app/study" },
-    { view: "browse", label: "The Commons", url: "https://commonry.app/browse" },
+    {
+      view: "browse",
+      label: "The Commons",
+      url: "https://commonry.app/browse",
+    },
     { view: "square", label: "The Square", url: "https://forum.commonry.app" },
-    { view: "profile", label: "Profile", url: "https://commonry.app/profile" }
+    { view: "profile", label: "Profile", url: "https://commonry.app/profile" },
   ];
 
   return (
@@ -173,11 +197,26 @@ export function MobileNavigation({ currentView = "home", onNavigate, isExternal 
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>

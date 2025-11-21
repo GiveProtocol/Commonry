@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface StatDisplayProps {
   label: string;
@@ -7,7 +7,12 @@ interface StatDisplayProps {
   className?: string;
 }
 
-export function StatDisplay({ label, value, subtitle, className }: StatDisplayProps) {
+export function StatDisplay({
+  label,
+  value,
+  subtitle,
+  className,
+}: StatDisplayProps) {
   return (
     <div
       className={cn(
@@ -18,7 +23,7 @@ export function StatDisplay({ label, value, subtitle, className }: StatDisplayPr
         "after:bg-gradient-to-r after:from-transparent after:via-green/10 after:to-transparent",
         "dark:after:via-cyan/10",
         "after:animate-shimmer",
-        className
+        className,
       )}
     >
       <div className="text-terminal-muted dark:text-text-muted text-sm font-mono mb-2">

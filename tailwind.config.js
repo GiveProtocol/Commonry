@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -15,44 +12,44 @@ export default {
         foreground: "hsl(var(--foreground))",
         // Light mode - Green and Orange
         green: {
-          DEFAULT: 'var(--terminal-green)',
-          dark: 'var(--terminal-green-dark)',
-          glow: 'var(--terminal-green-glow)',
+          DEFAULT: "var(--terminal-green)",
+          dark: "var(--terminal-green-dark)",
+          glow: "var(--terminal-green-glow)",
         },
         orange: {
-          DEFAULT: 'var(--terminal-orange)',
-          dark: 'var(--terminal-orange-dark)',
-          glow: 'var(--terminal-orange-glow)',
+          DEFAULT: "var(--terminal-orange)",
+          dark: "var(--terminal-orange-dark)",
+          glow: "var(--terminal-orange-glow)",
         },
         paper: {
-          DEFAULT: 'var(--paper)',
-          darker: 'var(--paper-darker)',
+          DEFAULT: "var(--paper)",
+          darker: "var(--paper-darker)",
         },
         ink: {
-          DEFAULT: 'var(--ink)',
-          light: 'var(--ink-light)',
+          DEFAULT: "var(--ink)",
+          light: "var(--ink-light)",
         },
         // Dark mode - Cyan and Amber
         cyan: {
-          DEFAULT: '#00d9ff',
-          dark: '#0891b2',
-          glow: 'rgba(0, 217, 255, 0.3)',
-          'glow-strong': 'rgba(0, 217, 255, 0.6)',
+          DEFAULT: "#00d9ff",
+          dark: "#0891b2",
+          glow: "rgba(0, 217, 255, 0.3)",
+          "glow-strong": "rgba(0, 217, 255, 0.6)",
         },
         amber: {
-          DEFAULT: '#fbbf24',
-          dark: '#f59e0b',
-          glow: 'rgba(251, 191, 36, 0.3)',
+          DEFAULT: "#fbbf24",
+          dark: "#f59e0b",
+          glow: "rgba(251, 191, 36, 0.3)",
         },
         dark: {
-          DEFAULT: '#0d1117',
-          lighter: '#161b22',
-          border: '#30363d',
-          surface: '#161b22',
+          DEFAULT: "#0d1117",
+          lighter: "#161b22",
+          border: "#30363d",
+          surface: "#161b22",
         },
         text: {
-          primary: '#c9d1d9',
-          muted: '#8b949e',
+          primary: "#c9d1d9",
+          muted: "#8b949e",
         },
         parchment: {
           light: "#FDFCF7",
@@ -98,8 +95,25 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'IBM Plex Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-        mono: ['var(--font-mono)', 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
+        sans: [
+          "var(--font-sans)",
+          "IBM Plex Sans",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+        mono: [
+          "var(--font-mono)",
+          "IBM Plex Mono",
+          "Menlo",
+          "Monaco",
+          "Courier New",
+          "monospace",
+        ],
       },
       keyframes: {
         "accordion-down": {
@@ -111,25 +125,25 @@ export default {
           to: { height: 0 },
         },
         scan: {
-          '0%': { transform: 'translateY(0)' },
-          '100%': { transform: 'translateY(100%)' },
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(100%)" },
         },
         shimmer: {
-          '0%': { left: '-100%' },
-          '100%': { left: '100%' },
+          "0%": { left: "-100%" },
+          "100%": { left: "100%" },
         },
         blink: {
-          '50%': { opacity: '0' },
+          "50%": { opacity: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        'scan': 'scan 8s linear infinite',
-        'shimmer': 'shimmer 3s infinite',
-        'blink': 'blink 1s step-end infinite',
+        scan: "scan 8s linear infinite",
+        shimmer: "shimmer 3s infinite",
+        blink: "blink 1s step-end infinite",
       },
     },
   },
   plugins: [],
-}
+};

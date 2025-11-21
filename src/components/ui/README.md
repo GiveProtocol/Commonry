@@ -9,6 +9,7 @@ This directory contains reusable terminal-themed UI components for the Commonry 
 A terminal-styled tooltip component with Radix UI.
 
 **Usage:**
+
 ```tsx
 import { TerminalTooltip } from './ui/TerminalTooltip';
 
@@ -23,6 +24,7 @@ import { TerminalTooltip } from './ui/TerminalTooltip';
 ```
 
 **Variants:**
+
 - `info` (cyan, default)
 - `warning` (amber)
 - `error` (red)
@@ -35,8 +37,9 @@ import { TerminalTooltip } from './ui/TerminalTooltip';
 A reusable modal component with terminal window styling.
 
 **Usage:**
+
 ```tsx
-import { TerminalModal, TerminalModalFooter } from './ui/TerminalModal';
+import { TerminalModal, TerminalModalFooter } from "./ui/TerminalModal";
 
 <TerminalModal
   open={isOpen}
@@ -52,10 +55,11 @@ import { TerminalModal, TerminalModalFooter } from './ui/TerminalModal';
     <button onClick={handleCancel}>Cancel</button>
     <button onClick={handleConfirm}>Confirm</button>
   </TerminalModalFooter>
-</TerminalModal>
+</TerminalModal>;
 ```
 
 **Props:**
+
 - `variant`: "cyan" | "amber" | "red"
 - `maxWidth`: "sm" | "md" | "lg" | "xl"
 - `commandName`: Optional command shown in header
@@ -67,17 +71,19 @@ import { TerminalModal, TerminalModalFooter } from './ui/TerminalModal';
 Terminal-styled toast notifications.
 
 **Usage:**
+
 ```tsx
-import { useToast } from '../Toast';
+import { useToast } from "../Toast";
 
 const { showToast } = useToast();
 
-showToast('Deck created successfully!', 'success');
-showToast('Failed to import deck', 'error');
-showToast('Processing...', 'info');
+showToast("Deck created successfully!", "success");
+showToast("Failed to import deck", "error");
+showToast("Processing...", "info");
 ```
 
 **Features:**
+
 - Terminal window header with traffic lights
 - Monospace font
 - Auto-dismiss after 5 seconds
@@ -92,20 +98,24 @@ Track user actions as terminal commands.
 ### useCommandHistory Hook
 
 **Usage:**
+
 ```tsx
-import { useCommandHistory, CommandTemplates } from '../hooks/useCommandHistory';
+import {
+  useCommandHistory,
+  CommandTemplates,
+} from "../hooks/useCommandHistory";
 
 const { addCommand, history, clearHistory } = useCommandHistory();
 
 // Add a command
-addCommand(CommandTemplates.createDeck('My Deck'), 'action', 'success');
-addCommand('./study --deck="Spanish"', 'action', 'info', { deckId: '123' });
+addCommand(CommandTemplates.createDeck("My Deck"), "action", "success");
+addCommand('./study --deck="Spanish"', "action", "info", { deckId: "123" });
 
 // Get recent commands
 const recent = getRecentCommands(5);
 
 // Search history
-const results = searchHistory('create');
+const results = searchHistory("create");
 ```
 
 ### CommandHistory Component
@@ -113,16 +123,15 @@ const results = searchHistory('create');
 Displays command history with search and filters.
 
 **Usage:**
-```tsx
-import { CommandHistory } from '../CommandHistory';
 
-<CommandHistory
-  maxVisible={10}
-  showSearch={true}
-/>
+```tsx
+import { CommandHistory } from "../CommandHistory";
+
+<CommandHistory maxVisible={10} showSearch={true} />;
 ```
 
 **Features:**
+
 - Search commands
 - Filter by type (action, navigation, system)
 - Shows timestamps
@@ -135,6 +144,7 @@ import { CommandHistory } from '../CommandHistory';
 ## Styling
 
 All components use the terminal design system with:
+
 - Cyan (#00d9ff) and Amber (#fbbf24) primary colors
 - IBM Plex Mono font
 - Glow effects on borders
