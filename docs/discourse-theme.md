@@ -15,23 +15,27 @@ This document contains the HTML and CSS code to integrate Commonry's navigation 
 Go to **Header** section and paste the following:
 
 ```html
-<script type="text/discourse-plugin" version="0.8">
+<script type="text/discourse-plugin" version="0.12.1">
+api.onPageChange(() => {
   // Detect dark mode and apply class to html element
   const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   if (isDarkMode) {
     document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
   }
+});
 
-  // Listen for dark mode changes
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (e.matches) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    });
-  }
+// Listen for dark mode changes
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (e.matches) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  });
+}
 </script>
 
 <!-- Commonry Shared Navigation -->
