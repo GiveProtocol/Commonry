@@ -68,5 +68,5 @@ export default function AuthGate({ children }: AuthGateProps) {
     );
   }
 
-  return <>{children}</>;
+  return children;
 }

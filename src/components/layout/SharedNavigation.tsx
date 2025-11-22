@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useCallback, useMemo } from "react";
 
 interface NavigationProps {
   currentView?: string;
@@ -25,7 +26,7 @@ interface NavigationProps {
  * - Accessible with keyboard navigation and ARIA labels
  */
 export function SharedNavigation({ currentView = "home", onNavigate, isExternal = false }: NavigationProps) {
-  const handleNavigate = (view: string, externalUrl?: string) => {
+  const handleNavigate = useCallback((view: string, externalUrl?: string) => {
     if (isExternal && externalUrl) {
       // For Discourse, navigate to Commonry app
       window.location.href = externalUrl;
@@ -33,34 +34,40 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
       // For Commonry app, use state-based routing
       onNavigate(view);
     }
-  };
+  }, [isExternal, onNavigate]);
 
-  const navItems = [
+  const handleHomeClick = useCallback(() => handleNavigate("home", "https://commonry.app"), [handleNavigate]);
+
+  const navItems = useMemo(() => [
     {
       view: "study",
       label: "Your Plot",
       url: "https://commonry.app/study",
-      ariaLabel: "Navigate to Your Plot - Personal study area"
+      ariaLabel: "Navigate to Your Plot - Personal study area",
+      onClick: () => handleNavigate("study", "https://commonry.app/study")
     },
     {
       view: "browse",
       label: "The Commons",
       url: "https://commonry.app/browse",
-      ariaLabel: "Navigate to The Commons - Browse public decks"
+      ariaLabel: "Navigate to The Commons - Browse public decks",
+      onClick: () => handleNavigate("browse", "https://commonry.app/browse")
     },
     {
       view: "square",
       label: "The Square",
       url: "https://forum.commonry.app",
-      ariaLabel: "Navigate to The Square - Community forum"
+      ariaLabel: "Navigate to The Square - Community forum",
+      onClick: () => handleNavigate("square", "https://forum.commonry.app")
     },
     {
       view: "profile",
       label: "Profile",
       url: "https://commonry.app/profile",
-      ariaLabel: "Navigate to your profile"
+      ariaLabel: "Navigate to your profile",
+      onClick: () => handleNavigate("profile", "https://commonry.app/profile")
     }
-  ];
+  ], [handleNavigate]);
 
   return (
     <nav
@@ -71,7 +78,7 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
       <div className="px-8 py-4">
         {/* Logo and Brand */}
         <button
-          onClick={() => handleNavigate("home", "https://commonry.app")}
+          onClick={handleHomeClick}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
           aria-label="Go to Commonry home"
         >
@@ -99,7 +106,7 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
               )}
               <button
                 key={item.view}
-                onClick={() => handleNavigate(item.view, item.url)}
+                onClick={item.onClick}
                 className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terminal-primary dark:focus-visible:ring-cyan focus-visible:ring-offset-2 rounded px-2 py-1 ${
                   currentView === item.view
                     ? "terminal-primary dark:text-cyan font-bold text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]"
@@ -130,21 +137,23 @@ interface MobileNavigationProps extends NavigationProps {
 }
 
 export function MobileNavigation({ currentView = "home", onNavigate, isExternal = false, isOpen, onToggle }: MobileNavigationProps) {
-  const handleNavigate = (view: string, externalUrl?: string) => {
+  const handleNavigate = useCallback((view: string, externalUrl?: string) => {
     onToggle(); // Close menu
     if (isExternal && externalUrl) {
       window.location.href = externalUrl;
     } else if (onNavigate) {
       onNavigate(view);
     }
-  };
+  }, [isExternal, onNavigate, onToggle]);
 
-  const navItems = [
-    { view: "study", label: "Your Plot", url: "https://commonry.app/study" },
-    { view: "browse", label: "The Commons", url: "https://commonry.app/browse" },
-    { view: "square", label: "The Square", url: "https://forum.commonry.app" },
-    { view: "profile", label: "Profile", url: "https://commonry.app/profile" }
-  ];
+  const handleHomeClick = useCallback(() => handleNavigate("home", "https://commonry.app"), [handleNavigate]);
+
+  const navItems = useMemo(() => [
+    { view: "study", label: "Your Plot", url: "https://commonry.app/study", onClick: () => handleNavigate("study", "https://commonry.app/study") },
+    { view: "browse", label: "The Commons", url: "https://commonry.app/browse", onClick: () => handleNavigate("browse", "https://commonry.app/browse") },
+    { view: "square", label: "The Square", url: "https://forum.commonry.app", onClick: () => handleNavigate("square", "https://forum.commonry.app") },
+    { view: "profile", label: "Profile", url: "https://commonry.app/profile", onClick: () => handleNavigate("profile", "https://commonry.app/profile") }
+  ], [handleNavigate]);
 
   return (
     <nav
@@ -156,7 +165,7 @@ export function MobileNavigation({ currentView = "home", onNavigate, isExternal 
         <div className="flex items-center justify-between">
           {/* Logo */}
           <button
-            onClick={() => handleNavigate("home", "https://commonry.app")}
+            onClick={handleHomeClick}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             aria-label="Go to Commonry home"
           >
@@ -194,7 +203,7 @@ export function MobileNavigation({ currentView = "home", onNavigate, isExternal 
             {navItems.map((item) => (
               <button
                 key={item.view}
-                onClick={() => handleNavigate(item.view, item.url)}
+                onClick={item.onClick}
                 className={`block w-full text-left px-4 py-2 rounded transition-colors ${
                   currentView === item.view
                     ? "terminal-primary dark:text-cyan font-bold bg-terminal-surface dark:bg-dark-surface"
