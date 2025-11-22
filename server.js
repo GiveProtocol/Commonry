@@ -52,7 +52,7 @@ function sanitizeForLog(input) {
   if (input === null || input === undefined) {
     return String(input);
   }
-  return String(input).replace(/[\n\r]/g, '');
+  return String(input).replace(/[\n\r]/g, "");
 }
 
 // General rate limiter: 100 requests per 15 minutes per IP
@@ -74,24 +74,28 @@ const uploadLimiter = rateLimit({
 });
 
 app.use(express.json());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true // Allow cookies to be sent
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true, // Allow cookies to be sent
+  }),
+);
 app.use(generalLimiter);
 
 // Session middleware for Discourse SSO
-app.use(session({
-  secret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    httpOnly: true,
-    sameSite: 'lax', // Allow cookie to be sent on redirects from Discourse
-    maxAge: 10 * 60 * 1000 // 10 minutes - enough time for SSO flow
-  }
-}));
+app.use(
+  session({
+    secret: process.env.JWT_SECRET || "your-secret-key-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      httpOnly: true,
+      sameSite: "lax", // Allow cookie to be sent on redirects from Discourse
+      maxAge: 10 * 60 * 1000, // 10 minutes - enough time for SSO flow
+    },
+  }),
+);
 
 // JWT configuration
 const JWT_SECRET =
@@ -535,13 +539,17 @@ app.post("/api/discourse/prepare-sso", authenticateToken, async (req, res) => {
   try {
     // Store user ID in session
     req.session.userId = req.userId;
-    console.log(`[SSO] Preparing session for user: ${sanitizeForLog(req.userId)}, Session ID: ${sanitizeForLog(req.sessionID)}`);
+    console.log(
+      `[SSO] Preparing session for user: ${sanitizeForLog(req.userId)}, Session ID: ${sanitizeForLog(req.sessionID)}`,
+    );
     req.session.save((err) => {
       if (err) {
         console.error("Session save error:", err);
         return res.status(500).json({ error: "Failed to create session" });
       }
-      console.log(`[SSO] Session saved successfully for user: ${sanitizeForLog(req.userId)}`);
+      console.log(
+        `[SSO] Session saved successfully for user: ${sanitizeForLog(req.userId)}`,
+      );
       res.json({ success: true, message: "Session established" });
     });
   } catch (error) {
@@ -569,7 +577,9 @@ app.post("/api/discourse/prepare-sso", authenticateToken, async (req, res) => {
 app.get("/api/discourse/sso", async (req, res) => {
   const { sso, sig } = req.query;
 
-  console.log(`[SSO] Received SSO request - Session ID: ${sanitizeForLog(req.sessionID)}`);
+  console.log(
+    `[SSO] Received SSO request - Session ID: ${sanitizeForLog(req.sessionID)}`,
+  );
   console.log(`[SSO] Session userId: ${sanitizeForLog(req.session.userId)}`);
   console.log(`[SSO] Session data:`, req.session);
 
@@ -579,7 +589,7 @@ app.get("/api/discourse/sso", async (req, res) => {
   if (!userId) {
     console.log(`[SSO] No userId in session - authentication failed`);
     return res.status(401).json({
-      error: "Not authenticated. Please log in to Commonry first."
+      error: "Not authenticated. Please log in to Commonry first.",
     });
   }
 

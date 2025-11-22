@@ -25,49 +25,63 @@ interface NavigationProps {
  * - Works in both light and dark modes
  * - Accessible with keyboard navigation and ARIA labels
  */
-export function SharedNavigation({ currentView = "home", onNavigate, isExternal = false }: NavigationProps) {
-  const handleNavigate = useCallback((view: string, externalUrl?: string) => {
-    if (isExternal && externalUrl) {
-      // For Discourse, navigate to Commonry app
-      window.location.href = externalUrl;
-    } else if (onNavigate) {
-      // For Commonry app, use state-based routing
-      onNavigate(view);
-    }
-  }, [isExternal, onNavigate]);
+export function SharedNavigation({
+  currentView = "home",
+  onNavigate,
+  isExternal = false,
+}: NavigationProps) {
+  const handleNavigate = useCallback(
+    (view: string, externalUrl?: string) => {
+      if (isExternal && externalUrl) {
+        // For Discourse, navigate to Commonry app
+        window.location.href = externalUrl;
+      } else if (onNavigate) {
+        // For Commonry app, use state-based routing
+        onNavigate(view);
+      }
+    },
+    [isExternal, onNavigate],
+  );
 
-  const handleHomeClick = useCallback(() => handleNavigate("home", "https://commonry.app"), [handleNavigate]);
+  const handleHomeClick = useCallback(
+    () => handleNavigate("home", "https://commonry.app"),
+    [handleNavigate],
+  );
 
-  const navItems = useMemo(() => [
-    {
-      view: "study",
-      label: "Your Plot",
-      url: "https://commonry.app/study",
-      ariaLabel: "Navigate to Your Plot - Personal study area",
-      onClick: () => handleNavigate("study", "https://commonry.app/study")
-    },
-    {
-      view: "browse",
-      label: "The Commons",
-      url: "https://commonry.app/browse",
-      ariaLabel: "Navigate to The Commons - Browse public decks",
-      onClick: () => handleNavigate("browse", "https://commonry.app/browse")
-    },
-    {
-      view: "square",
-      label: "The Square",
-      url: "https://forum.commonry.app",
-      ariaLabel: "Navigate to The Square - Community forum",
-      onClick: () => handleNavigate("square", "https://forum.commonry.app")
-    },
-    {
-      view: "profile",
-      label: "Profile",
-      url: "https://commonry.app/profile",
-      ariaLabel: "Navigate to your profile",
-      onClick: () => handleNavigate("profile", "https://commonry.app/profile")
-    }
-  ], [handleNavigate]);
+  const navItems = useMemo(
+    () => [
+      {
+        view: "study",
+        label: "Your Plot",
+        url: "https://commonry.app/study",
+        ariaLabel: "Navigate to Your Plot - Personal study area",
+        onClick: () => handleNavigate("study", "https://commonry.app/study"),
+      },
+      {
+        view: "browse",
+        label: "The Commons",
+        url: "https://commonry.app/browse",
+        ariaLabel: "Navigate to The Commons - Browse public decks",
+        onClick: () => handleNavigate("browse", "https://commonry.app/browse"),
+      },
+      {
+        view: "square",
+        label: "The Square",
+        url: "https://forum.commonry.app",
+        ariaLabel: "Navigate to The Square - Community forum",
+        onClick: () => handleNavigate("square", "https://forum.commonry.app"),
+      },
+      {
+        view: "profile",
+        label: "Profile",
+        url: "https://commonry.app/profile",
+        ariaLabel: "Navigate to your profile",
+        onClick: () =>
+          handleNavigate("profile", "https://commonry.app/profile"),
+      },
+    ],
+    [handleNavigate],
+  );
 
   return (
     <nav
@@ -82,9 +96,16 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
           className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
           aria-label="Go to Commonry home"
         >
-          <div className="text-4xl" role="img" aria-label="Commonry logo">🏛️</div>
+          <div className="text-4xl" role="img" aria-label="Commonry logo">
+            🏛️
+          </div>
           <div className="font-mono">
-            <div className="text-terminal-muted dark:text-text-muted text-xs" aria-hidden="true">$ cd ~</div>
+            <div
+              className="text-terminal-muted dark:text-text-muted text-xs"
+              aria-hidden="true"
+            >
+              $ cd ~
+            </div>
             <div className="terminal-primary dark:text-cyan text-2xl font-bold group-hover:text-shadow-terminal dark:group-hover:[text-shadow:0_0_20px_rgba(0,217,255,0.5)] transition-all">
               COMMONRY
             </div>
@@ -92,7 +113,10 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
         </button>
 
         {/* Navigation Links */}
-        <div className="flex items-center gap-6 font-mono text-sm" role="menubar">
+        <div
+          className="flex items-center gap-6 font-mono text-sm"
+          role="menubar"
+        >
           {navItems.map((item, index) => (
             <>
               {index > 0 && (
@@ -136,24 +160,60 @@ interface MobileNavigationProps extends NavigationProps {
   onToggle: () => void;
 }
 
-export function MobileNavigation({ currentView = "home", onNavigate, isExternal = false, isOpen, onToggle }: MobileNavigationProps) {
-  const handleNavigate = useCallback((view: string, externalUrl?: string) => {
-    onToggle(); // Close menu
-    if (isExternal && externalUrl) {
-      window.location.href = externalUrl;
-    } else if (onNavigate) {
-      onNavigate(view);
-    }
-  }, [isExternal, onNavigate, onToggle]);
+export function MobileNavigation({
+  currentView = "home",
+  onNavigate,
+  isExternal = false,
+  isOpen,
+  onToggle,
+}: MobileNavigationProps) {
+  const handleNavigate = useCallback(
+    (view: string, externalUrl?: string) => {
+      onToggle(); // Close menu
+      if (isExternal && externalUrl) {
+        window.location.href = externalUrl;
+      } else if (onNavigate) {
+        onNavigate(view);
+      }
+    },
+    [isExternal, onNavigate, onToggle],
+  );
 
-  const handleHomeClick = useCallback(() => handleNavigate("home", "https://commonry.app"), [handleNavigate]);
+  const handleHomeClick = useCallback(
+    () => handleNavigate("home", "https://commonry.app"),
+    [handleNavigate],
+  );
 
-  const navItems = useMemo(() => [
-    { view: "study", label: "Your Plot", url: "https://commonry.app/study", onClick: () => handleNavigate("study", "https://commonry.app/study") },
-    { view: "browse", label: "The Commons", url: "https://commonry.app/browse", onClick: () => handleNavigate("browse", "https://commonry.app/browse") },
-    { view: "square", label: "The Square", url: "https://forum.commonry.app", onClick: () => handleNavigate("square", "https://forum.commonry.app") },
-    { view: "profile", label: "Profile", url: "https://commonry.app/profile", onClick: () => handleNavigate("profile", "https://commonry.app/profile") }
-  ], [handleNavigate]);
+  const navItems = useMemo(
+    () => [
+      {
+        view: "study",
+        label: "Your Plot",
+        url: "https://commonry.app/study",
+        onClick: () => handleNavigate("study", "https://commonry.app/study"),
+      },
+      {
+        view: "browse",
+        label: "The Commons",
+        url: "https://commonry.app/browse",
+        onClick: () => handleNavigate("browse", "https://commonry.app/browse"),
+      },
+      {
+        view: "square",
+        label: "The Square",
+        url: "https://forum.commonry.app",
+        onClick: () => handleNavigate("square", "https://forum.commonry.app"),
+      },
+      {
+        view: "profile",
+        label: "Profile",
+        url: "https://commonry.app/profile",
+        onClick: () =>
+          handleNavigate("profile", "https://commonry.app/profile"),
+      },
+    ],
+    [handleNavigate],
+  );
 
   return (
     <nav
@@ -182,11 +242,26 @@ export function MobileNavigation({ currentView = "home", onNavigate, isExternal 
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>
