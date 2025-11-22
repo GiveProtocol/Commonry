@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, Users, TrendingUp, ExternalLink } from "lucide-react";
+import { MessageCircle, Users, TrendingUp, ExternalLink, Folder } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { Breadcrumb } from "./layout/Breadcrumb";
 import {
   getLatestTopics,
   getForumStats,
+  getCategories,
   getTopicUrl,
   type DiscourseTopic,
+  type DiscourseCategory,
 } from "../services/discourse-api";
 
 interface SquareViewProps {
@@ -18,6 +21,7 @@ const DISCOURSE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commo
 export function SquareView({ onBack }: SquareViewProps) {
   const { token } = useAuth();
   const [topics, setTopics] = useState<DiscourseTopic[]>([]);
+  const [categories, setCategories] = useState<DiscourseCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<{
     topicCount: number;
@@ -30,12 +34,14 @@ export function SquareView({ onBack }: SquareViewProps) {
     const loadForumData = async () => {
       setIsLoading(true);
       try {
-        const [latestTopics, forumStats] = await Promise.all([
+        const [latestTopics, forumStats, forumCategories] = await Promise.all([
           getLatestTopics(6),
           getForumStats(),
+          getCategories(),
         ]);
         setTopics(latestTopics);
         setStats(forumStats);
+        setCategories(forumCategories.slice(0, 6)); // Show top 6 categories
       } catch (error) {
         console.error("Failed to load forum data:", error);
       } finally {
@@ -100,6 +106,9 @@ export function SquareView({ onBack }: SquareViewProps) {
   return (
     <div className="bg-terminal-base dark:bg-dark min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Breadcrumb */}
+        <Breadcrumb items={[{ label: "The Square", current: true }]} />
+
         {/* Back Button */}
         <button
           onClick={handleBackClick}
@@ -192,11 +201,61 @@ export function SquareView({ onBack }: SquareViewProps) {
           </div>
         </motion.div>
 
+        {/* Categories Grid */}
+        {categories.length > 0 && (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mb-12"
+          >
+            <h2 className="text-2xl font-bold terminal-primary dark:text-cyan mb-6 font-mono flex items-center gap-3">
+              <span className="text-terminal-muted dark:text-text-muted">$</span>
+              forum.categories()
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {categories.map((category) => (
+                <a
+                  key={category.id}
+                  href={`${DISCOURSE_URL}/c/${category.slug}/${category.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-terminal-surface dark:bg-dark-surface border border-terminal-muted dark:border-dark-border rounded-lg p-5 hover:border-terminal-primary dark:hover:border-cyan hover:shadow-terminal-glow dark:hover:shadow-cyan-glow transition-all group"
+                >
+                  <div className="flex items-start gap-3 mb-2">
+                    <div
+                      className="w-4 h-4 rounded-full flex-shrink-0 mt-1"
+                      style={{ backgroundColor: `#${category.color}` }}
+                    />
+                    <div className="flex-1">
+                      <h3 className="text-terminal-base dark:text-text-primary font-semibold font-mono group-hover:terminal-primary dark:group-hover:text-cyan transition-colors">
+                        {category.name}
+                      </h3>
+                      {category.description && (
+                        <p className="text-sm text-terminal-muted dark:text-text-muted mt-1 line-clamp-2">
+                          {category.description.replace(/<[^>]*>/g, '')}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-4 mt-3 text-xs font-mono text-terminal-muted dark:text-text-muted">
+                        <span className="flex items-center gap-1">
+                          <Folder className="w-3 h-3" />
+                          {category.topic_count}
+                        </span>
+                        <span>{category.post_count} posts</span>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Recent Topics */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5 }}
         >
           <h2 className="text-2xl font-bold terminal-primary dark:text-cyan mb-6 font-mono flex items-center gap-3">
             <span className="text-terminal-muted dark:text-text-muted">$</span>
@@ -265,15 +324,13 @@ export function SquareView({ onBack }: SquareViewProps) {
             transition={{ delay: 0.6 }}
             className="mt-8 text-center"
           >
-            <a
-              href={DISCOURSE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-terminal-primary dark:text-cyan hover:text-shadow-terminal dark:hover:[text-shadow:0_0_10px_#00d9ff] font-mono transition-all"
+            <button
+              onClick={handleVisitForum}
+              className="inline-flex items-center gap-2 text-terminal-primary dark:text-cyan hover:text-shadow-terminal dark:hover:[text-shadow:0_0_10px_#00d9ff] font-mono transition-all cursor-pointer border border-terminal-primary/30 dark:border-cyan/30 rounded px-4 py-2 hover:shadow-terminal-glow dark:hover:shadow-cyan-glow"
             >
-              View all topics on the forum
+              Enter The Square
               <ExternalLink className="w-4 h-4" />
-            </a>
+            </button>
           </motion.div>
         )}
       </div>
