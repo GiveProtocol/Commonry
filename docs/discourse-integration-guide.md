@@ -43,6 +43,7 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 ### 1. Enhanced Square View (`src/components/SquareView.tsx`)
 
 **Added Features:**
+
 - ✅ Categories grid showing forum sections with color-coded labels
 - ✅ Forum statistics (topics, members, posts)
 - ✅ Recent topics list
@@ -50,11 +51,13 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 - ✅ SSO integration for seamless login
 
 **API Integration:**
+
 - Fetches from `https://forum.commonry.app/latest.json`
 - Fetches from `https://forum.commonry.app/categories.json`
 - Fetches from `https://forum.commonry.app/site.json` (stats)
 
 **User Flow:**
+
 1. User clicks "The Square" in navigation
 2. Sees preview of forum activity (categories + recent topics)
 3. Clicks "Enter The Square" button
@@ -66,6 +69,7 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 **Already Exists** - This component is designed to work on both sites!
 
 **Features:**
+
 - Logo linking to commonry.app
 - Navigation links: Your Plot | The Commons | The Square | Profile
 - Active state highlighting
@@ -94,24 +98,25 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 **New Component** - Provides visual continuity
 
 **Features:**
+
 - Shows current location hierarchy
 - Links back to parent pages
 - Different modes for Commonry vs Discourse
 
 **Usage on Commonry:**
+
 ```tsx
-<Breadcrumb items={[
-  { label: "The Square", current: true }
-]} />
+<Breadcrumb items={[{ label: "The Square", current: true }]} />
 ```
 
 **Usage on Discourse (via HTML):**
+
 ```tsx
 <Breadcrumb
   showCommonryHome
   items={[
     { label: "The Square", href: "https://forum.commonry.app" },
-    { label: "Category Name", current: true }
+    { label: "Category Name", current: true },
   ]}
 />
 ```
@@ -121,6 +126,7 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 **Location:** `docs/discourse-theme.md`
 
 **Contents:**
+
 - Complete HTML for navigation header
 - Complete CSS mirroring Commonry styles
 - Dark mode support
@@ -128,6 +134,7 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 - Accessibility features
 
 **Installation:**
+
 1. Go to Discourse Admin → Customize → Themes
 2. Edit CSS/HTML
 3. Paste Header HTML from docs
@@ -139,6 +146,7 @@ This guide explains how Commonry and Discourse (The Square) are integrated to fe
 **Location:** `docs/design-tokens.md`
 
 **Contents:**
+
 - Complete color system (light + dark mode)
 - Typography scale and font families
 - Spacing scale
@@ -208,16 +216,19 @@ When you update navigation in Commonry:
 
 ```tsx
 // Add new nav item
-const navItems = useMemo(() => [
-  // ... existing items
-  {
-    view: "newview",
-    label: "New View",
-    url: "https://commonry.app/newview",
-    ariaLabel: "Navigate to new view",
-    onClick: () => handleNavigate("newview", "https://commonry.app/newview")
-  }
-], [handleNavigate]);
+const navItems = useMemo(
+  () => [
+    // ... existing items
+    {
+      view: "newview",
+      label: "New View",
+      url: "https://commonry.app/newview",
+      ariaLabel: "Navigate to new view",
+      onClick: () => handleNavigate("newview", "https://commonry.app/newview"),
+    },
+  ],
+  [handleNavigate],
+);
 ```
 
 ### Step 2: Update Discourse Theme HTML
@@ -248,7 +259,7 @@ When changing colors, fonts, or other design tokens:
 
 ```css
 :root {
-  --terminal-green: #00a86b;  /* Change this */
+  --terminal-green: #00a86b; /* Change this */
 }
 ```
 
@@ -269,7 +280,7 @@ In `docs/discourse-theme.md` CSS section:
 
 ```css
 :root {
-  --commonry-green: #00a86b;  /* Change this */
+  --commonry-green: #00a86b; /* Change this */
 }
 ```
 
@@ -326,6 +337,7 @@ Before deploying changes:
 **Symptoms:** Categories or topics not showing on The Square
 
 **Solution:**
+
 ```bash
 # Check Discourse is running
 curl https://forum.commonry.app/latest.json
@@ -340,6 +352,7 @@ curl https://forum.commonry.app/latest.json
 **Symptoms:** Styles don't match between app and forum
 
 **Solution:**
+
 1. Compare `src/globals.css` with Discourse theme CSS
 2. Ensure all CSS variables are defined
 3. Check that fonts are loading (IBM Plex Mono/Sans)
@@ -350,6 +363,7 @@ curl https://forum.commonry.app/latest.json
 **Symptoms:** User not logged in when entering forum
 
 **Solution:**
+
 ```bash
 # Check environment variables
 cat .env | grep DISCOURSE
@@ -413,12 +427,14 @@ Ensure dark mode detection script is in Discourse Header:
 ## Support and Resources
 
 ### Documentation
+
 - [Discourse Theme Developer Guide](https://meta.discourse.org/t/developer-s-guide-to-discourse-themes/93648)
 - [Discourse API Docs](https://docs.discourse.org/)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
 - [Framer Motion Docs](https://www.framer.com/motion/)
 
 ### Commonry-Specific Docs
+
 - [Design Tokens](design-tokens.md)
 - [Discourse Theme](discourse-theme.md)
 - This Integration Guide
@@ -426,6 +442,7 @@ Ensure dark mode detection script is in Discourse Header:
 ### Quick Reference
 
 **Environment Variables:**
+
 ```bash
 VITE_DISCOURSE_URL=https://forum.commonry.app
 VITE_API_URL=https://api.commonry.app
@@ -434,6 +451,7 @@ DISCOURSE_URL=http://forum.commonry.app
 ```
 
 **Key Files:**
+
 - Navigation: `src/components/layout/SharedNavigation.tsx`
 - Square View: `src/components/SquareView.tsx`
 - API Service: `src/services/discourse-api.ts`
@@ -441,6 +459,7 @@ DISCOURSE_URL=http://forum.commonry.app
 - Theme Config: `tailwind.config.js`
 
 **Discourse Admin URLs:**
+
 - Themes: `https://forum.commonry.app/admin/customize/themes`
 - SSO Settings: `https://forum.commonry.app/admin/site_settings/category/login`
 - CORS Settings: `https://forum.commonry.app/admin/site_settings/category/security`

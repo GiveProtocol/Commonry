@@ -5,6 +5,7 @@ This document defines the design system tokens used across all Commonry platform
 ## Purpose
 
 These design tokens ensure visual consistency across:
+
 - **Commonry App** (commonry.app) - React/Vite application
 - **The Square** (forum.commonry.app) - Discourse forum
 - Any future platforms or integrations
@@ -14,68 +15,80 @@ These design tokens ensure visual consistency across:
 ### Light Mode (Default)
 
 #### Primary Color: Jade Green
+
 ```css
---terminal-green: #00a86b;           /* Main green */
---terminal-green-dark: #008055;      /* Darker for hover states */
---terminal-green-glow: rgba(0, 168, 107, 0.15);  /* Glow effect */
+--terminal-green: #00a86b; /* Main green */
+--terminal-green-dark: #008055; /* Darker for hover states */
+--terminal-green-glow: rgba(0, 168, 107, 0.15); /* Glow effect */
 ```
 
 **Usage:**
+
 - Primary actions and CTAs
 - Active navigation states
 - Focus indicators
 - Interactive element highlights
 
 **Tailwind Classes:**
+
 - `terminal-primary` (text)
 - `bg-terminal-primary` (background)
 - `border-terminal-primary` (borders)
 - `shadow-terminal-glow` (box shadow)
 
 #### Accent Color: Coral Orange
+
 ```css
---terminal-orange: #ff6b35;          /* Vibrant coral-orange */
---terminal-orange-dark: #e5572e;     /* Darker for hover */
---terminal-orange-glow: rgba(255, 107, 53, 0.15);  /* Glow effect */
+--terminal-orange: #ff6b35; /* Vibrant coral-orange */
+--terminal-orange-dark: #e5572e; /* Darker for hover */
+--terminal-orange-glow: rgba(255, 107, 53, 0.15); /* Glow effect */
 ```
 
 **Usage:**
+
 - Secondary actions
 - Highlights and badges
 - Warning states
 - Accent elements
 
 **Tailwind Classes:**
+
 - `terminal-accent` (text)
 - `bg-terminal-accent` (background)
 - `border-terminal-accent` (borders)
 
 #### Background Colors
+
 ```css
---paper: #fafaf9;                    /* Warm off-white */
---paper-darker: #f5f5f4;             /* Slightly darker for cards */
+--paper: #fafaf9; /* Warm off-white */
+--paper-darker: #f5f5f4; /* Slightly darker for cards */
 ```
 
 **Tailwind Classes:**
+
 - `bg-terminal-base` → `--paper`
 - `bg-terminal-surface` → `--paper-darker`
 
 #### Text Colors
+
 ```css
---ink: #1c1917;                      /* Near black */
---ink-light: #44403c;                /* Medium gray for secondary text */
+--ink: #1c1917; /* Near black */
+--ink-light: #44403c; /* Medium gray for secondary text */
 ```
 
 **Tailwind Classes:**
+
 - `text-terminal-base` → `--ink`
 - `text-terminal-muted` → `--ink-light`
 
 #### Borders & Dividers
+
 ```css
---border-light: #d6d3d1;             /* Soft neutral gray */
+--border-light: #d6d3d1; /* Soft neutral gray */
 ```
 
 **Tailwind Classes:**
+
 - `border-terminal-muted`
 
 ---
@@ -83,67 +96,79 @@ These design tokens ensure visual consistency across:
 ### Dark Mode
 
 #### Primary Color: Cyan
+
 ```css
---cyan: #00d9ff;                     /* Bright cyan */
---cyan-dark: #0891b2;                /* Darker cyan */
+--cyan: #00d9ff; /* Bright cyan */
+--cyan-dark: #0891b2; /* Darker cyan */
 --cyan-glow: rgba(0, 217, 255, 0.3); /* Glow effect */
---cyan-glow-strong: rgba(0, 217, 255, 0.6);  /* Stronger glow */
+--cyan-glow-strong: rgba(0, 217, 255, 0.6); /* Stronger glow */
 ```
 
 **Usage:**
+
 - Primary actions and CTAs
 - Active navigation states
 - Focus indicators
 - Terminal/tech aesthetic elements
 
 **Applies to same Tailwind classes** but in dark mode:
+
 - `dark:text-cyan`
 - `dark:bg-cyan`
 - `dark:border-cyan`
 
 #### Accent Color: Amber
+
 ```css
---amber: #fbbf24;                    /* Warm amber */
---amber-dark: #f59e0b;               /* Darker amber */
---amber-glow: rgba(251, 191, 36, 0.3);  /* Glow effect */
+--amber: #fbbf24; /* Warm amber */
+--amber-dark: #f59e0b; /* Darker amber */
+--amber-glow: rgba(251, 191, 36, 0.3); /* Glow effect */
 ```
 
 **Usage:**
+
 - Secondary actions
 - Highlights and badges
 - Interactive accents
 
 **Tailwind Classes (dark mode):**
+
 - `dark:text-amber`
 - `dark:bg-amber`
 
 #### Background Colors
+
 ```css
---dark: #0d1117;                     /* Deep dark background */
---dark-lighter: #161b22;             /* Slightly lighter for cards */
---dark-surface: #161b22;             /* Surface elements */
+--dark: #0d1117; /* Deep dark background */
+--dark-lighter: #161b22; /* Slightly lighter for cards */
+--dark-surface: #161b22; /* Surface elements */
 ```
 
 **Tailwind Classes:**
+
 - `dark:bg-dark` → `#0d1117`
 - `dark:bg-dark-surface` → `#161b22`
 
 #### Text Colors
+
 ```css
---text-primary: #c9d1d9;             /* Light gray text */
---text-muted: #8b949e;               /* Muted gray for secondary */
+--text-primary: #c9d1d9; /* Light gray text */
+--text-muted: #8b949e; /* Muted gray for secondary */
 ```
 
 **Tailwind Classes:**
+
 - `dark:text-text-primary`
 - `dark:text-text-muted`
 
 #### Borders
+
 ```css
---dark-border: #30363d;              /* Subtle borders */
+--dark-border: #30363d; /* Subtle borders */
 ```
 
 **Tailwind Classes:**
+
 - `dark:border-dark-border`
 
 ---
@@ -153,35 +178,41 @@ These design tokens ensure visual consistency across:
 ### Font Families
 
 ```css
---font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
---font-mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+--font-sans:
+  "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  sans-serif;
+--font-mono: "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
 ```
 
 **Usage Guidelines:**
+
 - **Monospace (`font-mono`)**: Use for navigation, terminal-style UI, code blocks, technical elements
 - **Sans-serif (`font-sans`)**: Use for body text, descriptions, long-form content
 
 **Tailwind Classes:**
+
 - `font-mono`
 - `font-sans`
 
 ### Font Sizes (Modular Scale: 1.25 ratio)
 
 ```css
-h1: 2.441rem;      /* ~39px */
-h2: 1.953rem;      /* ~31px */
-h3: 1.563rem;      /* ~25px */
-h4: 1.25rem;       /* ~20px */
-p:  1rem;          /* ~16px */
-small: 0.875rem;   /* ~14px */
+h1: 2.441rem; /* ~39px */
+h2: 1.953rem; /* ~31px */
+h3: 1.563rem; /* ~25px */
+h4: 1.25rem; /* ~20px */
+p: 1rem; /* ~16px */
+small: 0.875rem; /* ~14px */
 ```
 
 **Line Heights:**
+
 - Headings: 1.2
 - Body text: 1.6
 - Monospace: 1.5
 
 **Letter Spacing:**
+
 - Headings: -0.02em (tighter)
 - Body: -0.01em (slightly tight)
 - Monospace: 0 (normal)
@@ -203,6 +234,7 @@ Based on 8px grid system:
 ```
 
 **Common Patterns:**
+
 - Card padding: `p-5` to `p-8` (20-32px)
 - Section margins: `mb-12` (48px)
 - Navigation gaps: `gap-6` (24px)
@@ -212,14 +244,15 @@ Based on 8px grid system:
 ## Border Radius
 
 ```css
---radius: 0.5rem;  /* 8px */
+--radius: 0.5rem; /* 8px */
 
-lg: 0.5rem;       /* Standard cards, buttons */
-md: 0.375rem;     /* Smaller elements */
-sm: 0.25rem;      /* Badges, tags */
+lg: 0.5rem; /* Standard cards, buttons */
+md: 0.375rem; /* Smaller elements */
+sm: 0.25rem; /* Badges, tags */
 ```
 
 **Tailwind Classes:**
+
 - `rounded` → 0.25rem
 - `rounded-lg` → 0.5rem (most common)
 - `rounded-full` → 9999px (pills, avatars)
@@ -241,6 +274,7 @@ box-shadow: 0 0 20px var(--terminal-orange-glow);
 ```
 
 **Tailwind Classes:**
+
 - `shadow-terminal-glow`
 - `shadow-terminal-accent-glow`
 
@@ -261,6 +295,7 @@ box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
 ```
 
 **Tailwind Classes:**
+
 - `dark:shadow-cyan-glow`
 - `glow-cyan` / `glow-cyan-strong`
 - `glow-amber`
@@ -276,6 +311,7 @@ text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
 ```
 
 **Tailwind Classes:**
+
 - `text-shadow-terminal`
 - `dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]` (inline)
 
@@ -368,7 +404,9 @@ text-shadow: 0 0 15px [primary-glow];
 transition: all 0.2s ease;
 
 /* Hover effects */
-transition: color 0.2s ease, text-shadow 0.2s ease;
+transition:
+  color 0.2s ease,
+  text-shadow 0.2s ease;
 
 /* Transform */
 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -379,23 +417,36 @@ transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 ```css
 /* Fade In */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Slide Up */
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Blink (cursor) */
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 ```
 
 **Tailwind Classes:**
+
 - `animate-pulse`
 - `animate-blink`
 - `transition-all`
@@ -458,9 +509,7 @@ Use Tailwind classes:
 
 ```tsx
 <div className="bg-terminal-base dark:bg-dark">
-  <h1 className="terminal-primary dark:text-cyan font-mono">
-    Title
-  </h1>
+  <h1 className="terminal-primary dark:text-cyan font-mono">Title</h1>
 </div>
 ```
 
@@ -544,6 +593,7 @@ Commonry uses a "terminal" or "hacker" aesthetic inspired by classic Unix termin
 ### Do's and Don'ts
 
 ✅ **Do:**
+
 - Use monospace fonts for navigation, buttons, and labels
 - Apply subtle glow effects to primary elements
 - Use terminal-style prefixes (`$`, `./command`)
@@ -551,6 +601,7 @@ Commonry uses a "terminal" or "hacker" aesthetic inspired by classic Unix termin
 - Maintain high contrast for readability
 
 ❌ **Don't:**
+
 - Use script or decorative fonts
 - Overuse glow effects (reserve for interactive/active states)
 - Add unnecessary animations or transitions
