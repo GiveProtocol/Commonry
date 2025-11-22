@@ -26,7 +26,7 @@ const app = express();
 
 // Trust proxy headers from Cloudflare Tunnel
 // This is required for proper rate limiting and security when behind a reverse proxy
-app.set('trust proxy', true);
+app.set("trust proxy", true);
 
 const UPLOADS_DIR = path.resolve(__dirname, "uploads");
 const upload = multer({ dest: UPLOADS_DIR });
