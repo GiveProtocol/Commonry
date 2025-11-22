@@ -531,7 +531,7 @@ app.get("/api/auth/me", authenticateToken, async (req, res) => {
  * 4. Discourse redirects to /api/discourse/sso with sso/sig params
  * 5. We read userId from session to complete SSO
  */
-app.post("/api/discourse/prepare-sso", authenticateToken, async (req, res) => {
+app.post("/api/discourse/prepare-sso", authenticateToken, (req, res) => {
   try {
     // Store user ID in session
     req.session.userId = req.userId;
@@ -571,13 +571,13 @@ app.get("/api/discourse/sso", async (req, res) => {
 
   console.log(`[SSO] Received SSO request - Session ID: ${sanitizeForLog(req.sessionID)}`);
   console.log(`[SSO] Session userId: ${sanitizeForLog(req.session.userId)}`);
-  console.log(`[SSO] Session data:`, req.session);
+  // Note: Not logging full session object to prevent log injection
 
   // Authenticate user - read userId from session
   const userId = req.session.userId;
 
   if (!userId) {
-    console.log(`[SSO] No userId in session - authentication failed`);
+    console.log("[SSO] No userId in session - authentication failed");
     return res.status(401).json({
       error: "Not authenticated. Please log in to Commonry first."
     });
