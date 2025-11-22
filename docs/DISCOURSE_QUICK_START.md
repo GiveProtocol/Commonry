@@ -20,13 +20,15 @@ The file `discourse-theme.md` contains TWO main code blocks:
 1. In the Discourse theme editor, click the **"Header"** tab (left sidebar)
 2. Open the file: `/home/rb347841/Commonry/docs/discourse-theme.md`
 3. **Scroll to line 17** where you see:
-   ```
+
+   ````
    ### Step 2: Add Header HTML
 
    Go to **Header** section and paste the following:
 
    ```html
-   ```
+   ````
+
 4. **Copy everything from** `<script type="text/discourse-plugin"`
    **all the way to** the closing `</nav>` tag (around line 102)
 
@@ -36,13 +38,15 @@ The file `discourse-theme.md` contains TWO main code blocks:
 
 1. In the Discourse theme editor, click the **"Common"** tab under CSS section
 2. In `discourse-theme.md`, **scroll to line 104** where you see:
-   ```
+
+   ````
    ### Step 3: Add CSS
 
    Go to **Common** CSS section and paste the following:
 
    ```css
-   ```
+   ````
+
 3. **Copy everything from** `/* =================================================================`
    **all the way to** the end of the CSS block (around line 565)
 
