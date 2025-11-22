@@ -1,13 +1,8 @@
 # Discourse Theme Quick Start Guide
 
-## What You Need to Copy
+## Easy Installation - Copy from Separate Files
 
-The file `discourse-theme.md` contains TWO main code blocks:
-
-1. **Header HTML** (starts around line 17)
-2. **Common CSS** (starts around line 104)
-
-## Step-by-Step Installation
+I've created separate files to make this super easy:
 
 ### STEP 1: Access Discourse Admin
 
@@ -18,34 +13,15 @@ The file `discourse-theme.md` contains TWO main code blocks:
 ### STEP 2: Add Header HTML
 
 1. In the Discourse theme editor, click the **"Header"** tab (left sidebar)
-2. Open the file: `/home/rb347841/Commonry/docs/discourse-theme.md`
-3. **Scroll to line 17** where you see:
-   ```
-   ### Step 2: Add Header HTML
-
-   Go to **Header** section and paste the following:
-
-   ```html
-   ```
-4. **Copy everything from** `<script type="text/discourse-plugin"`
-   **all the way to** the closing `</nav>` tag (around line 102)
-
-5. **Paste into Discourse Header tab**
+2. Open the file: `/home/rb347841/Commonry/docs/discourse-header.html`
+3. **Select all and copy** (Ctrl+A, Ctrl+C or Cmd+A, Cmd+C)
+4. **Paste into Discourse Header tab**
 
 ### STEP 3: Add Common CSS
 
 1. In the Discourse theme editor, click the **"Common"** tab under CSS section
-2. In `discourse-theme.md`, **scroll to line 104** where you see:
-   ```
-   ### Step 3: Add CSS
-
-   Go to **Common** CSS section and paste the following:
-
-   ```css
-   ```
-3. **Copy everything from** `/* =================================================================`
-   **all the way to** the end of the CSS block (around line 565)
-
+2. Open the file: `/home/rb347841/Commonry/docs/discourse-styles.css`
+3. **Select all and copy** (Ctrl+A, Ctrl+C or Cmd+A, Cmd+C)
 4. **Paste into Discourse Common CSS tab**
 
 ### STEP 4: Save
@@ -55,24 +31,40 @@ The file `discourse-theme.md` contains TWO main code blocks:
 
 ---
 
-## Visual Guide
+## Files to Copy
 
-Here's what you're looking for in the file:
+You have THREE ways to get the code:
 
-```
-discourse-theme.md
-├── Installation Instructions (lines 1-15)
-├── 📋 HEADER HTML SECTION (lines 17-102)  ← COPY THIS
-│   └── Starts with: <script type="text/discourse-plugin"
-│       Ends with: </nav>
-├── 📋 COMMON CSS SECTION (lines 104-565)  ← COPY THIS
-│   └── Starts with: /* =================================================================
-│       Ends with: last closing brace }
-└── Additional Options (lines 566+)
+### Option 1: Separate Files (EASIEST)
+- **HTML**: `/home/rb347841/Commonry/docs/discourse-header.html`
+- **CSS**: `/home/rb347841/Commonry/docs/discourse-styles.css`
+
+### Option 2: Combined Documentation
+- **Full Guide**: `/home/rb347841/Commonry/docs/discourse-theme.md`
+  - Contains both HTML and CSS with instructions
+  - HTML is in lines 18-115
+  - CSS is in lines 120-471
+
+### Option 3: Command Line
+```bash
+# Copy HTML to clipboard (if you have xclip)
+cat /home/rb347841/Commonry/docs/discourse-header.html | xclip -selection clipboard
+
+# Copy CSS to clipboard
+cat /home/rb347841/Commonry/docs/discourse-styles.css | xclip -selection clipboard
 ```
 
 ---
 
-## I'll Create Separate Files for You
+## Visual Guide
 
-To make this easier, let me create two separate files:
+```
+docs/
+├── discourse-header.html        ← Paste into Discourse Header tab
+├── discourse-styles.css         ← Paste into Discourse Common CSS tab
+├── discourse-theme.md           ← Full documentation with both
+├── design-tokens.md             ← Design system reference
+└── discourse-integration-guide.md ← Complete integration guide
+```
+
+---
