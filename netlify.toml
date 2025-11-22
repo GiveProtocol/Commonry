@@ -1,19 +1,7 @@
 [build]
-  command = "rm -rf node_modules && npm ci && npm run build"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "22"
-  NPM_VERSION = "10"
-  # Force cache clear - 2025-01-12 22:00 UTC
-  NETLIFY_CACHE_ID = "v5"
-
-# Use npm ci to ensure clean installs from package-lock.json
-[context.production]
-  command = "rm -rf node_modules && npm ci && npm run build"
-
-[context.deploy-preview]
-  command = "rm -rf node_modules && npm ci && npm run build"
-
-[context.branch-deploy]
-  command = "rm -rf node_modules && npm ci && npm run build"
+  VITE_API_URL = "https://api.commonry.app"
+  VITE_DISCOURSE_URL = "https://forum.commonry.app"
