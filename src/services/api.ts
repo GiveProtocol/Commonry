@@ -5,8 +5,11 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // Debug: Log the API URL being used
-console.log('[API Service] Using API URL:', API_BASE_URL);
-console.log('[API Service] VITE_API_URL env var:', import.meta.env.VITE_API_URL);
+console.log("[API Service] Using API URL:", API_BASE_URL);
+console.log(
+  "[API Service] VITE_API_URL env var:",
+  import.meta.env.VITE_API_URL,
+);
 
 interface ApiResponse<T> {
   data?: T;
