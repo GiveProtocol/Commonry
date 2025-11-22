@@ -36,16 +36,19 @@ I've created separate files to make this super easy:
 You have THREE ways to get the code:
 
 ### Option 1: Separate Files (EASIEST)
+
 - **HTML**: `/home/rb347841/Commonry/docs/discourse-header.html`
 - **CSS**: `/home/rb347841/Commonry/docs/discourse-styles.css`
 
 ### Option 2: Combined Documentation
+
 - **Full Guide**: `/home/rb347841/Commonry/docs/discourse-theme.md`
   - Contains both HTML and CSS with instructions
   - HTML is in lines 18-115
   - CSS is in lines 120-471
 
 ### Option 3: Command Line
+
 ```bash
 # Copy HTML to clipboard (if you have xclip)
 cat /home/rb347841/Commonry/docs/discourse-header.html | xclip -selection clipboard
