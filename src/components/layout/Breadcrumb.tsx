@@ -61,9 +61,11 @@ export function Breadcrumb({ items, showCommonryHome = false }: BreadcrumbProps)
 
         {allItems.map((item, index) => {
           const isLast = index === allItems.length - 1;
+          // Use a stable key based on content, not index
+          const itemKey = item.href || item.label;
 
           return (
-            <li key={index} className="flex items-center gap-2">
+            <li key={itemKey} className="flex items-center gap-2">
               {item.href && !isLast ? (
                 <a
                   href={item.href}

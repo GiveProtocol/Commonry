@@ -1,3 +1,4 @@
+// skipcq: JS-C1003 - Radix UI components are designed to be used with namespace imports
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { ReactNode } from "react";
 

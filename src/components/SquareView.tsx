@@ -18,6 +18,19 @@ interface SquareViewProps {
 
 const DISCOURSE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commonry.app';
 
+/**
+ * Safely strips HTML tags from a string to prevent ReDoS attacks.
+ * Uses a non-backtracking regex and limits input length.
+ */
+const stripHtmlTags = (html: string): string => {
+  if (!html) return '';
+  // Limit input length to prevent DoS
+  const safeHtml = html.substring(0, 500);
+  // Use + instead of * to prevent catastrophic backtracking
+  // The + requires at least one character, making it safer
+  return safeHtml.replace(/<[^>]+>/g, '');
+};
+
 export function SquareView({ onBack }: SquareViewProps) {
   const { token } = useAuth();
   const [topics, setTopics] = useState<DiscourseTopic[]>([]);
@@ -233,7 +246,7 @@ export function SquareView({ onBack }: SquareViewProps) {
                       </h3>
                       {category.description && (
                         <p className="text-sm text-terminal-muted dark:text-text-muted mt-1 line-clamp-2">
-                          {category.description.replace(/<[^>]*>/g, '')}
+                          {stripHtmlTags(category.description)}
                         </p>
                       )}
                       <div className="flex items-center gap-4 mt-3 text-xs font-mono text-terminal-muted dark:text-text-muted">

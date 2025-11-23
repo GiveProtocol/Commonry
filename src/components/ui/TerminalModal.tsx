@@ -1,3 +1,4 @@
+// skipcq: JS-C1003 - Radix UI components are designed to be used with namespace imports
 import * as Dialog from "@radix-ui/react-dialog";
 import { ReactNode } from "react";
 import { X } from "lucide-react";
