@@ -23,7 +23,14 @@ type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
  */
 const getInitialView = (): View => {
   const path = window.location.pathname.slice(1); // Remove leading slash
-  const validViews: View[] = ["home", "study", "browse", "stats", "square", "profile"];
+  const validViews: View[] = [
+    "home",
+    "study",
+    "browse",
+    "stats",
+    "square",
+    "profile",
+  ];
 
   if (validViews.includes(path as View)) {
     return path as View;
@@ -69,14 +76,17 @@ function App() {
       setCurrentView(getInitialView());
     };
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const handleStartStudy = useCallback((deckId?: DeckId) => {
-    setSelectedDeckId(deckId);
-    navigate("study");
-  }, [navigate]);
+  const handleStartStudy = useCallback(
+    (deckId?: DeckId) => {
+      setSelectedDeckId(deckId);
+      navigate("study");
+    },
+    [navigate],
+  );
 
   if (!isInitialized) {
     return (
@@ -150,10 +160,7 @@ function App() {
 
       {/* Shared Navigation Bar */}
       {currentView !== "home" && (
-        <SharedNavigation
-          currentView={currentView}
-          onNavigate={navigate}
-        />
+        <SharedNavigation currentView={currentView} onNavigate={navigate} />
       )}
 
       {/* Theme Toggle Button */}
