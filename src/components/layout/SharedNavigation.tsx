@@ -36,7 +36,7 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
     }
   }, [isExternal, onNavigate]);
 
-  const handleHomeClick = useCallback(() => handleNavigate("home", "https://commonry.app"), [handleNavigate]);
+  const handleHomeClick = useCallback(() => handleNavigate("home", isExternal ? "https://commonry.app" : undefined), [handleNavigate, isExternal]);
 
   const navItems = useMemo(() => [
     {
@@ -44,30 +44,30 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
       label: "Your Plot",
       url: "https://commonry.app/study",
       ariaLabel: "Navigate to Your Plot - Personal study area",
-      onClick: () => handleNavigate("study", "https://commonry.app/study")
+      onClick: () => handleNavigate("study", isExternal ? "https://commonry.app/study" : undefined)
     },
     {
       view: "browse",
       label: "The Commons",
       url: "https://commonry.app/browse",
       ariaLabel: "Navigate to The Commons - Browse public decks",
-      onClick: () => handleNavigate("browse", "https://commonry.app/browse")
+      onClick: () => handleNavigate("browse", isExternal ? "https://commonry.app/browse" : undefined)
     },
     {
       view: "square",
       label: "The Square",
       url: "https://forum.commonry.app",
       ariaLabel: "Navigate to The Square - Community forum",
-      onClick: () => handleNavigate("square", "https://forum.commonry.app")
+      onClick: () => handleNavigate("square", isExternal ? "https://forum.commonry.app" : undefined)
     },
     {
       view: "profile",
       label: "Profile",
       url: "https://commonry.app/profile",
       ariaLabel: "Navigate to your profile",
-      onClick: () => handleNavigate("profile", "https://commonry.app/profile")
+      onClick: () => handleNavigate("profile", isExternal ? "https://commonry.app/profile" : undefined)
     }
-  ], [handleNavigate]);
+  ], [handleNavigate, isExternal]);
 
   return (
     <nav
@@ -146,14 +146,14 @@ export function MobileNavigation({ currentView = "home", onNavigate, isExternal 
     }
   }, [isExternal, onNavigate, onToggle]);
 
-  const handleHomeClick = useCallback(() => handleNavigate("home", "https://commonry.app"), [handleNavigate]);
+  const handleHomeClick = useCallback(() => handleNavigate("home", isExternal ? "https://commonry.app" : undefined), [handleNavigate, isExternal]);
 
   const navItems = useMemo(() => [
-    { view: "study", label: "Your Plot", url: "https://commonry.app/study", onClick: () => handleNavigate("study", "https://commonry.app/study") },
-    { view: "browse", label: "The Commons", url: "https://commonry.app/browse", onClick: () => handleNavigate("browse", "https://commonry.app/browse") },
-    { view: "square", label: "The Square", url: "https://forum.commonry.app", onClick: () => handleNavigate("square", "https://forum.commonry.app") },
-    { view: "profile", label: "Profile", url: "https://commonry.app/profile", onClick: () => handleNavigate("profile", "https://commonry.app/profile") }
-  ], [handleNavigate]);
+    { view: "study", label: "Your Plot", url: "https://commonry.app/study", onClick: () => handleNavigate("study", isExternal ? "https://commonry.app/study" : undefined) },
+    { view: "browse", label: "The Commons", url: "https://commonry.app/browse", onClick: () => handleNavigate("browse", isExternal ? "https://commonry.app/browse" : undefined) },
+    { view: "square", label: "The Square", url: "https://forum.commonry.app", onClick: () => handleNavigate("square", isExternal ? "https://forum.commonry.app" : undefined) },
+    { view: "profile", label: "Profile", url: "https://commonry.app/profile", onClick: () => handleNavigate("profile", isExternal ? "https://commonry.app/profile" : undefined) }
+  ], [handleNavigate, isExternal]);
 
   return (
     <nav
