@@ -18,16 +18,37 @@ import ProtectedView from "./components/ProtectedView";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
+/**
+ * Get the initial view from the URL path
+ */
+const getInitialView = (): View => {
+  const path = window.location.pathname.slice(1); // Remove leading slash
+  const validViews: View[] = ["home", "study", "browse", "stats", "square", "profile"];
+
+  if (validViews.includes(path as View)) {
+    return path as View;
+  }
+
+  return "home";
+};
+
 function App() {
-  const [currentView, setCurrentView] = useState<View>("home");
+  const [currentView, setCurrentView] = useState<View>(getInitialView);
   const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
     undefined,
   );
   const [isInitialized, setIsInitialized] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
+  // Navigation wrapper that updates both state and URL
+  const navigate = useCallback((view: View) => {
+    setCurrentView(view);
+    const path = view === "home" ? "/" : `/${view}`;
+    window.history.pushState({}, "", path);
+  }, []);
+
   // All hooks must be called before any early returns
-  const navigateToHome = useCallback(() => setCurrentView("home"), []);
+  const navigateToHome = useCallback(() => navigate("home"), [navigate]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -42,10 +63,20 @@ function App() {
     initializeApp();
   }, []);
 
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentView(getInitialView());
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const handleStartStudy = useCallback((deckId?: DeckId) => {
     setSelectedDeckId(deckId);
-    setCurrentView("study");
-  }, []);
+    navigate("study");
+  }, [navigate]);
 
   if (!isInitialized) {
     return (
@@ -108,7 +139,7 @@ function App() {
           </ProtectedView>
         );
       default:
-        return <HomeView onNavigate={setCurrentView} />;
+        return <HomeView onNavigate={navigate} />;
     }
   };
 
@@ -121,7 +152,7 @@ function App() {
       {currentView !== "home" && (
         <SharedNavigation
           currentView={currentView}
-          onNavigate={setCurrentView}
+          onNavigate={navigate}
         />
       )}
 
@@ -140,7 +171,7 @@ function App() {
         {renderView()}
       </main>
 
-      <Footer onNavigate={setCurrentView} />
+      <Footer onNavigate={navigate} />
     </div>
   );
 }
