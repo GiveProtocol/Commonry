@@ -35,7 +35,10 @@ interface BreadcrumbProps {
  *   ]}
  * />
  */
-export function Breadcrumb({ items, showCommonryHome = false }: BreadcrumbProps) {
+export function Breadcrumb({
+  items,
+  showCommonryHome = false,
+}: BreadcrumbProps) {
   const allItems = showCommonryHome
     ? [{ label: "Commonry", href: "https://commonry.app" }, ...items]
     : items;
@@ -55,7 +58,10 @@ export function Breadcrumb({ items, showCommonryHome = false }: BreadcrumbProps)
                 <span>Commonry</span>
               </a>
             </li>
-            <ChevronRight className="w-3 h-3 text-terminal-muted dark:text-text-muted" aria-hidden="true" />
+            <ChevronRight
+              className="w-3 h-3 text-terminal-muted dark:text-text-muted"
+              aria-hidden="true"
+            />
           </>
         )}
 
@@ -75,7 +81,11 @@ export function Breadcrumb({ items, showCommonryHome = false }: BreadcrumbProps)
                 </a>
               ) : (
                 <span
-                  className={isLast ? "terminal-primary dark:text-cyan font-bold" : "text-terminal-muted dark:text-text-muted"}
+                  className={
+                    isLast
+                      ? "terminal-primary dark:text-cyan font-bold"
+                      : "text-terminal-muted dark:text-text-muted"
+                  }
                   aria-current={isLast ? "page" : undefined}
                 >
                   {item.label}
@@ -83,7 +93,10 @@ export function Breadcrumb({ items, showCommonryHome = false }: BreadcrumbProps)
               )}
 
               {!isLast && (
-                <ChevronRight className="w-3 h-3 text-terminal-muted dark:text-text-muted" aria-hidden="true" />
+                <ChevronRight
+                  className="w-3 h-3 text-terminal-muted dark:text-text-muted"
+                  aria-hidden="true"
+                />
               )}
             </li>
           );

@@ -20,9 +20,7 @@ export function TerminalTooltip({
   return (
     <Tooltip.Provider delayDuration={delayDuration}>
       <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          {children}
-        </Tooltip.Trigger>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
             side={side}
@@ -64,7 +62,8 @@ export function TerminalTooltipCustom({
     info: "border-cyan text-cyan shadow-[0_0_20px_rgba(0,217,255,0.4)]",
     warning: "border-amber text-amber shadow-[0_0_20px_rgba(251,191,36,0.4)]",
     error: "border-red-500 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]",
-    success: "border-green-500 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.4)]",
+    success:
+      "border-green-500 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.4)]",
   };
 
   const arrowColors = {
@@ -77,9 +76,7 @@ export function TerminalTooltipCustom({
   return (
     <Tooltip.Provider delayDuration={delayDuration}>
       <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          {children}
-        </Tooltip.Trigger>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
             side={side}
