@@ -26,8 +26,11 @@
   --commonry-border-light: #d6d3d1;
 
   /* Font Stack */
-  --commonry-font-mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-  --commonry-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --commonry-font-mono:
+    "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
+  --commonry-font-sans:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
 }
 
 /* Dark Mode Variables */
@@ -141,7 +144,9 @@ html.dark .commonry-nav-separator {
 .commonry-nav-link {
   color: var(--commonry-ink-light);
   text-decoration: none;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
   padding: 0.5rem;
   border-radius: 0.25rem;
 }
