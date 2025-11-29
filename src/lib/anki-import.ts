@@ -447,7 +447,15 @@ async function processNoteWithFallback(
   if (frontData.images[0]) card.frontImage = frontData.images[0];
   if (backData.images[0]) card.backImage = backData.images[0];
 
-  await db.cards.add(card);
+  // Add sync metadata for SyncableCard
+  const syncableCard = {
+    ...card,
+    lastModifiedAt: new Date(),
+    syncStatus: "pending" as const,
+    version: 1,
+  };
+
+  await db.cards.add(syncableCard);
 }
 
 // Helper: Process a note with model templates
@@ -545,7 +553,15 @@ async function processNoteWithModel(
     if (frontData.images[0]) card.frontImage = frontData.images[0];
     if (backData.images[0]) card.backImage = backData.images[0];
 
-    await db.cards.add(card);
+    // Add sync metadata for SyncableCard
+    const syncableCard = {
+      ...card,
+      lastModifiedAt: new Date(),
+      syncStatus: "pending" as const,
+      version: 1,
+    };
+
+    await db.cards.add(syncableCard);
     cardsCreated++;
   }
 
@@ -611,7 +627,7 @@ export async function importAnkiDeck(
       // Check if deck already exists
       const existingDeck = await db.getDeck(newDeckId as DeckId);
       if (!existingDeck) {
-        // Create new deck
+        // Create new deck with sync metadata
         const deck = {
           id: newDeckId as DeckId,
           name: deckName,
@@ -621,6 +637,9 @@ export async function importAnkiDeck(
           newCount: 0,
           importSource: "anki" as const,
           externalId: ankiDeckId,
+          lastModifiedAt: new Date(),
+          syncStatus: "pending" as const,
+          version: 1,
         };
         await db.decks.add(deck);
       } else if (isReimport) {

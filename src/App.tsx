@@ -15,6 +15,7 @@ import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { DeckId } from "./types/ids";
 import ProtectedView from "./components/ProtectedView";
+import { syncService } from "./services/sync-service";
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
@@ -54,13 +55,20 @@ function App() {
     const initializeApp = async () => {
       try {
         await db.open();
+        // Initialize sync service
+        await syncService.initialize();
         setIsInitialized(true);
       } catch (error) {
-        console.error("Failed to initialize database:", error);
+        console.error("Failed to initialize application:", error);
       }
     };
 
     initializeApp();
+
+    // Cleanup sync service on unmount
+    return () => {
+      syncService.cleanup();
+    };
   }, []);
 
   // Handle browser back/forward buttons
@@ -186,51 +194,6 @@ function HomeView({ onNavigate }: HomeViewProps) {
       <HeroSection onNavigate={onNavigate} />
       <FeaturesSection />
     </>
-  );
-}
-
-interface PlaceholderViewProps {
-  title: string;
-  subtitle: string;
-  onBack: () => void;
-}
-
-function _PlaceholderView({ title, subtitle, onBack }: PlaceholderViewProps) {
-  return (
-    <div className="flex items-center justify-center flex-1 px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative border-2 border-terminal-accent dark:border-amber rounded-lg p-8 shadow-terminal-accent-glow dark:shadow-[0_0_30px_rgba(251,191,36,0.3)] max-w-md w-full text-center bg-terminal-surface dark:bg-dark-surface overflow-hidden"
-      >
-        {/* Terminal header */}
-        <div className="absolute top-0 left-0 right-0 h-8 bg-terminal-muted dark:bg-dark-border border-b border-terminal-accent/30 dark:border-amber/30 flex items-center px-4 gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500/50" />
-          <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50" />
-          <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50" />
-        </div>
-
-        <div className="mt-8">
-          <div className="font-mono text-terminal-muted dark:text-text-muted text-sm mb-2">
-            $ cat status.txt
-          </div>
-          <h1 className="text-3xl font-bold terminal-accent dark:text-amber mb-2 font-mono text-shadow-terminal-accent dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]">
-            {title}
-          </h1>
-          <p className="text-terminal-muted dark:text-text-muted mb-8 font-mono">
-            {subtitle}
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onBack}
-            className="bg-terminal-primary dark:bg-cyan hover:bg-terminal-primary/90 dark:hover:bg-cyan-dark text-paper dark:text-dark py-3 px-6 rounded border border-terminal-primary dark:border-cyan font-mono font-bold transition-all shadow-terminal-glow dark:shadow-cyan-glow"
-          >
-            ./back-to-home
-          </motion.button>
-        </div>
-      </motion.div>
-    </div>
   );
 }
 

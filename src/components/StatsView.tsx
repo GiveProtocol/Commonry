@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   api,
@@ -16,11 +16,24 @@ type TimePeriod = "today" | "week" | "month" | "all";
 
 export function StatsView({ onBack }: StatsViewProps) {
   const { user } = useAuth();
-  const [period, _setPeriod] = useState<TimePeriod>("today");
+  const [period, setPeriod] = useState<TimePeriod>("today");
   const [stats, setStats] = useState<UserStatistics | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [selectedMetric, _setSelectedMetric] =
+  const [selectedMetric, setSelectedMetric] =
     useState<LeaderboardMetric>("total_cards");
+
+  // Click handlers for period buttons
+  const clickHandlers = useMemo(() => ({
+    today: () => setPeriod("today"),
+    week: () => setPeriod("week"),
+    month: () => setPeriod("month"),
+    all: () => setPeriod("all"),
+  }), []);
+
+  // Click handler for metric buttons
+  const handleMetricClick = useCallback((metric: LeaderboardMetric) => () => {
+    setSelectedMetric(metric);
+  }, []);
   const [userRank, setUserRank] = useState<{
     rank: number | null;
     value: number;

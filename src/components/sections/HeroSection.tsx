@@ -5,6 +5,12 @@ import { TerminalButton } from "../ui/TerminalButton";
 import { StatDisplay } from "../ui/StatDisplay";
 import { TypingText } from "../ui/TypingText";
 
+type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
+
+interface HeroSectionProps {
+  onNavigate: (view: View) => void;
+}
+
 export function HeroSection({ onNavigate }: HeroSectionProps) {
   const [showContent, setShowContent] = useState(false);
 

@@ -113,6 +113,21 @@ class ApiService {
     return this.request<{ user: User }>("/api/auth/me");
   }
 
+  /**
+   * Registers a new user.
+   * @param username - The desired username.
+   * @param email - The user's email address.
+   * @param password - The user's password.
+   * @param displayName - Optional display name.
+   * @returns A promise resolving to the API response with user data and token.
+   */
+  async signup(username: string, email: string, password: string, displayName?: string) {
+    return this.request<{ user: User; token: string }>("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ username, email, password, displayName }),
+    });
+  }
+
   // ==================== STUDY SESSION ENDPOINTS ====================
 
   async recordStudySession(session: {

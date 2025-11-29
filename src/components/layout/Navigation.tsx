@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { TerminalButton } from "../ui/TerminalButton";
 import { TypingCursor } from "../ui/TypingCursor";
 import { Github } from "lucide-react";

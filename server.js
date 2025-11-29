@@ -16,6 +16,7 @@ import crypto from "crypto";
 import session from "express-session";
 import { sendVerificationEmail } from "./email-service.js";
 import { handleDiscourseSSORequest } from "./discourse-sso.js";
+import syncRoutes from "./sync-routes.js";
 
 dotenv.config();
 
@@ -1166,6 +1167,11 @@ app.get("/api/profile/:username/following", async (req, res) => {
     res.status(500).json({ error: "Failed to get following list" });
   }
 });
+
+// ==================== SYNC ENDPOINTS ====================
+
+// Mount sync routes with authentication
+app.use("/api/sync", authenticateToken, syncRoutes);
 
 // ==================== STUDY SESSION ENDPOINTS ====================
 

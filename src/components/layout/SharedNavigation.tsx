@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
+import { SyncStatusIndicator } from "../SyncStatusIndicator";
+
+type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
 
 interface NavigationProps {
-  currentView?: string;
-  onNavigate?: (view: string) => void;
+  currentView?: View;
+  onNavigate?: (view: View) => void;
   /** When true, external links open in same tab (for Discourse) */
   isExternal?: boolean;
 }
@@ -26,7 +29,7 @@ interface NavigationProps {
  * - Accessible with keyboard navigation and ARIA labels
  */
 export function SharedNavigation({ currentView = "home", onNavigate, isExternal = false }: NavigationProps) {
-  const handleNavigate = useCallback((view: string, externalUrl?: string) => {
+  const handleNavigate = useCallback((view: View, externalUrl?: string) => {
     if (isExternal && externalUrl) {
       // For Discourse, navigate to Commonry app
       window.location.href = externalUrl;
@@ -91,35 +94,40 @@ export function SharedNavigation({ currentView = "home", onNavigate, isExternal 
           </div>
         </button>
 
-        {/* Navigation Links */}
-        <div className="flex items-center gap-6 font-mono text-sm" role="menubar">
-          {navItems.map((item, index) => (
-            <>
-              {index > 0 && (
-                <span
-                  className="text-terminal-muted dark:text-text-muted"
-                  aria-hidden="true"
-                  key={`sep-${item.view}`}
+        {/* Navigation Links and Sync Status */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6 font-mono text-sm" role="menubar">
+            {navItems.map((item, index) => (
+              <>
+                {index > 0 && (
+                  <span
+                    className="text-terminal-muted dark:text-text-muted"
+                    aria-hidden="true"
+                    key={`sep-${item.view}`}
+                  >
+                    |
+                  </span>
+                )}
+                <button
+                  key={item.view}
+                  onClick={item.onClick}
+                  className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terminal-primary dark:focus-visible:ring-cyan focus-visible:ring-offset-2 rounded px-2 py-1 ${
+                    currentView === item.view
+                      ? "terminal-primary dark:text-cyan font-bold text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]"
+                      : "text-terminal-muted dark:text-text-muted hover:terminal-primary dark:hover:text-cyan"
+                  }`}
+                  aria-label={item.ariaLabel}
+                  aria-current={currentView === item.view ? "page" : undefined}
+                  role="menuitem"
                 >
-                  |
-                </span>
-              )}
-              <button
-                key={item.view}
-                onClick={item.onClick}
-                className={`transition-colors hover:[text-shadow:0_0_8px_currentColor] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terminal-primary dark:focus-visible:ring-cyan focus-visible:ring-offset-2 rounded px-2 py-1 ${
-                  currentView === item.view
-                    ? "terminal-primary dark:text-cyan font-bold text-shadow-terminal dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]"
-                    : "text-terminal-muted dark:text-text-muted hover:terminal-primary dark:hover:text-cyan"
-                }`}
-                aria-label={item.ariaLabel}
-                aria-current={currentView === item.view ? "page" : undefined}
-                role="menuitem"
-              >
-                [{item.label}]
-              </button>
-            </>
-          ))}
+                  [{item.label}]
+                </button>
+              </>
+            ))}
+          </div>
+
+          {/* Sync Status Indicator (only show when not external) */}
+          {!isExternal && <SyncStatusIndicator />}
         </div>
       </div>
     </nav>
@@ -137,7 +145,7 @@ interface MobileNavigationProps extends NavigationProps {
 }
 
 export function MobileNavigation({ currentView = "home", onNavigate, isExternal = false, isOpen, onToggle }: MobileNavigationProps) {
-  const handleNavigate = useCallback((view: string, externalUrl?: string) => {
+  const handleNavigate = useCallback((view: View, externalUrl?: string) => {
     onToggle(); // Close menu
     if (isExternal && externalUrl) {
       window.location.href = externalUrl;
