@@ -386,10 +386,13 @@ function renderTemplate(
 
   // Support field names with any characters (spaces, hyphens, parentheses, etc.)
   const conditionalRegex = /\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
-  rendered = rendered.replace(conditionalRegex, (_match, fieldName, content) => {
-    const fieldValue = fieldMap[fieldName] || "";
-    return fieldValue.trim() ? content : "";
-  });
+  rendered = rendered.replace(
+    conditionalRegex,
+    (_match, fieldName, content) => {
+      const fieldValue = fieldMap[fieldName] || "";
+      return fieldValue.trim() ? content : "";
+    },
+  );
 
   const invertedRegex = /\{\{\^([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
   rendered = rendered.replace(invertedRegex, (_match, fieldName, content) => {

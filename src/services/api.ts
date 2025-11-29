@@ -121,7 +121,12 @@ class ApiService {
    * @param displayName - Optional display name.
    * @returns A promise resolving to the API response with user data and token.
    */
-  async signup(username: string, email: string, password: string, displayName?: string) {
+  async signup(
+    username: string,
+    email: string,
+    password: string,
+    displayName?: string,
+  ) {
     return this.request<{ user: User; token: string }>("/api/auth/signup", {
       method: "POST",
       body: JSON.stringify({ username, email, password, displayName }),

@@ -76,19 +76,21 @@ router.post("/", async (req, res) => {
                 data.version || 1,
                 data.lastModifiedAt || new Date(),
                 data.isDeleted || false,
-              ]
+              ],
             );
             response.decks.created.push(data.id);
           } else if (operation === "update") {
             // Check for conflicts
             const existing = await client.query(
               "SELECT version, last_modified_at FROM decks WHERE client_id = $1 AND user_id = $2",
-              [data.id, userId]
+              [data.id, userId],
             );
 
             if (existing.rows.length > 0) {
               const serverVersion = existing.rows[0].version;
-              const serverModified = new Date(existing.rows[0].last_modified_at);
+              const serverModified = new Date(
+                existing.rows[0].last_modified_at,
+              );
               const clientModified = new Date(data.lastModifiedAt);
 
               // Check for version conflict
@@ -120,7 +122,7 @@ router.post("/", async (req, res) => {
                   data.isDeleted || false,
                   data.id,
                   userId,
-                ]
+                ],
               );
               response.decks.updated.push(data.id);
             } else {
@@ -140,7 +142,7 @@ router.post("/", async (req, res) => {
                   data.version || 1,
                   data.lastModifiedAt || new Date(),
                   data.isDeleted || false,
-                ]
+                ],
               );
               response.decks.created.push(data.id);
             }
@@ -150,7 +152,7 @@ router.post("/", async (req, res) => {
               `UPDATE decks
                SET is_deleted = true, last_modified_at = $1, version = version + 1
                WHERE client_id = $2 AND user_id = $3`,
-              [new Date(), data.id, userId]
+              [new Date(), data.id, userId],
             );
             response.decks.deleted.push(data.id);
           }
@@ -194,14 +196,14 @@ router.post("/", async (req, res) => {
                 data.version || 1,
                 data.lastModifiedAt || new Date(),
                 data.isDeleted || false,
-              ]
+              ],
             );
             response.cards.created.push(data.id);
           } else if (operation === "update") {
             // Check for conflicts
             const existing = await client.query(
               "SELECT version FROM cards WHERE client_id = $1 AND user_id = $2",
-              [data.id, userId]
+              [data.id, userId],
             );
 
             if (existing.rows.length > 0) {
@@ -241,7 +243,7 @@ router.post("/", async (req, res) => {
                   data.isDeleted || false,
                   data.id,
                   userId,
-                ]
+                ],
               );
               response.cards.updated.push(data.id);
             } else {
@@ -267,7 +269,7 @@ router.post("/", async (req, res) => {
                   data.version || 1,
                   data.lastModifiedAt || new Date(),
                   data.isDeleted || false,
-                ]
+                ],
               );
               response.cards.created.push(data.id);
             }
@@ -277,7 +279,7 @@ router.post("/", async (req, res) => {
               `UPDATE cards
                SET is_deleted = true, last_modified_at = $1, version = version + 1
                WHERE client_id = $2 AND user_id = $3`,
-              [new Date(), data.id, userId]
+              [new Date(), data.id, userId],
             );
             response.cards.deleted.push(data.id);
           }
@@ -312,7 +314,7 @@ router.post("/", async (req, res) => {
                 data.rating,
                 data.duration,
                 data.timestamp || new Date(),
-              ]
+              ],
             );
             response.sessions.created.push(data.id);
           }
@@ -383,7 +385,7 @@ router.get("/changes", async (req, res) => {
        FROM decks
        WHERE user_id = $1 AND last_modified_at > $2
        ORDER BY last_modified_at ASC`,
-      [userId, sinceDate]
+      [userId, sinceDate],
     );
 
     for (const deck of deckChanges.rows) {
@@ -404,7 +406,7 @@ router.get("/changes", async (req, res) => {
        FROM cards
        WHERE user_id = $1 AND last_modified_at > $2
        ORDER BY last_modified_at ASC`,
-      [userId, sinceDate]
+      [userId, sinceDate],
     );
 
     for (const card of cardChanges.rows) {

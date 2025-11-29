@@ -202,24 +202,32 @@ export class SyncService {
 
     // Process decks
     if (entities.decks.length > 0) {
-      request.decks = entities.decks.slice(0, this.config.batchSize).map((deck) => ({
-        operation: this.determineOperation(deck),
-        data: deck,
-      }));
+      request.decks = entities.decks
+        .slice(0, this.config.batchSize)
+        .map((deck) => ({
+          operation: this.determineOperation(deck),
+          data: deck,
+        }));
     }
 
     // Process cards
     if (entities.cards.length > 0) {
-      request.cards = entities.cards.slice(0, this.config.batchSize).map((card) => ({
-        operation: this.determineOperation(card),
-        data: card,
-      }));
+      request.cards = entities.cards
+        .slice(0, this.config.batchSize)
+        .map((card) => ({
+          operation: this.determineOperation(card),
+          data: card,
+        }));
     }
 
     // Process sessions (if enabled)
     if (this.config.syncSessions && entities.sessions.length > 0) {
-      request.sessions = entities.sessions.slice(0, this.config.batchSize)
-        .filter((session): session is StudySession & { id: string } => session.id !== undefined)
+      request.sessions = entities.sessions
+        .slice(0, this.config.batchSize)
+        .filter(
+          (session): session is StudySession & { id: string } =>
+            session.id !== undefined,
+        )
         .map((session) => ({
           operation: "create" as SyncOperation,
           data: {
@@ -283,7 +291,10 @@ export class SyncService {
       }
     } catch (error) {
       console.error("Push sync failed:", error);
-      itemsFailed = (request.decks?.length || 0) + (request.cards?.length || 0) + (request.sessions?.length || 0);
+      itemsFailed =
+        (request.decks?.length || 0) +
+        (request.cards?.length || 0) +
+        (request.sessions?.length || 0);
       errors.push({
         entityType: "deck",
         entityId: "",
@@ -355,7 +366,10 @@ export class SyncService {
   /**
    * Determines the operation type for an entity based on its state.
    */
-  private determineOperation(entity: { isDeleted?: boolean; serverId?: string }): SyncOperation {
+  private determineOperation(entity: {
+    isDeleted?: boolean;
+    serverId?: string;
+  }): SyncOperation {
     if (entity.isDeleted) return "delete";
     if (!entity.serverId) return "create";
     return "update";
@@ -444,7 +458,8 @@ export class SyncService {
    */
   async getSyncStats(): Promise<SyncStats> {
     const entities = await db.getEntitiesNeedingSync();
-    const pendingCount = entities.decks.length + entities.cards.length + entities.sessions.length;
+    const pendingCount =
+      entities.decks.length + entities.cards.length + entities.sessions.length;
 
     // Count conflicts (entities with 'conflict' status)
     const conflictCount = await this.countConflicts();
@@ -466,8 +481,14 @@ export class SyncService {
    * Counts entities with conflict status.
    */
   private async countConflicts(): Promise<number> {
-    const decksWithConflicts = await db.decks.where("syncStatus").equals("conflict").count();
-    const cardsWithConflicts = await db.cards.where("syncStatus").equals("conflict").count();
+    const decksWithConflicts = await db.decks
+      .where("syncStatus")
+      .equals("conflict")
+      .count();
+    const cardsWithConflicts = await db.cards
+      .where("syncStatus")
+      .equals("conflict")
+      .count();
     return decksWithConflicts + cardsWithConflicts;
   }
 
@@ -475,8 +496,14 @@ export class SyncService {
    * Counts entities with error status.
    */
   private async countErrors(): Promise<number> {
-    const decksWithErrors = await db.decks.where("syncStatus").equals("error").count();
-    const cardsWithErrors = await db.cards.where("syncStatus").equals("error").count();
+    const decksWithErrors = await db.decks
+      .where("syncStatus")
+      .equals("error")
+      .count();
+    const cardsWithErrors = await db.cards
+      .where("syncStatus")
+      .equals("error")
+      .count();
     return decksWithErrors + cardsWithErrors;
   }
 
