@@ -1,6 +1,19 @@
 -- Migration: Create achievements system tables
 -- Description: Achievement definitions and user achievement tracking
 
+-- Create ENUM types to avoid string literal duplication
+DO $$ BEGIN
+    CREATE TYPE achievement_category AS ENUM ('consistency', 'volume', 'community', 'special');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE achievement_rarity AS ENUM ('common', 'rare', 'epic', 'legendary');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 -- Achievements master table
 CREATE TABLE IF NOT EXISTS achievements (
     achievement_id VARCHAR(50) PRIMARY KEY,
@@ -8,7 +21,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     -- Achievement details
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    category VARCHAR(50) NOT NULL, -- 'consistency', 'volume', 'community', 'special'
+    category achievement_category NOT NULL,
     badge_icon VARCHAR(100), -- Icon identifier or emoji
 
     -- Criteria (stored as JSONB for flexibility)
@@ -17,12 +30,10 @@ CREATE TABLE IF NOT EXISTS achievements (
 
     -- Display order and rarity
     display_order INTEGER DEFAULT 0,
-    rarity VARCHAR(20) DEFAULT 'common', -- 'common', 'rare', 'epic', 'legendary'
+    rarity achievement_rarity DEFAULT 'common',
 
     -- Metadata
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT valid_category CHECK (category IN ('consistency', 'volume', 'community', 'special'))
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- User achievements junction table
