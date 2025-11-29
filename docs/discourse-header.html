@@ -1,32 +1,38 @@
 <script type="text/discourse-plugin" version="0.12.1">
-api.onPageChange(() => {
-  // Detect dark mode and apply class to html element
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (isDarkMode) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-});
-
-// Listen for dark mode changes
-if (window.matchMedia) {
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (e.matches) {
+  api.onPageChange(() => {
+    // Detect dark mode and apply class to html element
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
   });
-}
+
+  // Listen for dark mode changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (e.matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    });
+  }
 </script>
 
 <!-- Commonry Shared Navigation -->
 <nav class="commonry-nav" role="navigation" aria-label="Main navigation">
   <div class="commonry-nav-container">
     <!-- Logo and Brand -->
-    <a href="https://commonry.app" class="commonry-logo" aria-label="Go to Commonry home">
-      <div class="commonry-logo-icon" role="img" aria-label="Commonry logo">🏛️</div>
+    <a
+      href="https://commonry.app"
+      class="commonry-logo"
+      aria-label="Go to Commonry home"
+    >
+      <div class="commonry-logo-icon" role="img" aria-label="Commonry logo">
+        🏛️
+      </div>
       <div class="commonry-brand">
         <div class="commonry-subtitle">$ cd ~</div>
         <div class="commonry-title">COMMONRY</div>
@@ -80,7 +86,13 @@ if (window.matchMedia) {
   <ol class="commonry-breadcrumb-list">
     <li class="commonry-breadcrumb-item">
       <a href="https://commonry.app" class="commonry-breadcrumb-link">
-        <svg class="commonry-breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg
+          class="commonry-breadcrumb-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
@@ -88,12 +100,19 @@ if (window.matchMedia) {
       </a>
     </li>
     <li class="commonry-breadcrumb-separator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </li>
     <li class="commonry-breadcrumb-item">
-      <a href="https://forum.commonry.app" class="commonry-breadcrumb-link">The Square</a>
+      <a href="https://forum.commonry.app" class="commonry-breadcrumb-link"
+        >The Square</a
+      >
     </li>
   </ol>
 </nav>

@@ -16,34 +16,40 @@ Go to **Header** section and paste the following:
 
 ```html
 <script type="text/discourse-plugin" version="0.12.1">
-api.onPageChange(() => {
-  // Detect dark mode and apply class to html element
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (isDarkMode) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-});
-
-// Listen for dark mode changes
-if (window.matchMedia) {
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (e.matches) {
+  api.onPageChange(() => {
+    // Detect dark mode and apply class to html element
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
   });
-}
+
+  // Listen for dark mode changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (e.matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    });
+  }
 </script>
 
 <!-- Commonry Shared Navigation -->
 <nav class="commonry-nav" role="navigation" aria-label="Main navigation">
   <div class="commonry-nav-container">
     <!-- Logo and Brand -->
-    <a href="https://commonry.app" class="commonry-logo" aria-label="Go to Commonry home">
-      <div class="commonry-logo-icon" role="img" aria-label="Commonry logo">🏛️</div>
+    <a
+      href="https://commonry.app"
+      class="commonry-logo"
+      aria-label="Go to Commonry home"
+    >
+      <div class="commonry-logo-icon" role="img" aria-label="Commonry logo">
+        🏛️
+      </div>
       <div class="commonry-brand">
         <div class="commonry-subtitle">$ cd ~</div>
         <div class="commonry-title">COMMONRY</div>
@@ -97,7 +103,13 @@ if (window.matchMedia) {
   <ol class="commonry-breadcrumb-list">
     <li class="commonry-breadcrumb-item">
       <a href="https://commonry.app" class="commonry-breadcrumb-link">
-        <svg class="commonry-breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg
+          class="commonry-breadcrumb-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
@@ -105,12 +117,19 @@ if (window.matchMedia) {
       </a>
     </li>
     <li class="commonry-breadcrumb-separator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </li>
     <li class="commonry-breadcrumb-item">
-      <a href="https://forum.commonry.app" class="commonry-breadcrumb-link">The Square</a>
+      <a href="https://forum.commonry.app" class="commonry-breadcrumb-link"
+        >The Square</a
+      >
     </li>
   </ol>
 </nav>
@@ -149,8 +168,11 @@ Go to **Common** CSS section and paste the following:
   --commonry-border-light: #d6d3d1;
 
   /* Font Stack */
-  --commonry-font-mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-  --commonry-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --commonry-font-mono:
+    "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
+  --commonry-font-sans:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
 }
 
 /* Dark Mode Variables */
@@ -264,7 +286,9 @@ html.dark .commonry-nav-separator {
 .commonry-nav-link {
   color: var(--commonry-ink-light);
   text-decoration: none;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
   padding: 0.5rem;
   border-radius: 0.25rem;
 }
@@ -554,31 +578,40 @@ To show dynamic breadcrumbs based on the current category, add this to **Header*
 ## Troubleshooting
 
 ### Issue: Styles not appearing
+
 - **Solution**: Make sure you're editing **Common** CSS, not Desktop or Mobile specific CSS
 - Clear your browser cache and hard refresh (Ctrl+F5 or Cmd+Shift+R)
 
 ### Issue: Navigation overlaps with Discourse content
+
 - **Solution**: Increase the `margin-top` value for `#main-outlet` in the CSS
 
 ### Issue: Dark mode not working
+
 - **Solution**: Ensure the dark mode detection script is in the **Header** section and that your browser/OS dark mode is enabled
 
 ### Issue: Fonts look different
+
 - **Solution**: Import IBM Plex fonts by adding this to the **</head>** section:
   ```html
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
   ```
 
 ## Support
 
 If you need help with the integration:
+
 1. Check that all CSS variables are defined
 2. Verify HTML structure matches exactly
 3. Test in multiple browsers
 4. Check browser console for any JavaScript errors
 
 For more advanced customization, refer to:
+
 - [Discourse Theme Developer Guide](https://meta.discourse.org/t/developer-s-guide-to-discourse-themes/93648)
 - Commonry design system documentation (see docs/design-tokens.md)
