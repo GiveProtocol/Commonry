@@ -19,16 +19,16 @@ interface SquareViewProps {
 const DISCOURSE_URL = import.meta.env.VITE_DISCOURSE_URL || 'https://forum.commonry.app';
 
 /**
- * Safely strips HTML tags from a string to prevent ReDoS attacks.
- * Uses a non-backtracking regex and limits input length.
+ * Safely strips HTML tags from a string using DOM parsing.
+ * This approach avoids regex entirely, eliminating ReDoS concerns.
  */
 const stripHtmlTags = (html: string): string => {
   if (!html) return '';
   // Limit input length to prevent DoS
   const safeHtml = html.substring(0, 500);
-  // Use + instead of * to prevent catastrophic backtracking
-  // The + requires at least one character, making it safer
-  return safeHtml.replace(/<[^>]+>/g, '');
+  // Use DOM parsing instead of regex to safely extract text content
+  const doc = new DOMParser().parseFromString(safeHtml, 'text/html');
+  return doc.body.textContent || '';
 };
 
 export function SquareView({ onBack }: SquareViewProps) {
