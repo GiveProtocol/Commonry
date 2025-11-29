@@ -123,9 +123,11 @@ export function SyncStatusIndicator() {
                      z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="h-8 bg-terminal-muted dark:bg-dark-border
+            <div
+              className="h-8 bg-terminal-muted dark:bg-dark-border
                           border-b border-terminal-primary/30 dark:border-cyan/30
-                          flex items-center px-4 gap-2">
+                          flex items-center px-4 gap-2"
+            >
               <div className="w-3 h-3 rounded-full bg-red-500/50" />
               <div className="w-3 h-3 rounded-full bg-orange/50 dark:bg-amber/50" />
               <div className="w-3 h-3 rounded-full bg-green/50 dark:bg-cyan/50" />
@@ -140,7 +142,9 @@ export function SyncStatusIndicator() {
                 <span className="text-sm font-mono text-terminal-muted dark:text-text-muted">
                   Connection
                 </span>
-                <span className={`text-sm font-mono ${stats.isOnline ? "text-green-500" : "text-red-500"}`}>
+                <span
+                  className={`text-sm font-mono ${stats.isOnline ? "text-green-500" : "text-red-500"}`}
+                >
                   {stats.isOnline ? "Online" : "Offline"}
                 </span>
               </div>
@@ -223,7 +227,9 @@ export function SyncStatusIndicator() {
                          shadow-terminal-glow dark:shadow-cyan-glow
                          flex items-center justify-center gap-2"
               >
-                <RefreshCw className={`w-4 h-4 ${isManualSyncing ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${isManualSyncing ? "animate-spin" : ""}`}
+                />
                 {isManualSyncing ? "Syncing..." : "Sync Now"}
               </motion.button>
 

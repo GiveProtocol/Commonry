@@ -11,7 +11,9 @@ The sync system ensures that decks, cards, and study sessions are synchronized a
 ### Client-Side Components
 
 #### 1. **Sync Types** (`src/types/sync.ts`)
+
 Defines all TypeScript interfaces for sync operations:
+
 - `SyncStatus`: 'synced' | 'pending' | 'conflict' | 'error'
 - `SyncOperation`: 'create' | 'update' | 'delete'
 - `SyncEntityType`: 'deck' | 'card' | 'session'
@@ -20,7 +22,9 @@ Defines all TypeScript interfaces for sync operations:
 - `SyncConfig`: Configurable sync settings
 
 #### 2. **Database Layer** (`src/storage/database.ts`)
+
 Updated IndexedDB schema (v4) with:
+
 - Sync metadata fields on all tables
 - `syncQueue` table for offline operations
 - Soft delete support (tombstones)
@@ -28,6 +32,7 @@ Updated IndexedDB schema (v4) with:
 - Helper methods for sync operations
 
 **Key Changes:**
+
 ```typescript
 // Sync metadata fields added to cards and decks
 serverId?: string;
@@ -40,6 +45,7 @@ userId?: string;
 ```
 
 **New Methods:**
+
 - `queueSyncOperation()`: Adds operations to offline queue
 - `getPendingSyncItems()`: Retrieves queued operations
 - `getEntitiesNeedingSync()`: Gets pending entities
@@ -47,7 +53,9 @@ userId?: string;
 - `filterDeleted()`: Filters out soft-deleted entities
 
 #### 3. **Sync Service** (`src/services/sync-service.ts`)
+
 Orchestrates all sync operations:
+
 - **Auto-sync**: Periodic background syncing (default: 30s)
 - **Manual sync**: User-triggered sync
 - **Push sync**: Upload local changes to server
@@ -57,6 +65,7 @@ Orchestrates all sync operations:
 - **Sync statistics**: Real-time sync state tracking
 
 **Configuration Options:**
+
 ```typescript
 {
   autoSync: true,           // Enable automatic syncing
@@ -69,7 +78,9 @@ Orchestrates all sync operations:
 ```
 
 #### 4. **Sync Status UI** (`src/components/SyncStatusIndicator.tsx`)
+
 Visual indicator showing:
+
 - Online/offline status
 - Pending changes count
 - Conflicts and errors
@@ -82,19 +93,23 @@ The sync status indicator is automatically shown in the SharedNavigation compone
 ### Server-Side Components
 
 #### 1. **Sync Routes** (`sync-routes.js`)
+
 Express router handling sync API endpoints:
 
 **POST `/api/sync`**
+
 - Receives batch operations from client
 - Processes creates, updates, deletes
 - Detects version conflicts
 - Returns results and conflicts
 
 **GET `/api/sync/changes`**
+
 - Fetches server changes since timestamp
 - Returns modified entities for pull sync
 
 #### 2. **Database Schema Requirements**
+
 PostgreSQL tables need these columns:
 
 ```sql
@@ -119,6 +134,7 @@ card_client_id VARCHAR(255)      -- Reference to card's client ID
 ## Sync Flow
 
 ### 1. **Create Operation**
+
 ```
 User creates deck locally
   ↓
@@ -136,6 +152,7 @@ Client: Update syncStatus='synced', store serverId
 ```
 
 ### 2. **Update Operation**
+
 ```
 User edits card locally
   ↓
@@ -157,6 +174,7 @@ Client: If no conflict, mark as synced
 ```
 
 ### 3. **Delete Operation**
+
 ```
 User deletes deck
   ↓
@@ -174,6 +192,7 @@ Client: Mark as synced
 ```
 
 ### 4. **Offline → Online Recovery**
+
 ```
 User makes changes while offline
   ↓
@@ -205,6 +224,7 @@ When the same entity is modified on both client and server:
 5. **Sync**: Upload merged version to server
 
 **Example:**
+
 ```typescript
 // Client has: { name: "Spanish", lastModifiedAt: "2025-11-24T10:00:00" }
 // Server has: { name: "Español", lastModifiedAt: "2025-11-24T09:00:00" }
@@ -223,14 +243,14 @@ The sync service is automatically initialized in `App.tsx`:
 useEffect(() => {
   const initializeApp = async () => {
     await db.open();
-    await syncService.initialize();  // Starts auto-sync
+    await syncService.initialize(); // Starts auto-sync
     setIsInitialized(true);
   };
 
   initializeApp();
 
   return () => {
-    syncService.cleanup();  // Cleanup on unmount
+    syncService.cleanup(); // Cleanup on unmount
   };
 }, []);
 ```
@@ -251,9 +271,9 @@ Update sync settings programmatically:
 ```typescript
 syncService.updateConfig({
   autoSync: true,
-  syncInterval: 60000,  // Sync every 1 minute
+  syncInterval: 60000, // Sync every 1 minute
   batchSize: 100,
-  wifiOnly: true        // Only sync on WiFi
+  wifiOnly: true, // Only sync on WiFi
 });
 ```
 
@@ -268,7 +288,7 @@ console.log({
   pendingCount: stats.pendingCount,
   conflictCount: stats.conflictCount,
   isOnline: stats.isOnline,
-  isSyncing: stats.isSyncing
+  isSyncing: stats.isSyncing,
 });
 ```
 
@@ -312,6 +332,7 @@ console.log({
 ## Implementation Status
 
 ✅ **Completed:**
+
 - Sync data models and types
 - IndexedDB schema with sync metadata
 - SyncService for orchestration
@@ -323,6 +344,7 @@ console.log({
 - Sync status UI indicators
 
 ⏳ **Pending:**
+
 - Comprehensive testing across scenarios
 - Database migration scripts for production
 - Performance optimization for large datasets
@@ -354,6 +376,7 @@ console.log({
 ### Sync not happening
 
 **Check:**
+
 1. Is user online? `syncService.getSyncStats().isOnline`
 2. Is auto-sync enabled? `syncService.getConfig().autoSync`
 3. Any errors? `syncService.getSyncStats().errorCount`
@@ -361,6 +384,7 @@ console.log({
 ### Conflicts not resolving
 
 **Check:**
+
 1. Are version numbers incrementing?
 2. Is `lastModifiedAt` updating correctly?
 3. Are conflicts appearing in UI?
@@ -368,6 +392,7 @@ console.log({
 ### Offline queue not processing
 
 **Check:**
+
 1. Is network back online?
 2. Are items in queue? `db.getPendingSyncItems()`
 3. Check browser console for errors
@@ -375,6 +400,7 @@ console.log({
 ## Future Enhancements
 
 **Potential improvements:**
+
 - Real-time sync via WebSockets
 - Differential sync (only changed fields)
 - Compressed sync payloads
@@ -385,6 +411,7 @@ console.log({
 ## Support
 
 For issues or questions about the sync system:
+
 1. Check browser console for sync errors
 2. Verify database schema matches requirements
 3. Test with manual sync first before relying on auto-sync

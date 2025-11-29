@@ -5,9 +5,9 @@
  * and server (PostgreSQL).
  */
 
-export type SyncStatus = 'synced' | 'pending' | 'conflict' | 'error';
-export type SyncOperation = 'create' | 'update' | 'delete';
-export type SyncEntityType = 'deck' | 'card' | 'session';
+export type SyncStatus = "synced" | "pending" | "conflict" | "error";
+export type SyncOperation = "create" | "update" | "delete";
+export type SyncEntityType = "deck" | "card" | "session";
 
 /**
  * Sync metadata attached to all syncable entities
@@ -79,7 +79,7 @@ export interface SyncableCard {
   interval: number;
   repetitions: number;
   easeFactor: number;
-  status: 'new' | 'learning' | 'review' | 'relearning';
+  status: "new" | "learning" | "review" | "relearning";
   lastReview?: Date;
   totalReviews: number;
 

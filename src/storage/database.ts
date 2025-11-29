@@ -117,32 +117,43 @@ export class SRSDatabase extends Dexie {
     });
 
     // Version 4: Add sync metadata and sync queue
-    this.version(4).stores({
-      cards:
-        "id, deckId, due, status, interval, easeFactor, importSource, externalId, syncStatus, serverId, lastModifiedAt, isDeleted, userId",
-      decks:
-        "id, name, importSource, externalId, syncStatus, serverId, lastModifiedAt, isDeleted, userId",
-      sessions: "++id, cardId, timestamp, syncStatus, serverId, userId",
-      importMappings:
-        "++id, [sourceSystem+sourceId+entityType], internalId, importBatchId",
-      importBatches: "id, sourceSystem, importedAt, status",
-      syncQueue: "id, entityType, entityId, operation, timestamp, userId",
-    }).upgrade(async (tx) => {
-      // Initialize sync metadata for existing records
-      await tx.table("cards").toCollection().modify((card: SyncableCard) => {
-        card.syncStatus = "pending";
-        card.version = 1;
-        card.lastModifiedAt = new Date();
+    this.version(4)
+      .stores({
+        cards:
+          "id, deckId, due, status, interval, easeFactor, importSource, externalId, syncStatus, serverId, lastModifiedAt, isDeleted, userId",
+        decks:
+          "id, name, importSource, externalId, syncStatus, serverId, lastModifiedAt, isDeleted, userId",
+        sessions: "++id, cardId, timestamp, syncStatus, serverId, userId",
+        importMappings:
+          "++id, [sourceSystem+sourceId+entityType], internalId, importBatchId",
+        importBatches: "id, sourceSystem, importedAt, status",
+        syncQueue: "id, entityType, entityId, operation, timestamp, userId",
+      })
+      .upgrade(async (tx) => {
+        // Initialize sync metadata for existing records
+        await tx
+          .table("cards")
+          .toCollection()
+          .modify((card: SyncableCard) => {
+            card.syncStatus = "pending";
+            card.version = 1;
+            card.lastModifiedAt = new Date();
+          });
+        await tx
+          .table("decks")
+          .toCollection()
+          .modify((deck: SyncableDeck) => {
+            deck.syncStatus = "pending";
+            deck.version = 1;
+            deck.lastModifiedAt = new Date();
+          });
+        await tx
+          .table("sessions")
+          .toCollection()
+          .modify((session: StudySession) => {
+            session.syncStatus = "pending";
+          });
       });
-      await tx.table("decks").toCollection().modify((deck: SyncableDeck) => {
-        deck.syncStatus = "pending";
-        deck.version = 1;
-        deck.lastModifiedAt = new Date();
-      });
-      await tx.table("sessions").toCollection().modify((session: StudySession) => {
-        session.syncStatus = "pending";
-      });
-    });
 
     this.srsEngine = new SRSEngine();
   }
@@ -175,38 +186,49 @@ export class SRSDatabase extends Dexie {
     let result: ReviewResult | undefined;
     const now = new Date();
 
-    await this.transaction("rw", this.cards, this.sessions, this.syncQueue, async () => {
-      const card = await this.cards.get(cardId);
-      if (!card) throw new Error("Card not found");
+    await this.transaction(
+      "rw",
+      this.cards,
+      this.sessions,
+      this.syncQueue,
+      async () => {
+        const card = await this.cards.get(cardId);
+        if (!card) throw new Error("Card not found");
 
-      // Update card with SRS engine
-      result = this.srsEngine.calculateNextReview(card, rating);
+        // Update card with SRS engine
+        result = this.srsEngine.calculateNextReview(card, rating);
 
-      // Update card with sync metadata
-      await this.cards.update(cardId, {
-        ...result.card,
-        lastModifiedAt: now,
-        syncStatus: "pending",
-        version: (card.version || 1) + 1,
-      });
+        // Update card with sync metadata
+        await this.cards.update(cardId, {
+          ...result.card,
+          lastModifiedAt: now,
+          syncStatus: "pending",
+          version: (card.version || 1) + 1,
+        });
 
-      // Record session with sync metadata
-      const session: StudySession = {
-        cardId,
-        rating,
-        duration,
-        timestamp: now,
-        syncStatus: "pending",
-      };
+        // Record session with sync metadata
+        const session: StudySession = {
+          cardId,
+          rating,
+          duration,
+          timestamp: now,
+          syncStatus: "pending",
+        };
 
-      await this.sessions.add(session);
+        await this.sessions.add(session);
 
-      // Queue sync operations
-      await this.queueSyncOperation("update", "card", cardId, result.card);
-      if (session.id) {
-        await this.queueSyncOperation("create", "session", session.id, session);
-      }
-    });
+        // Queue sync operations
+        await this.queueSyncOperation("update", "card", cardId, result.card);
+        if (session.id) {
+          await this.queueSyncOperation(
+            "create",
+            "session",
+            session.id,
+            session,
+          );
+        }
+      },
+    );
 
     if (!result) {
       throw new Error("Failed to record review");
@@ -348,7 +370,10 @@ export class SRSDatabase extends Dexie {
    * @param updates - Partial card properties to update.
    * @returns A promise that resolves when the update is complete.
    */
-  async updateCard(cardId: CardId, updates: Partial<SyncableCard>): Promise<void> {
+  async updateCard(
+    cardId: CardId,
+    updates: Partial<SyncableCard>,
+  ): Promise<void> {
     const card = await this.cards.get(cardId);
     if (!card) throw new Error("Card not found");
 
@@ -381,7 +406,9 @@ export class SRSDatabase extends Dexie {
       version: (card.version || 1) + 1,
     });
 
-    await this.queueSyncOperation("delete", "card", cardId, { isDeleted: true });
+    await this.queueSyncOperation("delete", "card", cardId, {
+      isDeleted: true,
+    });
   }
 
   /**
@@ -395,29 +422,39 @@ export class SRSDatabase extends Dexie {
 
     const now = new Date();
 
-    await this.transaction("rw", this.cards, this.decks, this.syncQueue, async () => {
-      // Soft delete all cards in the deck
-      const cards = await this.cards.where("deckId").equals(deckId).toArray();
-      for (const card of cards) {
-        await this.cards.update(card.id, {
+    await this.transaction(
+      "rw",
+      this.cards,
+      this.decks,
+      this.syncQueue,
+      async () => {
+        // Soft delete all cards in the deck
+        const cards = await this.cards.where("deckId").equals(deckId).toArray();
+        for (const card of cards) {
+          await this.cards.update(card.id, {
+            isDeleted: true,
+            lastModifiedAt: now,
+            syncStatus: "pending",
+            version: (card.version || 1) + 1,
+          });
+          await this.queueSyncOperation("delete", "card", card.id, {
+            isDeleted: true,
+          });
+        }
+
+        // Soft delete the deck
+        await this.decks.update(deckId, {
           isDeleted: true,
           lastModifiedAt: now,
           syncStatus: "pending",
-          version: (card.version || 1) + 1,
+          version: (deck.version || 1) + 1,
         });
-        await this.queueSyncOperation("delete", "card", card.id, { isDeleted: true });
-      }
 
-      // Soft delete the deck
-      await this.decks.update(deckId, {
-        isDeleted: true,
-        lastModifiedAt: now,
-        syncStatus: "pending",
-        version: (deck.version || 1) + 1,
-      });
-
-      await this.queueSyncOperation("delete", "deck", deckId, { isDeleted: true });
-    });
+        await this.queueSyncOperation("delete", "deck", deckId, {
+          isDeleted: true,
+        });
+      },
+    );
   }
 
   /**
@@ -519,10 +556,7 @@ export class SRSDatabase extends Dexie {
    * @returns A promise that resolves to an array of sync queue items.
    */
   async getPendingSyncItems(limit = 50): Promise<SyncQueueItem[]> {
-    return await this.syncQueue
-      .orderBy("timestamp")
-      .limit(limit)
-      .toArray();
+    return await this.syncQueue.orderBy("timestamp").limit(limit).toArray();
   }
 
   /**
