@@ -5,7 +5,7 @@
  * Allows users to manually trigger sync operations.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CloudOff, RefreshCw, Check, AlertCircle, Clock } from "lucide-react";
 import { syncService } from "../services/sync-service";
@@ -16,6 +16,18 @@ export function SyncStatusIndicator() {
   const [isManualSyncing, setIsManualSyncing] = useState(false);
   const [lastSyncResult, setLastSyncResult] = useState<SyncResult | null>(null);
   const [showDetails, setShowDetails] = useState(false);
+
+  // Close dropdown on Escape key (keyboard accessibility)
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (event.key === "Escape" && showDetails) {
+      setShowDetails(false);
+    }
+  }, [showDetails]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   // Poll sync stats every 5 seconds
   useEffect(() => {
@@ -242,11 +254,15 @@ export function SyncStatusIndicator() {
         )}
       </AnimatePresence>
 
-      {/* Click outside to close */}
+      {/* Click outside to close (keyboard users can press Escape) */}
       {showDetails && (
         <div
           className="fixed inset-0 z-40"
           onClick={() => setShowDetails(false)}
+          onKeyDown={(e) => e.key === "Escape" && setShowDetails(false)}
+          role="button"
+          tabIndex={-1}
+          aria-label="Close sync status dropdown"
         />
       )}
     </div>
