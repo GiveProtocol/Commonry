@@ -122,7 +122,7 @@ export interface SyncQueueItem {
   operation: SyncOperation;
   entityType: SyncEntityType;
   entityId: string;
-  data: any;
+  data: unknown;
   timestamp: Date;
   retryCount: number;
   lastError?: string;
@@ -149,8 +149,8 @@ export interface SyncConflict {
   entityId: string;
   localVersion: number;
   serverVersion: number;
-  localData: any;
-  serverData: any;
+  localData: unknown;
+  serverData: unknown;
   conflictedFields: string[];
 }
 
