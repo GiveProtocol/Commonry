@@ -17,12 +17,24 @@ export function SyncStatusIndicator() {
   const [lastSyncResult, setLastSyncResult] = useState<SyncResult | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
+  // Close dropdown handler
+  const closeDropdown = useCallback(() => {
+    setShowDetails(false);
+  }, []);
+
   // Close dropdown on Escape key (keyboard accessibility)
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key === "Escape" && showDetails) {
       setShowDetails(false);
     }
   }, [showDetails]);
+
+  // Handle keyboard events on backdrop
+  const handleBackdropKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setShowDetails(false);
+    }
+  }, []);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -258,8 +270,8 @@ export function SyncStatusIndicator() {
       {showDetails && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => setShowDetails(false)}
-          onKeyDown={(e) => e.key === "Escape" && setShowDetails(false)}
+          onClick={closeDropdown}
+          onKeyDown={handleBackdropKeyDown}
           role="button"
           tabIndex={-1}
           aria-label="Close sync status dropdown"
