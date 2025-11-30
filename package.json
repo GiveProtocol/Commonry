@@ -52,7 +52,8 @@
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "3.4.1",
-    "ulid": "^3.0.1"
+    "ulid": "^3.0.1",
+    "lusca": "^1.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
