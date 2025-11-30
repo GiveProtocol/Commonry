@@ -25,7 +25,7 @@ function generateULID(prefix) {
  * Processes creates, updates, and deletes for decks, cards, and sessions.
  */
 router.post("/", async (req, res) => {
-  const { decks, cards, sessions, lastSyncAt } = req.body;
+  const { decks, cards, sessions } = req.body;
   const userId = req.userId; // Set by authenticateToken middleware
 
   const client = await pool.connect();
@@ -88,11 +88,6 @@ router.post("/", async (req, res) => {
 
             if (existing.rows.length > 0) {
               const serverVersion = existing.rows[0].version;
-              const serverModified = new Date(
-                existing.rows[0].last_modified_at,
-              );
-              const clientModified = new Date(data.lastModifiedAt);
-
               // Check for version conflict
               if (data.version && data.version < serverVersion) {
                 response.decks.conflicts.push({
