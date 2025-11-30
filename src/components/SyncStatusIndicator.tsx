@@ -18,11 +18,14 @@ export function SyncStatusIndicator() {
   const [showDetails, setShowDetails] = useState(false);
 
   // Close dropdown on Escape key (keyboard accessibility)
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === "Escape" && showDetails) {
-      setShowDetails(false);
-    }
-  }, [showDetails]);
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showDetails) {
+        setShowDetails(false);
+      }
+    },
+    [showDetails],
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
