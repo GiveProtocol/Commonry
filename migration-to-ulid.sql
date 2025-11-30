@@ -12,11 +12,25 @@ ALTER TABLE leaderboard_cache DROP CONSTRAINT IF EXISTS fk_user_leaderboard;
 ALTER TABLE cards DROP CONSTRAINT IF EXISTS fk_deck;
 ALTER TABLE media DROP CONSTRAINT IF EXISTS fk_deck_media;
 
--- Backup existing data (create backup tables)
-CREATE TABLE users_backup AS SELECT * FROM users;
-CREATE TABLE cards_backup AS SELECT * FROM cards;
-CREATE TABLE decks_backup AS SELECT * FROM decks;
-CREATE TABLE media_backup AS SELECT * FROM media;
+-- Backup existing data (create backup tables with explicit columns)
+CREATE TABLE users_backup AS
+    SELECT user_id, username, email, password_hash, display_name,
+           created_at, updated_at, last_login_at, is_active
+    FROM users;
+
+CREATE TABLE cards_backup AS
+    SELECT card_id, deck_id, card_type, front_content, back_content,
+           tags, created_at, updated_at
+    FROM cards;
+
+CREATE TABLE decks_backup AS
+    SELECT deck_id, name, description, metadata, created_at, updated_at
+    FROM decks;
+
+CREATE TABLE media_backup AS
+    SELECT media_id, deck_id, filename, content_type, storage_url,
+           file_hash, file_size, created_at
+    FROM media;
 
 -- Drop dependent tables (we'll recreate them)
 DROP TABLE IF EXISTS leaderboard_cache;
