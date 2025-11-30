@@ -16,312 +16,318 @@
 -->
 
 <style>
-/* ===== COMMONRY NAVIGATION STYLES ===== */
+  /* ===== COMMONRY NAVIGATION STYLES ===== */
 
-/* Import IBM Plex fonts (same as Commonry app) */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+  /* Import IBM Plex fonts (same as Commonry app) */
+  @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
 
-/* Hide default Discourse header */
-.d-header {
-  display: none !important;
-}
-
-/* Commonry Navigation Container */
-#commonry-nav {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background-color: #fafaf9; /* Light mode: paper */
-  border-bottom: 2px solid #00a86b; /* Light mode: terminal-green */
-  box-shadow: 0 0 20px rgba(0, 168, 107, 0.15);
-  font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-}
-
-/* Dark mode styles */
-html.dark-scheme #commonry-nav,
-html[data-theme="dark"] #commonry-nav,
-.dark #commonry-nav {
-  background-color: #0d1117; /* Dark mode: dark */
-  border-bottom-color: #00d9ff; /* Dark mode: cyan */
-  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
-}
-
-/* Navigation inner container */
-#commonry-nav-inner {
-  padding: 1rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Logo container */
-#commonry-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-#commonry-logo:hover {
-  opacity: 0.8;
-}
-
-/* Logo emoji */
-#commonry-logo-icon {
-  font-size: 2.5rem;
-  line-height: 1;
-}
-
-/* Logo text container */
-#commonry-logo-text {
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-#commonry-logo-prompt {
-  font-size: 0.75rem;
-  color: #44403c; /* Light mode: ink-light */
-  line-height: 1;
-}
-
-html.dark-scheme #commonry-logo-prompt,
-html[data-theme="dark"] #commonry-logo-prompt,
-.dark #commonry-logo-prompt {
-  color: #8b949e; /* Dark mode: text-muted */
-}
-
-#commonry-logo-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #00a86b; /* Light mode: terminal-green */
-  transition: text-shadow 0.2s;
-}
-
-html.dark-scheme #commonry-logo-name,
-html[data-theme="dark"] #commonry-logo-name,
-.dark #commonry-logo-name {
-  color: #00d9ff; /* Dark mode: cyan */
-}
-
-#commonry-logo:hover #commonry-logo-name {
-  text-shadow: 0 0 15px rgba(0, 168, 107, 0.5);
-}
-
-html.dark-scheme #commonry-logo:hover #commonry-logo-name,
-html[data-theme="dark"] #commonry-logo:hover #commonry-logo-name,
-.dark #commonry-logo:hover #commonry-logo-name {
-  text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
-}
-
-/* Navigation links container */
-#commonry-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  font-size: 0.875rem;
-}
-
-/* Navigation link */
-.commonry-nav-link {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: none;
-  color: #44403c; /* Light mode: ink-light */
-  transition: all 0.2s;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.875rem;
-}
-
-html.dark-scheme .commonry-nav-link,
-html[data-theme="dark"] .commonry-nav-link,
-.dark .commonry-nav-link {
-  color: #8b949e; /* Dark mode: text-muted */
-}
-
-.commonry-nav-link:hover {
-  color: #00a86b; /* Light mode: terminal-green */
-  text-shadow: 0 0 8px currentColor;
-}
-
-html.dark-scheme .commonry-nav-link:hover,
-html[data-theme="dark"] .commonry-nav-link:hover,
-.dark .commonry-nav-link:hover {
-  color: #00d9ff; /* Dark mode: cyan */
-}
-
-/* Active navigation link */
-.commonry-nav-link.active {
-  color: #00a86b; /* Light mode: terminal-green */
-  font-weight: 700;
-  text-shadow: 0 0 15px rgba(0, 168, 107, 0.5);
-}
-
-html.dark-scheme .commonry-nav-link.active,
-html[data-theme="dark"] .commonry-nav-link.active,
-.dark .commonry-nav-link.active {
-  color: #00d9ff; /* Dark mode: cyan */
-  text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
-}
-
-/* Focus styles for accessibility */
-.commonry-nav-link:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px #00a86b;
-}
-
-html.dark-scheme .commonry-nav-link:focus-visible,
-html[data-theme="dark"] .commonry-nav-link:focus-visible,
-.dark .commonry-nav-link:focus-visible {
-  box-shadow: 0 0 0 2px #00d9ff;
-}
-
-/* Separator */
-.commonry-nav-separator {
-  color: #44403c; /* Light mode: ink-light */
-}
-
-html.dark-scheme .commonry-nav-separator,
-html[data-theme="dark"] .commonry-nav-separator,
-.dark .commonry-nav-separator {
-  color: #8b949e; /* Dark mode: text-muted */
-}
-
-/* Mobile hamburger menu */
-#commonry-mobile-nav {
-  display: none;
-}
-
-/* Mobile-specific styles */
-@media (max-width: 768px) {
-  #commonry-nav-links {
-    display: none;
+  /* Hide default Discourse header */
+  .d-header {
+    display: none !important;
   }
 
-  #commonry-mobile-nav {
-    display: block;
+  /* Commonry Navigation Container */
+  #commonry-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #fafaf9; /* Light mode: paper */
+    border-bottom: 2px solid #00a86b; /* Light mode: terminal-green */
+    box-shadow: 0 0 20px rgba(0, 168, 107, 0.15);
+    font-family: "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
   }
 
-  #commonry-mobile-toggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: transparent;
-    border: none;
-    color: #00a86b;
-    cursor: pointer;
-    padding: 0.5rem;
-    transition: background-color 0.2s;
+  /* Dark mode styles */
+  html.dark-scheme #commonry-nav,
+  html[data-theme="dark"] #commonry-nav,
+  .dark #commonry-nav {
+    background-color: #0d1117; /* Dark mode: dark */
+    border-bottom-color: #00d9ff; /* Dark mode: cyan */
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
   }
 
-  html.dark-scheme #commonry-mobile-toggle,
-  html[data-theme="dark"] #commonry-mobile-toggle,
-  .dark #commonry-mobile-toggle {
-    color: #00d9ff;
+  /* Navigation inner container */
+  #commonry-nav-inner {
+    padding: 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
-  #commonry-mobile-toggle:hover {
-    background-color: #f5f5f4;
-  }
-
-  html.dark-scheme #commonry-mobile-toggle:hover,
-  html[data-theme="dark"] #commonry-mobile-toggle:hover,
-  .dark #commonry-mobile-toggle:hover {
-    background-color: #161b22;
-  }
-
-  #commonry-mobile-toggle svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-
-  #commonry-mobile-menu {
-    margin-top: 1rem;
-    display: none;
-  }
-
-  #commonry-mobile-menu.open {
+  /* Logo container */
+  #commonry-logo {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
   }
 
-  #commonry-mobile-menu .commonry-nav-link {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1rem;
+  #commonry-logo:hover {
+    opacity: 0.8;
   }
 
-  #commonry-mobile-menu .commonry-nav-link:hover {
-    background-color: #f5f5f4;
+  /* Logo emoji */
+  #commonry-logo-icon {
+    font-size: 2.5rem;
+    line-height: 1;
   }
 
-  html.dark-scheme #commonry-mobile-menu .commonry-nav-link:hover,
-  html[data-theme="dark"] #commonry-mobile-menu .commonry-nav-link:hover,
-  .dark #commonry-mobile-menu .commonry-nav-link:hover {
-    background-color: #161b22;
+  /* Logo text container */
+  #commonry-logo-text {
+    font-family: "IBM Plex Mono", monospace;
   }
 
-  #commonry-mobile-menu .commonry-nav-link.active {
-    background-color: #f5f5f4;
+  #commonry-logo-prompt {
+    font-size: 0.75rem;
+    color: #44403c; /* Light mode: ink-light */
+    line-height: 1;
   }
 
-  html.dark-scheme #commonry-mobile-menu .commonry-nav-link.active,
-  html[data-theme="dark"] #commonry-mobile-menu .commonry-nav-link.active,
-  .dark #commonry-mobile-menu .commonry-nav-link.active {
-    background-color: #161b22;
+  html.dark-scheme #commonry-logo-prompt,
+  html[data-theme="dark"] #commonry-logo-prompt,
+  .dark #commonry-logo-prompt {
+    color: #8b949e; /* Dark mode: text-muted */
   }
-}
 
-/* Breadcrumb / Context indicator */
-#commonry-breadcrumb {
-  padding: 0.5rem 2rem;
-  background-color: #f5f5f4; /* Light mode: paper-darker */
-  border-bottom: 1px solid #d6d3d1; /* Light mode: border-light */
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem;
-  color: #44403c; /* Light mode: ink-light */
-}
+  #commonry-logo-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00a86b; /* Light mode: terminal-green */
+    transition: text-shadow 0.2s;
+  }
 
-html.dark-scheme #commonry-breadcrumb,
-html[data-theme="dark"] #commonry-breadcrumb,
-.dark #commonry-breadcrumb {
-  background-color: #161b22; /* Dark mode: card */
-  border-bottom-color: #30363d; /* Dark mode: border */
-  color: #8b949e; /* Dark mode: text-muted */
-}
+  html.dark-scheme #commonry-logo-name,
+  html[data-theme="dark"] #commonry-logo-name,
+  .dark #commonry-logo-name {
+    color: #00d9ff; /* Dark mode: cyan */
+  }
 
-#commonry-breadcrumb a {
-  color: #00a86b; /* Light mode: terminal-green */
-  text-decoration: none;
-}
+  #commonry-logo:hover #commonry-logo-name {
+    text-shadow: 0 0 15px rgba(0, 168, 107, 0.5);
+  }
 
-html.dark-scheme #commonry-breadcrumb a,
-html[data-theme="dark"] #commonry-breadcrumb a,
-.dark #commonry-breadcrumb a {
-  color: #00d9ff; /* Dark mode: cyan */
-}
+  html.dark-scheme #commonry-logo:hover #commonry-logo-name,
+  html[data-theme="dark"] #commonry-logo:hover #commonry-logo-name,
+  .dark #commonry-logo:hover #commonry-logo-name {
+    text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+  }
 
-#commonry-breadcrumb a:hover {
-  text-decoration: underline;
-}
+  /* Navigation links container */
+  #commonry-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+  }
 
-/* Adjust Discourse content to account for custom header */
-#main-outlet {
-  padding-top: 0 !important;
-}
+  /* Navigation link */
+  .commonry-nav-link {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    color: #44403c; /* Light mode: ink-light */
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.875rem;
+  }
+
+  html.dark-scheme .commonry-nav-link,
+  html[data-theme="dark"] .commonry-nav-link,
+  .dark .commonry-nav-link {
+    color: #8b949e; /* Dark mode: text-muted */
+  }
+
+  .commonry-nav-link:hover {
+    color: #00a86b; /* Light mode: terminal-green */
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  html.dark-scheme .commonry-nav-link:hover,
+  html[data-theme="dark"] .commonry-nav-link:hover,
+  .dark .commonry-nav-link:hover {
+    color: #00d9ff; /* Dark mode: cyan */
+  }
+
+  /* Active navigation link */
+  .commonry-nav-link.active {
+    color: #00a86b; /* Light mode: terminal-green */
+    font-weight: 700;
+    text-shadow: 0 0 15px rgba(0, 168, 107, 0.5);
+  }
+
+  html.dark-scheme .commonry-nav-link.active,
+  html[data-theme="dark"] .commonry-nav-link.active,
+  .dark .commonry-nav-link.active {
+    color: #00d9ff; /* Dark mode: cyan */
+    text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+  }
+
+  /* Focus styles for accessibility */
+  .commonry-nav-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #00a86b;
+  }
+
+  html.dark-scheme .commonry-nav-link:focus-visible,
+  html[data-theme="dark"] .commonry-nav-link:focus-visible,
+  .dark .commonry-nav-link:focus-visible {
+    box-shadow: 0 0 0 2px #00d9ff;
+  }
+
+  /* Separator */
+  .commonry-nav-separator {
+    color: #44403c; /* Light mode: ink-light */
+  }
+
+  html.dark-scheme .commonry-nav-separator,
+  html[data-theme="dark"] .commonry-nav-separator,
+  .dark .commonry-nav-separator {
+    color: #8b949e; /* Dark mode: text-muted */
+  }
+
+  /* Mobile hamburger menu */
+  #commonry-mobile-nav {
+    display: none;
+  }
+
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    #commonry-nav-links {
+      display: none;
+    }
+
+    #commonry-mobile-nav {
+      display: block;
+    }
+
+    #commonry-mobile-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      color: #00a86b;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: background-color 0.2s;
+    }
+
+    html.dark-scheme #commonry-mobile-toggle,
+    html[data-theme="dark"] #commonry-mobile-toggle,
+    .dark #commonry-mobile-toggle {
+      color: #00d9ff;
+    }
+
+    #commonry-mobile-toggle:hover {
+      background-color: #f5f5f4;
+    }
+
+    html.dark-scheme #commonry-mobile-toggle:hover,
+    html[data-theme="dark"] #commonry-mobile-toggle:hover,
+    .dark #commonry-mobile-toggle:hover {
+      background-color: #161b22;
+    }
+
+    #commonry-mobile-toggle svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    #commonry-mobile-menu {
+      margin-top: 1rem;
+      display: none;
+    }
+
+    #commonry-mobile-menu.open {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    #commonry-mobile-menu .commonry-nav-link {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    #commonry-mobile-menu .commonry-nav-link:hover {
+      background-color: #f5f5f4;
+    }
+
+    html.dark-scheme #commonry-mobile-menu .commonry-nav-link:hover,
+    html[data-theme="dark"] #commonry-mobile-menu .commonry-nav-link:hover,
+    .dark #commonry-mobile-menu .commonry-nav-link:hover {
+      background-color: #161b22;
+    }
+
+    #commonry-mobile-menu .commonry-nav-link.active {
+      background-color: #f5f5f4;
+    }
+
+    html.dark-scheme #commonry-mobile-menu .commonry-nav-link.active,
+    html[data-theme="dark"] #commonry-mobile-menu .commonry-nav-link.active,
+    .dark #commonry-mobile-menu .commonry-nav-link.active {
+      background-color: #161b22;
+    }
+  }
+
+  /* Breadcrumb / Context indicator */
+  #commonry-breadcrumb {
+    padding: 0.5rem 2rem;
+    background-color: #f5f5f4; /* Light mode: paper-darker */
+    border-bottom: 1px solid #d6d3d1; /* Light mode: border-light */
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    color: #44403c; /* Light mode: ink-light */
+  }
+
+  html.dark-scheme #commonry-breadcrumb,
+  html[data-theme="dark"] #commonry-breadcrumb,
+  .dark #commonry-breadcrumb {
+    background-color: #161b22; /* Dark mode: card */
+    border-bottom-color: #30363d; /* Dark mode: border */
+    color: #8b949e; /* Dark mode: text-muted */
+  }
+
+  #commonry-breadcrumb a {
+    color: #00a86b; /* Light mode: terminal-green */
+    text-decoration: none;
+  }
+
+  html.dark-scheme #commonry-breadcrumb a,
+  html[data-theme="dark"] #commonry-breadcrumb a,
+  .dark #commonry-breadcrumb a {
+    color: #00d9ff; /* Dark mode: cyan */
+  }
+
+  #commonry-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  /* Adjust Discourse content to account for custom header */
+  #main-outlet {
+    padding-top: 0 !important;
+  }
 </style>
 
 <!-- Navigation HTML -->
 <nav id="commonry-nav" role="navigation" aria-label="Main navigation">
   <div id="commonry-nav-inner">
     <!-- Logo -->
-    <a href="https://commonry.app" id="commonry-logo" aria-label="Go to Commonry home">
-      <div id="commonry-logo-icon" role="img" aria-label="Commonry logo">🏛️</div>
+    <a
+      href="https://commonry.app"
+      id="commonry-logo"
+      aria-label="Go to Commonry home"
+    >
+      <div id="commonry-logo-icon" role="img" aria-label="Commonry logo">
+        🏛️
+      </div>
       <div id="commonry-logo-text">
         <div id="commonry-logo-prompt" aria-hidden="true">$ cd ~</div>
         <div id="commonry-logo-name">COMMONRY</div>
@@ -330,38 +336,91 @@ html[data-theme="dark"] #commonry-breadcrumb a,
 
     <!-- Desktop Navigation -->
     <div id="commonry-nav-links" role="menubar">
-      <a href="https://commonry.app" class="commonry-nav-link" role="menuitem" aria-label="Your Plot - Personal study area">
+      <a
+        href="https://commonry.app"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="Your Plot - Personal study area"
+      >
         [Your Plot]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="https://commonry.app" class="commonry-nav-link" role="menuitem" aria-label="The Commons - Browse public decks">
+      <a
+        href="https://commonry.app"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="The Commons - Browse public decks"
+      >
         [The Commons]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="https://forum.commonry.app" class="commonry-nav-link active" role="menuitem" aria-current="page" aria-label="The Square - Community forum">
+      <a
+        href="https://forum.commonry.app"
+        class="commonry-nav-link active"
+        role="menuitem"
+        aria-current="page"
+        aria-label="The Square - Community forum"
+      >
         [The Square]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="https://commonry.app" class="commonry-nav-link" role="menuitem" aria-label="Profile - Your account">
+      <a
+        href="https://commonry.app"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="Profile - Your account"
+      >
         [Profile]
       </a>
     </div>
 
     <!-- Mobile Navigation -->
     <div id="commonry-mobile-nav">
-      <button id="commonry-mobile-toggle" aria-label="Open menu" aria-expanded="false">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" id="commonry-hamburger-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      <button
+        id="commonry-mobile-toggle"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          id="commonry-hamburger-icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
         </svg>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" id="commonry-close-icon" style="display: none;">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          id="commonry-close-icon"
+          style="display: none"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
         </svg>
       </button>
 
       <div id="commonry-mobile-menu">
         <a href="https://commonry.app" class="commonry-nav-link">[Your Plot]</a>
-        <a href="https://commonry.app" class="commonry-nav-link">[The Commons]</a>
-        <a href="https://forum.commonry.app" class="commonry-nav-link active" aria-current="page">[The Square]</a>
+        <a href="https://commonry.app" class="commonry-nav-link"
+          >[The Commons]</a
+        >
+        <a
+          href="https://forum.commonry.app"
+          class="commonry-nav-link active"
+          aria-current="page"
+          >[The Square]</a
+        >
         <a href="https://commonry.app" class="commonry-nav-link">[Profile]</a>
       </div>
     </div>
@@ -375,28 +434,28 @@ html[data-theme="dark"] #commonry-breadcrumb a,
 
 <script>
   // Mobile menu toggle
-  (function() {
-    const toggleBtn = document.getElementById('commonry-mobile-toggle');
-    const mobileMenu = document.getElementById('commonry-mobile-menu');
-    const hamburgerIcon = document.getElementById('commonry-hamburger-icon');
-    const closeIcon = document.getElementById('commonry-close-icon');
+  (function () {
+    const toggleBtn = document.getElementById("commonry-mobile-toggle");
+    const mobileMenu = document.getElementById("commonry-mobile-menu");
+    const hamburgerIcon = document.getElementById("commonry-hamburger-icon");
+    const closeIcon = document.getElementById("commonry-close-icon");
 
     if (toggleBtn && mobileMenu) {
-      toggleBtn.addEventListener('click', function() {
-        const isOpen = mobileMenu.classList.contains('open');
+      toggleBtn.addEventListener("click", function () {
+        const isOpen = mobileMenu.classList.contains("open");
 
         if (isOpen) {
-          mobileMenu.classList.remove('open');
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          toggleBtn.setAttribute('aria-label', 'Open menu');
-          hamburgerIcon.style.display = 'block';
-          closeIcon.style.display = 'none';
+          mobileMenu.classList.remove("open");
+          toggleBtn.setAttribute("aria-expanded", "false");
+          toggleBtn.setAttribute("aria-label", "Open menu");
+          hamburgerIcon.style.display = "block";
+          closeIcon.style.display = "none";
         } else {
-          mobileMenu.classList.add('open');
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          toggleBtn.setAttribute('aria-label', 'Close menu');
-          hamburgerIcon.style.display = 'none';
-          closeIcon.style.display = 'block';
+          mobileMenu.classList.add("open");
+          toggleBtn.setAttribute("aria-expanded", "true");
+          toggleBtn.setAttribute("aria-label", "Close menu");
+          hamburgerIcon.style.display = "none";
+          closeIcon.style.display = "block";
         }
       });
     }
