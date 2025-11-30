@@ -14,6 +14,7 @@ import dotenv from "dotenv";
 import { ulid } from "ulid";
 import crypto from "crypto";
 import session from "express-session";
+import { csrf } from "lusca";
 import { sendVerificationEmail } from "./email-service.js";
 import { handleDiscourseSSORequest } from "./discourse-sso.js";
 import syncRoutes from "./sync-routes.js";
@@ -102,6 +103,9 @@ app.use(
     },
   }),
 );
+
+// CSRF protection middleware
+app.use(csrf());
 
 // JWT configuration
 const JWT_SECRET =
