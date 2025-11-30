@@ -23,11 +23,14 @@ export function SyncStatusIndicator() {
   }, []);
 
   // Close dropdown on Escape key (keyboard accessibility)
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === "Escape" && showDetails) {
-      setShowDetails(false);
-    }
-  }, [showDetails]);
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape" && showDetails) {
+        setShowDetails(false);
+      }
+    },
+    [showDetails],
+  );
 
   // Handle keyboard events on backdrop
   const handleBackdropKeyDown = useCallback((event: React.KeyboardEvent) => {
