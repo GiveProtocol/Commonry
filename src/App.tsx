@@ -57,6 +57,7 @@ function App() {
 
   // All hooks must be called before any early returns
   const navigateToHome = useCallback(() => navigate("home"), [navigate]);
+  const navigateToBrowse = useCallback(() => navigate("browse"), [navigate]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -128,7 +129,7 @@ function App() {
       case "study":
         return (
           <ProtectedView>
-            <StudyView onBack={navigateToHome} initialDeckId={selectedDeckId} />
+            <StudyView onBack={navigateToBrowse} initialDeckId={selectedDeckId} />
           </ProtectedView>
         );
       case "browse":
