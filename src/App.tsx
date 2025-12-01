@@ -129,7 +129,10 @@ function App() {
       case "study":
         return (
           <ProtectedView>
-            <StudyView onBack={navigateToBrowse} initialDeckId={selectedDeckId} />
+            <StudyView
+              onBack={navigateToBrowse}
+              initialDeckId={selectedDeckId}
+            />
           </ProtectedView>
         );
       case "browse":
