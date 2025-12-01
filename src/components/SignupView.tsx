@@ -2,6 +2,8 @@ import { useState, useCallback, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import { TerminalBorder } from "./ui/TerminalBorder";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 // Signup view with email verification flow
 interface SignupViewProps {
   onSwitchToLogin: () => void;
@@ -32,7 +34,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
       setIsLoading(true);
 
       try {
-        const response = await fetch("http://localhost:3000/api/auth/signup", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -65,7 +67,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/resend-verification",
+        `${API_BASE_URL}/api/auth/resend-verification`,
         {
           method: "POST",
           headers: {

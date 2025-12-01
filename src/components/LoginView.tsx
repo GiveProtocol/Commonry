@@ -3,6 +3,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
 import { TerminalBorder } from "./ui/TerminalBorder";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 interface LoginViewProps {
   onSwitchToSignup: () => void;
 }
@@ -47,7 +49,7 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/resend-verification",
+        `${API_BASE_URL}/api/auth/resend-verification`,
         {
           method: "POST",
           headers: {

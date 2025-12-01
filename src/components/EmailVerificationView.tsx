@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, Loader2, Mail } from "lucide-react";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 interface EmailVerificationViewProps {
   token: string;
   onSuccess: () => void;
@@ -23,7 +25,7 @@ export default function EmailVerificationView({
     const verifyEmail = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/auth/verify-email/${token}`,
+          `${API_BASE_URL}/api/auth/verify-email/${token}`,
         );
         const data = await response.json();
 
@@ -80,7 +82,7 @@ export default function EmailVerificationView({
     setResending(true);
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/resend-verification",
+        `${API_BASE_URL}/api/auth/resend-verification`,
         {
           method: "POST",
           headers: {
