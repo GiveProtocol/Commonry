@@ -14,7 +14,6 @@ import dotenv from "dotenv";
 import { ulid } from "ulid";
 import crypto from "crypto";
 import session from "express-session";
-import lusca from "lusca";
 import { sendVerificationEmail } from "./email-service.js";
 import { handleDiscourseSSORequest } from "./discourse-sso.js";
 import syncRoutes from "./sync-routes.js";
@@ -81,9 +80,34 @@ const uploadLimiter = rateLimit({
 });
 
 app.use(express.json());
+
+// CORS configuration - allow multiple origins for dev and production
+const allowedOrigins = [
+  "http://localhost:5173",      // Local development
+  "https://commonry.app",       // Production frontend
+  "https://www.commonry.app",   // Production with www
+];
+
+// Add any custom origin from environment variable
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.warn(`CORS blocked origin: ${origin}`);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true, // Allow cookies to be sent
   }),
 );
@@ -104,8 +128,9 @@ app.use(
   }),
 );
 
-// CSRF protection middleware
-app.use(lusca.csrf());
+// CSRF protection removed - not needed for JWT-based API authentication
+// JWT tokens are sent via Authorization header, not cookies, so they're not vulnerable to CSRF
+// Discourse SSO is protected by signed payloads (sig parameter) instead
 
 // JWT configuration
 const JWT_SECRET =
