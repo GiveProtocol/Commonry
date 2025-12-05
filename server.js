@@ -83,13 +83,16 @@ app.use(express.json());
 
 // CORS configuration - allow multiple origins for dev and production
 const allowedOrigins = [
-  "http://localhost:5173",      // Local development
-  "https://commonry.app",       // Production frontend
-  "https://www.commonry.app",   // Production with www
+  "http://localhost:5173", // Local development
+  "https://commonry.app", // Production frontend
+  "https://www.commonry.app", // Production with www
 ];
 
 // Add any custom origin from environment variable
-if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+if (
+  process.env.FRONTEND_URL &&
+  !allowedOrigins.includes(process.env.FRONTEND_URL)
+) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
