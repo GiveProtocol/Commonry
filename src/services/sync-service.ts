@@ -21,15 +21,19 @@ import {
 } from "../types/sync";
 import type { StudySession } from "../storage/database";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 export class SyncService {
   private config: SyncConfig;
   private syncInterval: number | null = null;
   private isSyncing = false;
   private lastSyncAt?: Date;
   private onlineStatusListener?: () => void;
+  private apiBaseUrl: string;
 
   constructor(config: Partial<SyncConfig> = {}) {
     this.config = { ...DEFAULT_SYNC_CONFIG, ...config };
+    this.apiBaseUrl = API_BASE_URL;
     this.setupOnlineStatusListener();
   }
 
@@ -376,16 +380,29 @@ export class SyncService {
   }
 
   /**
+   * Gets the auth token from localStorage.
+   */
+  private getAuthToken(): string | null {
+    return localStorage.getItem("auth_token");
+  }
+
+  /**
    * Sends sync request to server.
    */
   private async sendSyncRequest(request: SyncRequest): Promise<SyncResponse> {
-    const response = await fetch("/api/sync", {
+    const token = this.getAuthToken();
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.apiBaseUrl}/api/sync`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(request),
-      credentials: "include",
     });
 
     if (!response.ok) {
@@ -399,16 +416,22 @@ export class SyncService {
    * Fetches changes from server since last sync.
    */
   private async fetchServerChanges(since?: Date): Promise<SyncResponse> {
+    const token = this.getAuthToken();
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const url = since
-      ? `/api/sync/changes?since=${since.toISOString()}`
-      : "/api/sync/changes";
+      ? `${this.apiBaseUrl}/api/sync/changes?since=${since.toISOString()}`
+      : `${this.apiBaseUrl}/api/sync/changes`;
 
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
+      headers,
     });
 
     if (!response.ok) {
