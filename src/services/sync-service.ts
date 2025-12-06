@@ -382,7 +382,7 @@ export class SyncService {
   /**
    * Gets the auth token from localStorage.
    */
-  private getAuthToken(): string | null {
+  private static getAuthToken(): string | null {
     return localStorage.getItem("auth_token");
   }
 
@@ -390,7 +390,7 @@ export class SyncService {
    * Sends sync request to server.
    */
   private async sendSyncRequest(request: SyncRequest): Promise<SyncResponse> {
-    const token = this.getAuthToken();
+    const token = SyncService.getAuthToken();
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -416,7 +416,7 @@ export class SyncService {
    * Fetches changes from server since last sync.
    */
   private async fetchServerChanges(since?: Date): Promise<SyncResponse> {
-    const token = this.getAuthToken();
+    const token = SyncService.getAuthToken();
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
