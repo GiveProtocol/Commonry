@@ -20,9 +20,11 @@ export function CategoryCard({ category, onClick }: CategoryCardProps) {
     >
       <div>
         {/* Category name */}
-        <h3 className="font-mono text-lg font-bold text-terminal-primary dark:text-cyan
+        <h3
+          className="font-mono text-lg font-bold text-terminal-primary dark:text-cyan
                       group-hover:text-shadow-terminal dark:group-hover:[text-shadow:0_0_10px_rgba(0,217,255,0.5)]
-                      transition-all">
+                      transition-all"
+        >
           [{category.name}]
         </h3>
 

@@ -86,8 +86,10 @@ export function CommonsView({
             </button>
           </div>
 
-          <h1 className="font-mono text-3xl font-bold text-terminal-primary dark:text-cyan
-                        text-shadow-terminal dark:text-shadow-cyan">
+          <h1
+            className="font-mono text-3xl font-bold text-terminal-primary dark:text-cyan
+                        text-shadow-terminal dark:text-shadow-cyan"
+          >
             [THE_COMMONS]
           </h1>
           <p className="font-mono text-sm text-terminal-muted dark:text-text-muted mt-2">
@@ -164,8 +166,10 @@ export function CommonsView({
             {/* Stats footer */}
             <div className="mt-12 pt-6 border-t border-terminal-muted dark:border-gray-700">
               <p className="font-mono text-xs text-terminal-muted dark:text-text-muted text-center">
-                {categories.reduce((sum, cat) => sum + cat.deckCount, 0).toLocaleString()} public decks across{" "}
-                {categories.length} fields of study
+                {categories
+                  .reduce((sum, cat) => sum + cat.deckCount, 0)
+                  .toLocaleString()}{" "}
+                public decks across {categories.length} fields of study
               </p>
             </div>
           </>

@@ -81,7 +81,7 @@ export function CategoryDecksView({
     setSelectedTags((prev) =>
       prev.includes(tagSlug)
         ? prev.filter((t) => t !== tagSlug)
-        : [...prev, tagSlug]
+        : [...prev, tagSlug],
     );
   }, []);
 
@@ -103,7 +103,7 @@ export function CategoryDecksView({
         console.error("Failed to update subscription:", err);
       }
     },
-    [loadDecks]
+    [loadDecks],
   );
 
   const handleFlag = useCallback((deckId: string, deckName: string) => {
@@ -127,7 +127,7 @@ export function CategoryDecksView({
         setFlagDeckName("");
       }
     },
-    [flagDeckId]
+    [flagDeckId],
   );
 
   const totalPages = Math.ceil(total / limit);
@@ -225,8 +225,8 @@ export function CategoryDecksView({
           <>
             {/* Results count */}
             <p className="font-mono text-xs text-terminal-muted dark:text-text-muted mb-4">
-              Showing {(page - 1) * limit + 1}-
-              {Math.min(page * limit, total)} of {total} decks
+              Showing {(page - 1) * limit + 1}-{Math.min(page * limit, total)}{" "}
+              of {total} decks
             </p>
 
             {/* Deck grid */}

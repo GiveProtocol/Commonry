@@ -2,7 +2,15 @@ import { motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import { SyncStatusIndicator } from "../SyncStatusIndicator";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "stats"
+  | "square"
+  | "profile";
 
 interface NavigationProps {
   currentView?: View;

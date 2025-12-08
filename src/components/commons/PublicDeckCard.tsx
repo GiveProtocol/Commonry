@@ -119,10 +119,7 @@ export function PublicDeckCard({
       </div>
 
       {/* Content */}
-      <button
-        onClick={onClick}
-        className="w-full text-left p-4"
-      >
+      <button onClick={onClick} className="w-full text-left p-4">
         {/* Deck name */}
         <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-1">
           {deck.name}
@@ -155,18 +152,12 @@ export function PublicDeckCard({
               className="flex items-center gap-1"
               title={`${deck.averageRating.toFixed(1)} rating`}
             >
-              <Star
-                size={12}
-                className="text-amber-500 fill-amber-500"
-              />
+              <Star size={12} className="text-amber-500 fill-amber-500" />
               {deck.averageRating.toFixed(1)}
             </span>
           )}
 
-          <span
-            className="flex items-center gap-1"
-            title="Last activity"
-          >
+          <span className="flex items-center gap-1" title="Last activity">
             <Clock size={12} />
             {formatRelativeTime(deck.lastActivityAt)}
           </span>
@@ -197,10 +188,7 @@ export function PublicDeckCard({
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-center">
-            <Star
-              className="mx-auto mb-1 text-amber-500"
-              size={16}
-            />
+            <Star className="mx-auto mb-1 text-amber-500" size={16} />
             <p className="text-lg font-bold text-gray-900 dark:text-white">
               {deck.averageRating?.toFixed(1) || "-"}
             </p>

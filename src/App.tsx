@@ -18,7 +18,15 @@ import { DeckId } from "./types/ids";
 import ProtectedView from "./components/ProtectedView";
 import { syncService } from "./services/sync-service";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "stats"
+  | "square"
+  | "profile";
 
 /**
  * Get the initial view from the URL path
@@ -57,9 +65,9 @@ function App() {
   const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
     undefined,
   );
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | undefined>(
-    initialState.categorySlug,
-  );
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<
+    string | undefined
+  >(initialState.categorySlug);
   const [isInitialized, setIsInitialized] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
@@ -79,7 +87,10 @@ function App() {
   const navigateToHome = useCallback(() => navigate("home"), [navigate]);
   const navigateToBrowse = useCallback(() => navigate("browse"), [navigate]);
   const navigateToCommons = useCallback(() => navigate("commons"), [navigate]);
-  const navigateToCategory = useCallback((slug: string) => navigate("commons-category", slug), [navigate]);
+  const navigateToCategory = useCallback(
+    (slug: string) => navigate("commons-category", slug),
+    [navigate],
+  );
 
   useEffect(() => {
     const initializeApp = async () => {
