@@ -365,6 +365,148 @@ class ApiService {
       `/api/profile/${username}/following`,
     );
   }
+
+  // ==================== BROWSE ENDPOINTS (The Commons) ====================
+
+  /**
+   * Fetches all categories with deck counts.
+   * @returns A promise resolving to an array of categories.
+   */
+  async getCategories() {
+    return this.request<BrowseCategory[]>("/api/browse/categories");
+  }
+
+  /**
+   * Fetches decks in a category with sorting and filtering.
+   * @param slug - The category slug.
+   * @param options - Sorting and filtering options.
+   * @returns A promise resolving to category details and deck list.
+   */
+  async getCategoryDecks(
+    slug: string,
+    options: {
+      sort?: string;
+      tags?: string[];
+      page?: number;
+      limit?: number;
+    } = {},
+  ) {
+    const params = new URLSearchParams();
+    if (options.sort) params.append("sort", options.sort);
+    if (options.tags && options.tags.length > 0) {
+      params.append("tags", options.tags.join(","));
+    }
+    if (options.page) params.append("page", options.page.toString());
+    if (options.limit) params.append("limit", options.limit.toString());
+
+    const queryString = params.toString();
+    return this.request<CategoryDecksResponse>(
+      `/api/browse/categories/${slug}${queryString ? `?${queryString}` : ""}`,
+    );
+  }
+
+  /**
+   * Fetches featured decks, optionally filtered by category.
+   * @param categorySlug - Optional category slug to filter by.
+   * @returns A promise resolving to an array of featured decks.
+   */
+  async getFeaturedDecks(categorySlug?: string) {
+    const params = new URLSearchParams();
+    if (categorySlug) params.append("categorySlug", categorySlug);
+    const queryString = params.toString();
+    return this.request<BrowseDeck[]>(
+      `/api/browse/featured${queryString ? `?${queryString}` : ""}`,
+    );
+  }
+
+  /**
+   * Fetches details for a public deck.
+   * @param deckId - The deck ID.
+   * @returns A promise resolving to the deck details.
+   */
+  async getPublicDeck(deckId: string) {
+    return this.request<BrowseDeckDetail>(`/api/browse/decks/${deckId}`);
+  }
+
+  /**
+   * Publishes a deck to The Commons.
+   * @param deckId - The deck ID.
+   * @param categoryId - The primary category ID.
+   * @param tags - Optional array of tag names.
+   * @returns A promise resolving to success status.
+   */
+  async publishDeck(deckId: string, categoryId: string, tags: string[] = []) {
+    return this.request<{ success: boolean; message: string }>(
+      `/api/decks/${deckId}/publish`,
+      {
+        method: "POST",
+        body: JSON.stringify({ categoryId, tags }),
+      },
+    );
+  }
+
+  /**
+   * Subscribes to a public deck.
+   * @param deckId - The deck ID.
+   * @returns A promise resolving to success status.
+   */
+  async subscribeToDeck(deckId: string) {
+    return this.request<{ success: boolean; message: string }>(
+      `/api/decks/${deckId}/subscribe`,
+      {
+        method: "POST",
+      },
+    );
+  }
+
+  /**
+   * Unsubscribes from a public deck.
+   * @param deckId - The deck ID.
+   * @returns A promise resolving to success status.
+   */
+  async unsubscribeFromDeck(deckId: string) {
+    return this.request<{ success: boolean; message: string }>(
+      `/api/decks/${deckId}/subscribe`,
+      {
+        method: "DELETE",
+      },
+    );
+  }
+
+  /**
+   * Checks if the current user is subscribed to a deck.
+   * @param deckId - The deck ID.
+   * @returns A promise resolving to subscription status.
+   */
+  async checkSubscription(deckId: string) {
+    return this.request<{ isSubscribed: boolean }>(
+      `/api/decks/${deckId}/subscription`,
+    );
+  }
+
+  /**
+   * Flags a deck for inappropriate content.
+   * @param deckId - The deck ID.
+   * @param reason - The reason for flagging.
+   * @returns A promise resolving to success status.
+   */
+  async flagDeck(deckId: string, reason: string) {
+    return this.request<{ success: boolean; message: string }>(
+      `/api/decks/${deckId}/flag`,
+      {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      },
+    );
+  }
+
+  /**
+   * Fetches the current user's subscribed decks.
+   * @returns A promise resolving to an array of subscribed decks.
+   */
+  async getSubscribedDecks() {
+    return this.request<BrowseDeck[]>("/api/browse/subscriptions");
+  }
 }
 
 // ==================== TYPES ====================
@@ -499,6 +641,70 @@ export interface FollowUser {
   displayName: string;
   avatarUrl?: string;
   followedAt: string;
+}
+
+// ==================== BROWSE TYPES ====================
+
+export interface BrowseCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  iconEmoji?: string;
+  displayOrder: number;
+  deckCount: number;
+}
+
+export interface BrowseAuthor {
+  username: string;
+  displayName?: string;
+}
+
+export interface BrowseTag {
+  id: string;
+  name: string;
+  slug: string;
+  usageCount?: number;
+}
+
+export interface BrowseDeck {
+  id: string;
+  name: string;
+  description?: string;
+  cardCount: number;
+  subscriberCount: number;
+  averageRating?: number;
+  lastActivityAt?: string;
+  createdAt: string;
+  trendingScore?: number;
+  isFeatured: boolean;
+  author: BrowseAuthor;
+  isSubscribed?: boolean;
+}
+
+export interface BrowseDeckDetail extends BrowseDeck {
+  categories: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    isPrimary: boolean;
+  }>;
+  tags: BrowseTag[];
+  sampleCards: Array<{
+    id: string;
+    frontContent: unknown;
+    backContent: unknown;
+  }>;
+}
+
+export interface CategoryDecksResponse {
+  category: BrowseCategory;
+  decks: BrowseDeck[];
+  tags: BrowseTag[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 // Export singleton instance

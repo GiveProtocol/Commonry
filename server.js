@@ -1733,6 +1733,610 @@ app.get("/api/decks/:id", async (req, res) => {
   }
 });
 
+// ============================================
+// BROWSE API ENDPOINTS (The Commons)
+// ============================================
+
+// Get all categories with deck counts
+app.get("/api/browse/categories", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        c.id,
+        c.name,
+        c.slug,
+        c.description,
+        c.icon_emoji as "iconEmoji",
+        c.display_order as "displayOrder",
+        COUNT(dc.deck_id) FILTER (WHERE d.is_public = true) as "deckCount"
+      FROM categories c
+      LEFT JOIN deck_categories dc ON c.id = dc.category_id
+      LEFT JOIN decks d ON dc.deck_id = d.deck_id
+      GROUP BY c.id, c.name, c.slug, c.description, c.icon_emoji, c.display_order
+      ORDER BY c.display_order ASC
+    `);
+    res.json(result.rows.map(row => ({
+      ...row,
+      deckCount: parseInt(row.deckCount) || 0
+    })));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ error: "Failed to fetch categories" });
+  }
+});
+
+// Get decks in a category with sorting and filtering
+app.get("/api/browse/categories/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { sort = "community", tags, page = 1, limit = 20 } = req.query;
+
+    // Get category
+    const categoryResult = await pool.query(
+      "SELECT * FROM categories WHERE slug = $1",
+      [slug]
+    );
+    if (categoryResult.rows.length === 0) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+    const category = categoryResult.rows[0];
+
+    // Build sort clause
+    let orderBy;
+    switch (sort) {
+      case "newest":
+        orderBy = "d.created_at DESC";
+        break;
+      case "popular":
+        orderBy = "d.subscriber_count DESC, d.created_at DESC";
+        break;
+      case "rating":
+        orderBy = "d.average_rating DESC NULLS LAST, d.subscriber_count DESC";
+        break;
+      case "updated":
+        orderBy = "d.last_activity_at DESC NULLS LAST";
+        break;
+      case "cards":
+        orderBy = "(SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) DESC";
+        break;
+      case "community":
+      default:
+        orderBy = "d.trending_score DESC, d.subscriber_count DESC";
+        break;
+    }
+
+    // Parse tags filter
+    const tagSlugs = tags ? tags.split(",").filter(Boolean) : [];
+
+    // Build query with optional tag filtering
+    let deckQuery;
+    let queryParams;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    if (tagSlugs.length > 0) {
+      // Filter by tags (AND logic - deck must have ALL specified tags)
+      deckQuery = `
+        SELECT
+          d.deck_id as id,
+          d.name,
+          d.description,
+          d.subscriber_count as "subscriberCount",
+          d.average_rating as "averageRating",
+          d.last_activity_at as "lastActivityAt",
+          d.featured_at as "featuredAt",
+          d.created_at as "createdAt",
+          d.trending_score as "trendingScore",
+          u.username as "authorUsername",
+          u.display_name as "authorDisplayName",
+          (SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) as "cardCount"
+        FROM decks d
+        JOIN deck_categories dc ON d.deck_id = dc.deck_id
+        JOIN users u ON d.author_id = u.user_id
+        WHERE dc.category_id = $1
+          AND d.is_public = true
+          AND d.deck_id IN (
+            SELECT dt.deck_id
+            FROM deck_tags dt
+            JOIN tags t ON dt.tag_id = t.id
+            WHERE t.slug = ANY($2)
+            GROUP BY dt.deck_id
+            HAVING COUNT(DISTINCT t.slug) = $3
+          )
+        ORDER BY ${orderBy}
+        LIMIT $4 OFFSET $5
+      `;
+      queryParams = [category.id, tagSlugs, tagSlugs.length, parseInt(limit), offset];
+    } else {
+      deckQuery = `
+        SELECT
+          d.deck_id as id,
+          d.name,
+          d.description,
+          d.subscriber_count as "subscriberCount",
+          d.average_rating as "averageRating",
+          d.last_activity_at as "lastActivityAt",
+          d.featured_at as "featuredAt",
+          d.created_at as "createdAt",
+          d.trending_score as "trendingScore",
+          u.username as "authorUsername",
+          u.display_name as "authorDisplayName",
+          (SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) as "cardCount"
+        FROM decks d
+        JOIN deck_categories dc ON d.deck_id = dc.deck_id
+        JOIN users u ON d.author_id = u.user_id
+        WHERE dc.category_id = $1 AND d.is_public = true
+        ORDER BY ${orderBy}
+        LIMIT $2 OFFSET $3
+      `;
+      queryParams = [category.id, parseInt(limit), offset];
+    }
+
+    const decksResult = await pool.query(deckQuery, queryParams);
+
+    // Get total count for pagination
+    let countQuery;
+    let countParams;
+    if (tagSlugs.length > 0) {
+      countQuery = `
+        SELECT COUNT(DISTINCT d.deck_id)
+        FROM decks d
+        JOIN deck_categories dc ON d.deck_id = dc.deck_id
+        WHERE dc.category_id = $1
+          AND d.is_public = true
+          AND d.deck_id IN (
+            SELECT dt.deck_id
+            FROM deck_tags dt
+            JOIN tags t ON dt.tag_id = t.id
+            WHERE t.slug = ANY($2)
+            GROUP BY dt.deck_id
+            HAVING COUNT(DISTINCT t.slug) = $3
+          )
+      `;
+      countParams = [category.id, tagSlugs, tagSlugs.length];
+    } else {
+      countQuery = `
+        SELECT COUNT(*)
+        FROM decks d
+        JOIN deck_categories dc ON d.deck_id = dc.deck_id
+        WHERE dc.category_id = $1 AND d.is_public = true
+      `;
+      countParams = [category.id];
+    }
+    const countResult = await pool.query(countQuery, countParams);
+    const total = parseInt(countResult.rows[0].count);
+
+    // Get tags used in this category
+    const tagsResult = await pool.query(`
+      SELECT DISTINCT t.id, t.name, t.slug, t.usage_count as "usageCount"
+      FROM tags t
+      JOIN deck_tags dt ON t.id = dt.tag_id
+      JOIN deck_categories dc ON dt.deck_id = dc.deck_id
+      JOIN decks d ON dt.deck_id = d.deck_id
+      WHERE (dc.category_id = $1 OR t.category_id = $1)
+        AND d.is_public = true
+      ORDER BY t.usage_count DESC
+      LIMIT 30
+    `, [category.id]);
+
+    res.json({
+      category: {
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        iconEmoji: category.icon_emoji
+      },
+      decks: decksResult.rows.map(deck => ({
+        ...deck,
+        subscriberCount: parseInt(deck.subscriberCount) || 0,
+        cardCount: parseInt(deck.cardCount) || 0,
+        isFeatured: !!deck.featuredAt,
+        author: {
+          username: deck.authorUsername,
+          displayName: deck.authorDisplayName
+        }
+      })),
+      tags: tagsResult.rows,
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit))
+    });
+  } catch (error) {
+    console.error("Error fetching category decks:", error);
+    res.status(500).json({ error: "Failed to fetch decks" });
+  }
+});
+
+// Get featured decks (optionally filtered by category)
+app.get("/api/browse/featured", async (req, res) => {
+  try {
+    const { categorySlug, limit = 6 } = req.query;
+
+    let query;
+    let params;
+
+    if (categorySlug) {
+      query = `
+        SELECT
+          d.deck_id as id,
+          d.name,
+          d.description,
+          d.subscriber_count as "subscriberCount",
+          d.average_rating as "averageRating",
+          d.featured_at as "featuredAt",
+          u.username as "authorUsername",
+          u.display_name as "authorDisplayName",
+          (SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) as "cardCount"
+        FROM decks d
+        JOIN users u ON d.author_id = u.user_id
+        JOIN deck_categories dc ON d.deck_id = dc.deck_id
+        JOIN categories c ON dc.category_id = c.id
+        WHERE d.is_public = true
+          AND d.featured_at IS NOT NULL
+          AND c.slug = $1
+        ORDER BY d.featured_at DESC
+        LIMIT $2
+      `;
+      params = [categorySlug, parseInt(limit)];
+    } else {
+      query = `
+        SELECT
+          d.deck_id as id,
+          d.name,
+          d.description,
+          d.subscriber_count as "subscriberCount",
+          d.average_rating as "averageRating",
+          d.featured_at as "featuredAt",
+          u.username as "authorUsername",
+          u.display_name as "authorDisplayName",
+          (SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) as "cardCount"
+        FROM decks d
+        JOIN users u ON d.author_id = u.user_id
+        WHERE d.is_public = true AND d.featured_at IS NOT NULL
+        ORDER BY d.featured_at DESC
+        LIMIT $1
+      `;
+      params = [parseInt(limit)];
+    }
+
+    const result = await pool.query(query, params);
+    res.json(result.rows.map(deck => ({
+      ...deck,
+      subscriberCount: parseInt(deck.subscriberCount) || 0,
+      cardCount: parseInt(deck.cardCount) || 0,
+      isFeatured: true,
+      author: {
+        username: deck.authorUsername,
+        displayName: deck.authorDisplayName
+      }
+    })));
+  } catch (error) {
+    console.error("Error fetching featured decks:", error);
+    res.status(500).json({ error: "Failed to fetch featured decks" });
+  }
+});
+
+// Get public deck details
+app.get("/api/browse/decks/:deckId", async (req, res) => {
+  try {
+    const { deckId } = req.params;
+
+    const deckResult = await pool.query(`
+      SELECT
+        d.deck_id as id,
+        d.name,
+        d.description,
+        d.subscriber_count as "subscriberCount",
+        d.average_rating as "averageRating",
+        d.last_activity_at as "lastActivityAt",
+        d.featured_at as "featuredAt",
+        d.created_at as "createdAt",
+        d.is_public as "isPublic",
+        u.username as "authorUsername",
+        u.display_name as "authorDisplayName",
+        (SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) as "cardCount"
+      FROM decks d
+      JOIN users u ON d.author_id = u.user_id
+      WHERE d.deck_id = $1 AND d.is_public = true
+    `, [deckId]);
+
+    if (deckResult.rows.length === 0) {
+      return res.status(404).json({ error: "Deck not found or not public" });
+    }
+
+    const deck = deckResult.rows[0];
+
+    // Get categories
+    const categoriesResult = await pool.query(`
+      SELECT c.id, c.name, c.slug, dc.is_primary as "isPrimary"
+      FROM categories c
+      JOIN deck_categories dc ON c.id = dc.category_id
+      WHERE dc.deck_id = $1
+      ORDER BY dc.is_primary DESC
+    `, [deckId]);
+
+    // Get tags
+    const tagsResult = await pool.query(`
+      SELECT t.id, t.name, t.slug
+      FROM tags t
+      JOIN deck_tags dt ON t.id = dt.tag_id
+      WHERE dt.deck_id = $1
+    `, [deckId]);
+
+    // Get sample cards (first 5)
+    const cardsResult = await pool.query(`
+      SELECT card_id as id, front_content as "frontContent", back_content as "backContent"
+      FROM cards
+      WHERE deck_id = $1
+      LIMIT 5
+    `, [deckId]);
+
+    res.json({
+      ...deck,
+      subscriberCount: parseInt(deck.subscriberCount) || 0,
+      cardCount: parseInt(deck.cardCount) || 0,
+      isFeatured: !!deck.featuredAt,
+      author: {
+        username: deck.authorUsername,
+        displayName: deck.authorDisplayName
+      },
+      categories: categoriesResult.rows,
+      tags: tagsResult.rows,
+      sampleCards: cardsResult.rows
+    });
+  } catch (error) {
+    console.error("Error fetching deck details:", error);
+    res.status(500).json({ error: "Failed to fetch deck details" });
+  }
+});
+
+// Publish a deck to The Commons (protected)
+app.post("/api/decks/:deckId/publish", authenticateToken, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { deckId } = req.params;
+    const { categoryId, tags = [] } = req.body;
+    const userId = req.userId;
+
+    if (!categoryId) {
+      return res.status(400).json({ error: "Category is required" });
+    }
+
+    await client.query("BEGIN");
+
+    // Verify deck exists and user owns it
+    const deckResult = await client.query(
+      "SELECT deck_id, author_id FROM decks WHERE deck_id = $1",
+      [deckId]
+    );
+
+    if (deckResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    // If deck has no author_id, set it (for existing decks)
+    if (!deckResult.rows[0].author_id) {
+      await client.query(
+        "UPDATE decks SET author_id = $1 WHERE deck_id = $2",
+        [userId, deckId]
+      );
+    } else if (deckResult.rows[0].author_id !== userId) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({ error: "You can only publish your own decks" });
+    }
+
+    // Verify category exists
+    const categoryResult = await client.query(
+      "SELECT id FROM categories WHERE id = $1",
+      [categoryId]
+    );
+    if (categoryResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "Invalid category" });
+    }
+
+    // Update deck to public
+    await client.query(`
+      UPDATE decks
+      SET is_public = true,
+          last_activity_at = CURRENT_TIMESTAMP,
+          trending_score = calculate_trending_score($1)
+      WHERE deck_id = $1
+    `, [deckId]);
+
+    // Add primary category
+    await client.query(`
+      INSERT INTO deck_categories (deck_id, category_id, is_primary)
+      VALUES ($1, $2, true)
+      ON CONFLICT (deck_id, category_id) DO UPDATE SET is_primary = true
+    `, [deckId, categoryId]);
+
+    // Add tags (create if they don't exist)
+    for (const tagName of tags) {
+      const slug = tagName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+
+      // Insert or get tag
+      const tagResult = await client.query(`
+        INSERT INTO tags (id, name, slug)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (slug) DO UPDATE SET name = tags.name
+        RETURNING id
+      `, [`tag_${ulid()}`, tagName.toLowerCase(), slug]);
+
+      // Link tag to deck
+      await client.query(`
+        INSERT INTO deck_tags (deck_id, tag_id)
+        VALUES ($1, $2)
+        ON CONFLICT DO NOTHING
+      `, [deckId, tagResult.rows[0].id]);
+    }
+
+    await client.query("COMMIT");
+
+    res.json({ success: true, message: "Deck published to The Commons" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error publishing deck:", error);
+    res.status(500).json({ error: "Failed to publish deck" });
+  } finally {
+    client.release();
+  }
+});
+
+// Subscribe to a deck (protected)
+app.post("/api/decks/:deckId/subscribe", authenticateToken, async (req, res) => {
+  try {
+    const { deckId } = req.params;
+    const userId = req.userId;
+
+    // Verify deck is public
+    const deckResult = await pool.query(
+      "SELECT deck_id FROM decks WHERE deck_id = $1 AND is_public = true",
+      [deckId]
+    );
+    if (deckResult.rows.length === 0) {
+      return res.status(404).json({ error: "Deck not found or not public" });
+    }
+
+    // Add subscription
+    await pool.query(`
+      INSERT INTO deck_subscriptions (user_id, deck_id)
+      VALUES ($1, $2)
+      ON CONFLICT DO NOTHING
+    `, [userId, deckId]);
+
+    res.json({ success: true, message: "Subscribed to deck" });
+  } catch (error) {
+    console.error("Error subscribing to deck:", error);
+    res.status(500).json({ error: "Failed to subscribe" });
+  }
+});
+
+// Unsubscribe from a deck (protected)
+app.delete("/api/decks/:deckId/subscribe", authenticateToken, async (req, res) => {
+  try {
+    const { deckId } = req.params;
+    const userId = req.userId;
+
+    await pool.query(
+      "DELETE FROM deck_subscriptions WHERE user_id = $1 AND deck_id = $2",
+      [userId, deckId]
+    );
+
+    res.json({ success: true, message: "Unsubscribed from deck" });
+  } catch (error) {
+    console.error("Error unsubscribing from deck:", error);
+    res.status(500).json({ error: "Failed to unsubscribe" });
+  }
+});
+
+// Check if user is subscribed to a deck (protected)
+app.get("/api/decks/:deckId/subscription", authenticateToken, async (req, res) => {
+  try {
+    const { deckId } = req.params;
+    const userId = req.userId;
+
+    const result = await pool.query(
+      "SELECT 1 FROM deck_subscriptions WHERE user_id = $1 AND deck_id = $2",
+      [userId, deckId]
+    );
+
+    res.json({ isSubscribed: result.rows.length > 0 });
+  } catch (error) {
+    console.error("Error checking subscription:", error);
+    res.status(500).json({ error: "Failed to check subscription" });
+  }
+});
+
+// Flag a deck for inappropriate content (protected, rate limited)
+const flagLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // 5 flags per hour per IP
+  message: "Too many flag requests, please try again later.",
+});
+
+app.post("/api/decks/:deckId/flag", authenticateToken, flagLimiter, async (req, res) => {
+  try {
+    const { deckId } = req.params;
+    const { reason } = req.body;
+    const userId = req.userId;
+
+    if (!reason || reason.trim().length < 10) {
+      return res.status(400).json({ error: "Please provide a detailed reason (at least 10 characters)" });
+    }
+
+    // Verify deck exists and is public
+    const deckResult = await pool.query(
+      "SELECT deck_id FROM decks WHERE deck_id = $1 AND is_public = true",
+      [deckId]
+    );
+    if (deckResult.rows.length === 0) {
+      return res.status(404).json({ error: "Deck not found or not public" });
+    }
+
+    // Check if user already flagged this deck
+    const existingFlag = await pool.query(
+      "SELECT id FROM deck_flags WHERE deck_id = $1 AND reporter_id = $2 AND status = 'pending'",
+      [deckId, userId]
+    );
+    if (existingFlag.rows.length > 0) {
+      return res.status(400).json({ error: "You have already flagged this deck" });
+    }
+
+    // Create flag
+    await pool.query(`
+      INSERT INTO deck_flags (id, deck_id, reporter_id, reason)
+      VALUES ($1, $2, $3, $4)
+    `, [`flag_${ulid()}`, deckId, userId, reason.trim()]);
+
+    res.json({ success: true, message: "Thank you for your report. We will review it shortly." });
+  } catch (error) {
+    console.error("Error flagging deck:", error);
+    res.status(500).json({ error: "Failed to submit flag" });
+  }
+});
+
+// Get user's subscribed decks (protected)
+app.get("/api/browse/subscriptions", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const result = await pool.query(`
+      SELECT
+        d.deck_id as id,
+        d.name,
+        d.description,
+        d.subscriber_count as "subscriberCount",
+        d.average_rating as "averageRating",
+        d.last_activity_at as "lastActivityAt",
+        u.username as "authorUsername",
+        u.display_name as "authorDisplayName",
+        (SELECT COUNT(*) FROM cards WHERE deck_id = d.deck_id) as "cardCount",
+        ds.subscribed_at as "subscribedAt"
+      FROM deck_subscriptions ds
+      JOIN decks d ON ds.deck_id = d.deck_id
+      JOIN users u ON d.author_id = u.user_id
+      WHERE ds.user_id = $1 AND d.is_public = true
+      ORDER BY ds.subscribed_at DESC
+    `, [userId]);
+
+    res.json(result.rows.map(deck => ({
+      ...deck,
+      subscriberCount: parseInt(deck.subscriberCount) || 0,
+      cardCount: parseInt(deck.cardCount) || 0,
+      author: {
+        username: deck.authorUsername,
+        displayName: deck.authorDisplayName
+      }
+    })));
+  } catch (error) {
+    console.error("Error fetching subscriptions:", error);
+    res.status(500).json({ error: "Failed to fetch subscriptions" });
+  }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

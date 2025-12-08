@@ -11,53 +11,75 @@ import { FeaturesSection } from "./components/sections/FeaturesSection";
 import { SharedNavigation } from "./components/layout/SharedNavigation";
 import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
 import { SkipToMain } from "./components/ui/SkipToMain";
+import { CommonsView, CategoryDecksView } from "./components/commons";
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { DeckId } from "./types/ids";
 import ProtectedView from "./components/ProtectedView";
 import { syncService } from "./services/sync-service";
 
-type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
+type View = "home" | "study" | "browse" | "commons" | "commons-category" | "stats" | "square" | "profile";
 
 /**
  * Get the initial view from the URL path
  */
-const getInitialView = (): View => {
+const getInitialView = (): { view: View; categorySlug?: string } => {
   const path = window.location.pathname.slice(1); // Remove leading slash
   const validViews: View[] = [
     "home",
     "study",
     "browse",
+    "commons",
     "stats",
     "square",
     "profile",
   ];
 
-  if (validViews.includes(path as View)) {
-    return path as View;
+  // Handle /commons/:slug pattern
+  if (path.startsWith("commons/")) {
+    const categorySlug = path.slice("commons/".length);
+    if (categorySlug) {
+      return { view: "commons-category", categorySlug };
+    }
+    return { view: "commons" };
   }
 
-  return "home";
+  if (validViews.includes(path as View)) {
+    return { view: path as View };
+  }
+
+  return { view: "home" };
 };
 
 function App() {
-  const [currentView, setCurrentView] = useState<View>(getInitialView);
+  const initialState = getInitialView();
+  const [currentView, setCurrentView] = useState<View>(initialState.view);
   const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
     undefined,
+  );
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | undefined>(
+    initialState.categorySlug,
   );
   const [isInitialized, setIsInitialized] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   // Navigation wrapper that updates both state and URL
-  const navigate = useCallback((view: View) => {
+  const navigate = useCallback((view: View, slug?: string) => {
     setCurrentView(view);
-    const path = view === "home" ? "/" : `/${view}`;
-    window.history.pushState({}, "", path);
+    if (view === "commons-category" && slug) {
+      setSelectedCategorySlug(slug);
+      window.history.pushState({}, "", `/commons/${slug}`);
+    } else {
+      const path = view === "home" ? "/" : `/${view}`;
+      window.history.pushState({}, "", path);
+    }
   }, []);
 
   // All hooks must be called before any early returns
   const navigateToHome = useCallback(() => navigate("home"), [navigate]);
   const navigateToBrowse = useCallback(() => navigate("browse"), [navigate]);
+  const navigateToCommons = useCallback(() => navigate("commons"), [navigate]);
+  const navigateToCategory = useCallback((slug: string) => navigate("commons-category", slug), [navigate]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -82,7 +104,9 @@ function App() {
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentView(getInitialView());
+      const state = getInitialView();
+      setCurrentView(state.view);
+      setSelectedCategorySlug(state.categorySlug);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -140,6 +164,35 @@ function App() {
           <DeckBrowser
             onBack={navigateToHome}
             onStartStudy={handleStartStudy}
+          />
+        );
+      case "commons":
+        return (
+          <CommonsView
+            onBack={navigateToHome}
+            onCategorySelect={navigateToCategory}
+            onDeckSelect={(deckId) => {
+              // For now, navigate to study with the deck ID
+              // In future, could show a deck preview modal
+              setSelectedDeckId(deckId as DeckId);
+              navigate("study");
+            }}
+          />
+        );
+      case "commons-category":
+        return selectedCategorySlug ? (
+          <CategoryDecksView
+            categorySlug={selectedCategorySlug}
+            onBack={navigateToCommons}
+            onDeckSelect={(deckId) => {
+              setSelectedDeckId(deckId as DeckId);
+              navigate("study");
+            }}
+          />
+        ) : (
+          <CommonsView
+            onBack={navigateToHome}
+            onCategorySelect={navigateToCategory}
           />
         );
       case "stats":

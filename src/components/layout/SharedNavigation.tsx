@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import { SyncStatusIndicator } from "../SyncStatusIndicator";
 
-type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
+type View = "home" | "study" | "browse" | "commons" | "commons-category" | "stats" | "square" | "profile";
 
 interface NavigationProps {
   currentView?: View;
@@ -67,13 +67,24 @@ export function SharedNavigation({
       },
       {
         view: "browse",
-        label: "The Commons",
+        label: "My Decks",
         url: "https://commonry.app/browse",
-        ariaLabel: "Navigate to The Commons - Browse public decks",
+        ariaLabel: "Navigate to My Decks - Manage your personal decks",
         onClick: () =>
           handleNavigate(
             "browse",
             isExternal ? "https://commonry.app/browse" : undefined,
+          ),
+      },
+      {
+        view: "commons",
+        label: "The Commons",
+        url: "https://commonry.app/commons",
+        ariaLabel: "Navigate to The Commons - Browse public decks",
+        onClick: () =>
+          handleNavigate(
+            "commons",
+            isExternal ? "https://commonry.app/commons" : undefined,
           ),
       },
       {
@@ -223,12 +234,22 @@ export function MobileNavigation({
       },
       {
         view: "browse",
-        label: "The Commons",
+        label: "My Decks",
         url: "https://commonry.app/browse",
         onClick: () =>
           handleNavigate(
             "browse",
             isExternal ? "https://commonry.app/browse" : undefined,
+          ),
+      },
+      {
+        view: "commons",
+        label: "The Commons",
+        url: "https://commonry.app/commons",
+        onClick: () =>
+          handleNavigate(
+            "commons",
+            isExternal ? "https://commonry.app/commons" : undefined,
           ),
       },
       {

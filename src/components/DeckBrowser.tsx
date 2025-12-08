@@ -15,6 +15,7 @@ import {
   Sparkles,
   Loader2,
   Download,
+  Globe,
 } from "lucide-react";
 import { db } from "../storage/database";
 import { Deck } from "../lib/srs-engine";
@@ -28,6 +29,8 @@ import { DeckView } from "./DeckView";
 import { importAnkiDeck, CardDirection } from "../lib/anki-import";
 import { exportAnkiDeck } from "../lib/anki-export";
 import { useToast } from "./Toast";
+import { PublishDeckDialog } from "./commons/PublishDeckDialog";
+import { api } from "../services/api";
 
 interface DeckBrowserProps {
   onBack: () => void;
@@ -56,6 +59,8 @@ export function DeckBrowser({
   const [showCardDirectionDialog, setShowCardDirectionDialog] = useState(false);
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
   const [cardDirection, setCardDirection] = useState<CardDirection>("all");
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [publishDeck, setPublishDeck] = useState<Deck | null>(null);
   const { showToast } = useToast();
 
   const loadDecks = async () => {
@@ -339,6 +344,35 @@ export function DeckBrowser({
     [decks],
   );
 
+  const handlePublishClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      const deckId = e.currentTarget.dataset.deckId;
+      const deck = decks.find((d) => d.id === deckId);
+      if (deck) {
+        setPublishDeck(deck);
+        setShowPublishDialog(true);
+      }
+    },
+    [decks],
+  );
+
+  const handlePublishDeck = useCallback(
+    async (categoryId: string, tags: string[]) => {
+      if (!publishDeck) return;
+
+      const result = await api.publishDeck(publishDeck.id, categoryId, tags);
+      if (result.error) {
+        showToast(`Failed to publish: ${result.error}`, "error");
+        throw new Error(result.error);
+      }
+      showToast(`"${publishDeck.name}" published to The Commons!`, "success");
+      setShowPublishDialog(false);
+      setPublishDeck(null);
+    },
+    [publishDeck, showToast],
+  );
+
   const getGradientClass = (index: number): string => {
     const gradients = [
       "bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700",
@@ -484,6 +518,14 @@ export function DeckBrowser({
                         >
                           <Download size={16} className="text-green-500" />
                           Export to Anki
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer outline-none"
+                          onClick={handlePublishClick}
+                          data-deck-id={deck.id}
+                        >
+                          <Globe size={16} className="text-cyan-500" />
+                          Publish to Commons
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer outline-none border-t border-gray-200 dark:border-gray-700"
@@ -948,6 +990,19 @@ export function DeckBrowser({
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+
+      {/* Publish to Commons Dialog */}
+      <PublishDeckDialog
+        isOpen={showPublishDialog}
+        onClose={() => {
+          setShowPublishDialog(false);
+          setPublishDeck(null);
+        }}
+        onPublish={handlePublishDeck}
+        deckName={publishDeck?.name || ""}
+        deckDescription={publishDeck?.description}
+        cardCount={publishDeck?.cardCount || 0}
+      />
     </div>
   );
 }
