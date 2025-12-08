@@ -2212,6 +2212,7 @@ app.post("/api/decks/:deckId/subscribe", authenticateToken, async (req, res) => 
     console.error("Error subscribing to deck:", error);
     res.status(500).json({ error: "Failed to subscribe" });
   }
+  return null;
 });
 
 // Unsubscribe from a deck (protected)
@@ -2296,6 +2297,7 @@ app.post("/api/decks/:deckId/flag", authenticateToken, flagLimiter, async (req, 
     console.error("Error flagging deck:", error);
     res.status(500).json({ error: "Failed to submit flag" });
   }
+  return null;
 });
 
 // Get user's subscribed decks (protected)
