@@ -1,5 +1,6 @@
 -- Migration: Create enriched review_events table for analytics
 -- This is an append-only event log optimized for ML/analytics, separate from study_sessions
+-- Note: This is PostgreSQL, not Oracle PL/SQL. VARCHAR is correct (ignore VarcharUsageCheck).
 -- Note: String duplication for ENUM values and JSONB defaults is intentional in DDL (S1192)
 --
 -- Design principles:
