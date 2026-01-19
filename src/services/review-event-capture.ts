@@ -335,7 +335,6 @@ export class ReviewEventCaptureService {
       const response = await api.startReviewEvent(payload);
       if (response.data?.success) {
         this.currentBuilder.status = 'started';
-        return eventId;
       }
     } catch (error) {
       console.warn('[ReviewEventCapture] Failed to start event, will complete locally:', error);
