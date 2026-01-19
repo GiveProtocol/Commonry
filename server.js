@@ -17,6 +17,8 @@ import session from "express-session";
 import { sendVerificationEmail } from "./email-service.js";
 import { handleDiscourseSSORequest } from "./discourse-sso.js";
 import syncRoutes from "./sync-routes.js";
+import { createReviewEventRoutes } from "./review-event-routes.js";
+import { createStudySessionRoutes } from "./study-session-routes.js";
 
 dotenv.config();
 
@@ -68,6 +70,7 @@ const generalLimiter = rateLimit({
   message: "Too many requests from this IP, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false }, // We handle trust proxy at the app level
 });
 
 // Stricter rate limiter for file uploads: 5 uploads per 15 minutes per IP
@@ -77,6 +80,7 @@ const uploadLimiter = rateLimit({
   message: "Too many upload requests, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false }, // We handle trust proxy at the app level
 });
 
 app.use(express.json());
@@ -1205,7 +1209,30 @@ app.get("/api/profile/:username/following", async (req, res) => {
 // Mount sync routes with authentication
 app.use("/api/sync", authenticateToken, syncRoutes);
 
-// ==================== STUDY SESSION ENDPOINTS ====================
+// ==================== REVIEW EVENT ENDPOINTS ====================
+
+// Mount review event lifecycle routes
+// POST   /api/reviews/events/start         - Start a new review event
+// PATCH  /api/reviews/events/:id/interaction - Append interaction data
+// POST   /api/reviews/events/:id/complete  - Complete a review event
+// POST   /api/reviews/events               - Record complete event (single request)
+// POST   /api/reviews/events/batch         - Batch record complete events
+app.use("/api/reviews/events", createReviewEventRoutes(pool, authenticateToken));
+
+// ==================== STUDY SESSION LIFECYCLE ENDPOINTS ====================
+
+// Mount study session lifecycle routes (new robust session tracking)
+// POST   /api/sessions/start         - Start a new session
+// POST   /api/sessions/:id/heartbeat - Send heartbeat (every 30s)
+// POST   /api/sessions/:id/break     - Record break start/end
+// POST   /api/sessions/:id/complete  - Complete session
+// POST   /api/sessions/:id/beacon    - Browser close handler (sendBeacon)
+// GET    /api/sessions/active        - Get current active session
+// GET    /api/sessions/recent        - Get recent sessions
+// GET    /api/sessions/:id           - Get session details
+app.use("/api/sessions", createStudySessionRoutes(pool, authenticateToken));
+
+// ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
 // Record a study session
 app.post("/api/study-sessions", authenticateToken, async (req, res) => {
@@ -1299,6 +1326,241 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
     await client.query("ROLLBACK");
     console.error("Batch record error:", error);
     res.status(500).json({ error: "Failed to record study sessions" });
+    return null;
+  } finally {
+    client.release();
+  }
+});
+
+// ==================== REVIEW EVENTS ENDPOINTS ====================
+// Enriched review data for AI/ML analytics (separate from study_sessions)
+
+// Record a single review event
+app.post("/api/review-events", authenticateToken, async (req, res) => {
+  const event = req.body;
+
+  // Validate required fields
+  if (!event.event_id || !event.card_id || !event.deck_id || event.rating === undefined) {
+    return res.status(400).json({
+      error: "event_id, card_id, deck_id, and rating are required",
+    });
+  }
+
+  if (event.rating < 1 || event.rating > 4) {
+    return res.status(400).json({ error: "Rating must be between 1 and 4" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO review_events (
+        event_id, user_id, card_id, deck_id, session_id, rating,
+        time_to_first_interaction_ms, time_to_answer_ms, total_duration_ms,
+        hesitation_before_rating_ms, position_in_session, time_since_session_start_ms,
+        local_hour, local_day_of_week, timezone_offset_minutes, preceding_reviews,
+        response_type, user_response_text, expected_response_text, response_similarity_score,
+        keystroke_count, backspace_count, paste_count, edit_count, option_interactions,
+        device_type, viewport_width, viewport_height, was_backgrounded, time_backgrounded_ms,
+        input_method, client_version, platform,
+        card_state_before, card_state_after, predicted_recall_probability,
+        actual_interval_days, scheduled_interval_days, overdue_days,
+        ease_factor_before, ease_factor_after, interval_before_days, interval_after_days,
+        repetition_count, lapse_count,
+        front_content_length, back_content_length, has_media, media_types, card_tags,
+        legacy_session_id
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6,
+        $7, $8, $9, $10, $11, $12,
+        $13, $14, $15, $16,
+        $17, $18, $19, $20, $21, $22, $23, $24, $25,
+        $26, $27, $28, $29, $30, $31, $32, $33,
+        $34, $35, $36, $37, $38, $39, $40, $41, $42, $43,
+        $44, $45, $46, $47, $48, $49, $50,
+        $51
+      )
+      RETURNING event_id, created_at`,
+      [
+        event.event_id,
+        req.userId,
+        event.card_id,
+        event.deck_id,
+        event.session_id || null,
+        event.rating,
+        event.time_to_first_interaction_ms,
+        event.time_to_answer_ms,
+        event.total_duration_ms,
+        event.hesitation_before_rating_ms,
+        event.position_in_session,
+        event.time_since_session_start_ms,
+        event.local_hour,
+        event.local_day_of_week,
+        event.timezone_offset_minutes,
+        JSON.stringify(event.preceding_reviews || []),
+        event.response_type || "self_rating",
+        event.user_response_text,
+        event.expected_response_text,
+        event.response_similarity_score,
+        event.keystroke_count,
+        event.backspace_count,
+        event.paste_count,
+        event.edit_count,
+        event.option_interactions ? JSON.stringify(event.option_interactions) : null,
+        event.device_type || "unknown",
+        event.viewport_width,
+        event.viewport_height,
+        event.was_backgrounded || false,
+        event.time_backgrounded_ms,
+        event.input_method,
+        event.client_version,
+        event.platform,
+        event.card_state_before,
+        event.card_state_after,
+        event.predicted_recall_probability,
+        event.actual_interval_days,
+        event.scheduled_interval_days,
+        event.overdue_days,
+        event.ease_factor_before,
+        event.ease_factor_after,
+        event.interval_before_days,
+        event.interval_after_days,
+        event.repetition_count,
+        event.lapse_count,
+        event.front_content_length,
+        event.back_content_length,
+        event.has_media || false,
+        event.media_types || [],
+        event.card_tags || [],
+        event.legacy_session_id,
+      ],
+    );
+
+    res.status(201).json({
+      success: true,
+      event: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Record review event error:", error);
+    res.status(500).json({ error: "Failed to record review event" });
+  }
+
+  return null;
+});
+
+// Batch record review events
+app.post("/api/review-events/batch", authenticateToken, async (req, res) => {
+  const { events } = req.body;
+
+  if (!Array.isArray(events) || events.length === 0) {
+    return res.status(400).json({ error: "events array is required" });
+  }
+
+  // Limit batch size to prevent abuse
+  if (events.length > 100) {
+    return res.status(400).json({ error: "Maximum 100 events per batch" });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const results = [];
+    for (const event of events) {
+      const result = await client.query(
+        `INSERT INTO review_events (
+          event_id, user_id, card_id, deck_id, session_id, rating,
+          time_to_first_interaction_ms, time_to_answer_ms, total_duration_ms,
+          hesitation_before_rating_ms, position_in_session, time_since_session_start_ms,
+          local_hour, local_day_of_week, timezone_offset_minutes, preceding_reviews,
+          response_type, user_response_text, expected_response_text, response_similarity_score,
+          keystroke_count, backspace_count, paste_count, edit_count, option_interactions,
+          device_type, viewport_width, viewport_height, was_backgrounded, time_backgrounded_ms,
+          input_method, client_version, platform,
+          card_state_before, card_state_after, predicted_recall_probability,
+          actual_interval_days, scheduled_interval_days, overdue_days,
+          ease_factor_before, ease_factor_after, interval_before_days, interval_after_days,
+          repetition_count, lapse_count,
+          front_content_length, back_content_length, has_media, media_types, card_tags,
+          legacy_session_id
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6,
+          $7, $8, $9, $10, $11, $12,
+          $13, $14, $15, $16,
+          $17, $18, $19, $20, $21, $22, $23, $24, $25,
+          $26, $27, $28, $29, $30, $31, $32, $33,
+          $34, $35, $36, $37, $38, $39, $40, $41, $42, $43,
+          $44, $45, $46, $47, $48, $49, $50,
+          $51
+        )
+        RETURNING event_id, created_at`,
+        [
+          event.event_id,
+          req.userId,
+          event.card_id,
+          event.deck_id,
+          event.session_id || null,
+          event.rating,
+          event.time_to_first_interaction_ms,
+          event.time_to_answer_ms,
+          event.total_duration_ms,
+          event.hesitation_before_rating_ms,
+          event.position_in_session,
+          event.time_since_session_start_ms,
+          event.local_hour,
+          event.local_day_of_week,
+          event.timezone_offset_minutes,
+          JSON.stringify(event.preceding_reviews || []),
+          event.response_type || "self_rating",
+          event.user_response_text,
+          event.expected_response_text,
+          event.response_similarity_score,
+          event.keystroke_count,
+          event.backspace_count,
+          event.paste_count,
+          event.edit_count,
+          event.option_interactions ? JSON.stringify(event.option_interactions) : null,
+          event.device_type || "unknown",
+          event.viewport_width,
+          event.viewport_height,
+          event.was_backgrounded || false,
+          event.time_backgrounded_ms,
+          event.input_method,
+          event.client_version,
+          event.platform,
+          event.card_state_before,
+          event.card_state_after,
+          event.predicted_recall_probability,
+          event.actual_interval_days,
+          event.scheduled_interval_days,
+          event.overdue_days,
+          event.ease_factor_before,
+          event.ease_factor_after,
+          event.interval_before_days,
+          event.interval_after_days,
+          event.repetition_count,
+          event.lapse_count,
+          event.front_content_length,
+          event.back_content_length,
+          event.has_media || false,
+          event.media_types || [],
+          event.card_tags || [],
+          event.legacy_session_id,
+        ],
+      );
+
+      results.push(result.rows[0]);
+    }
+
+    await client.query("COMMIT");
+
+    res.status(201).json({
+      success: true,
+      count: results.length,
+      events: results,
+    });
+    return null;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Batch record review events error:", error);
+    res.status(500).json({ error: "Failed to record review events" });
     return null;
   } finally {
     client.release();
@@ -2313,6 +2575,7 @@ const flagLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // 5 flags per hour per IP
   message: "Too many flag requests, please try again later.",
+  validate: { trustProxy: false }, // We handle trust proxy at the app level
 });
 
 app.post(

@@ -2,6 +2,27 @@
  * API Service for backend communication
  */
 
+import type {
+  StartReviewEventPayload,
+  StartReviewEventResponse,
+  InteractionPayload,
+  InteractionResponse,
+  CompleteReviewEventPayload,
+  CompleteReviewEventResponse,
+} from "../types/review-events";
+
+import type {
+  StartSessionPayload,
+  StartSessionResponse,
+  HeartbeatPayload,
+  HeartbeatResponse,
+  BreakPayload,
+  BreakResponse,
+  CompleteSessionPayload,
+  CompleteSessionResponse,
+  StudySessionRecord,
+} from "../types/study-sessions";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // Debug: Log the API URL being used
@@ -169,6 +190,189 @@ class ApiService {
         method: "POST",
         body: JSON.stringify({ sessions }),
       },
+    );
+  }
+
+  // ==================== REVIEW EVENTS LIFECYCLE ENDPOINTS ====================
+
+  /**
+   * Starts a new review event when a card is shown.
+   * @param payload - Initial event data with card/device/session context.
+   * @returns Promise with event ID and server timestamp.
+   */
+  async startReviewEvent(payload: StartReviewEventPayload) {
+    return this.request<StartReviewEventResponse>(
+      "/api/reviews/events/start",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      },
+    );
+  }
+
+  /**
+   * Appends interaction data to an in-progress review.
+   * @param eventId - The review event ID.
+   * @param payload - Interaction events to append.
+   * @param async - If true, uses fire-and-forget mode.
+   * @returns Promise with interaction count.
+   */
+  async recordReviewInteraction(
+    eventId: string,
+    payload: InteractionPayload,
+    async = false,
+  ) {
+    const url = `/api/reviews/events/${eventId}/interaction${async ? "?async=true" : ""}`;
+    return this.request<InteractionResponse>(url, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Completes a review event with final outcome data.
+   * @param eventId - The review event ID.
+   * @param payload - Completion data including rating and timing.
+   * @returns Promise with completion confirmation.
+   */
+  async completeReviewEvent(eventId: string, payload: CompleteReviewEventPayload) {
+    return this.request<CompleteReviewEventResponse>(
+      `/api/reviews/events/${eventId}/complete`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      },
+    );
+  }
+
+  /**
+   * Records a complete review event in a single request.
+   * Use when streaming isn't available or for backwards compatibility.
+   * @param payload - Complete event payload.
+   * @returns Promise with event details.
+   */
+  async recordCompleteReviewEvent(payload: CompleteReviewEventPayload & StartReviewEventPayload) {
+    return this.request<{
+      success: boolean;
+      eventId: string;
+      serverReceivedAt: string;
+      completedAt: string;
+      wasCorrect: boolean;
+    }>("/api/reviews/events", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Records multiple complete review events in a batch.
+   * @param events - Array of complete event payloads.
+   * @returns Promise with batch results.
+   */
+  async recordReviewEventsBatch(
+    events: Array<CompleteReviewEventPayload & StartReviewEventPayload>,
+  ) {
+    return this.request<{
+      success: boolean;
+      total: number;
+      successCount: number;
+      errorCount: number;
+      events: Array<{ success: boolean; eventId?: string; error?: string }>;
+    }>("/api/reviews/events/batch", {
+      method: "POST",
+      body: JSON.stringify({ events }),
+    });
+  }
+
+  // ==================== STUDY SESSION LIFECYCLE ENDPOINTS ====================
+
+  /**
+   * Starts a new study session when user enters review mode.
+   * @param payload - Session configuration with device/time context.
+   * @returns Promise with session ID and server timestamp.
+   */
+  async startStudySession(payload: StartSessionPayload) {
+    return this.request<StartSessionResponse>("/api/sessions/start", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Sends a heartbeat to keep the session alive.
+   * Called every 30 seconds during active study.
+   * @param sessionId - The session ID.
+   * @param payload - Heartbeat data with incremental counts.
+   * @returns Promise with heartbeat confirmation.
+   */
+  async sendSessionHeartbeat(sessionId: string, payload: HeartbeatPayload = {}) {
+    return this.request<HeartbeatResponse>(
+      `/api/sessions/${sessionId}/heartbeat`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      },
+    );
+  }
+
+  /**
+   * Records a break start or end during a session.
+   * @param sessionId - The session ID.
+   * @param payload - Break action and reason.
+   * @returns Promise with break confirmation.
+   */
+  async recordSessionBreak(sessionId: string, payload: BreakPayload) {
+    return this.request<BreakResponse>(`/api/sessions/${sessionId}/break`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Completes a study session with final statistics.
+   * @param sessionId - The session ID.
+   * @param payload - Completion data with final counts and state.
+   * @returns Promise with session statistics.
+   */
+  async completeStudySession(sessionId: string, payload: CompleteSessionPayload) {
+    return this.request<CompleteSessionResponse>(
+      `/api/sessions/${sessionId}/complete`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      },
+    );
+  }
+
+  /**
+   * Gets the current active session for the user (if any).
+   * @returns Promise with active session or null.
+   */
+  async getActiveSession() {
+    return this.request<{ success: boolean; session: StudySessionRecord | null }>(
+      "/api/sessions/active",
+    );
+  }
+
+  /**
+   * Gets a specific session by ID.
+   * @param sessionId - The session ID.
+   * @returns Promise with session details.
+   */
+  async getSession(sessionId: string) {
+    return this.request<{ success: boolean; session: StudySessionRecord }>(
+      `/api/sessions/${sessionId}`,
+    );
+  }
+
+  /**
+   * Gets recent sessions for the user.
+   * @param limit - Maximum number of sessions to return (default: 10, max: 50).
+   * @returns Promise with sessions array.
+   */
+  async getRecentSessions(limit = 10) {
+    return this.request<{ success: boolean; sessions: StudySessionRecord[] }>(
+      `/api/sessions/recent?limit=${Math.min(limit, 50)}`,
     );
   }
 

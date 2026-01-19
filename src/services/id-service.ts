@@ -8,6 +8,8 @@ import {
   UserId,
   CardModelId,
   CardTemplateId,
+  ReviewEventId,
+  StudySessionId,
   EntityId,
   EntityType,
   ENTITY_PREFIXES,
@@ -82,6 +84,22 @@ export class IdService {
    */
   static generateCardTemplateId(): CardTemplateId {
     return this.generate("cardTemplate") as CardTemplateId;
+  }
+
+  /**
+   * Generates a unique identifier for a review event.
+   * @returns {ReviewEventId} A new review event ID (evt_ prefix).
+   */
+  static generateReviewEventId(): ReviewEventId {
+    return this.generate("reviewEvent") as ReviewEventId;
+  }
+
+  /**
+   * Generates a unique identifier for a study session.
+   * @returns {StudySessionId} A new study session ID (ses_ prefix).
+   */
+  static generateStudySessionId(): StudySessionId {
+    return this.generate("studySession") as StudySessionId;
   }
 
   /**
@@ -165,6 +183,24 @@ export class IdService {
    */
   static isUserId(id: string): id is UserId {
     return id.startsWith(`${ENTITY_PREFIXES.user}_`) && this.isValidId(id);
+  }
+
+  /**
+   * Checks if the given id is a valid ReviewEventId.
+   * @param id - The id string to validate.
+   * @returns True if the id is a ReviewEventId; otherwise, false.
+   */
+  static isReviewEventId(id: string): id is ReviewEventId {
+    return id.startsWith(`${ENTITY_PREFIXES.reviewEvent}_`) && this.isValidId(id);
+  }
+
+  /**
+   * Checks if the given id is a valid StudySessionId.
+   * @param id - The id string to validate.
+   * @returns True if the id is a StudySessionId; otherwise, false.
+   */
+  static isStudySessionId(id: string): id is StudySessionId {
+    return id.startsWith(`${ENTITY_PREFIXES.studySession}_`) && this.isValidId(id);
   }
 
   // ===== Parsing Methods =====

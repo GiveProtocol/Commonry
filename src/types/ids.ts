@@ -15,6 +15,8 @@ export type MediaId = Brand<string, 'MediaId'>;
 export type UserId = Brand<string, 'UserId'>;
 export type CardModelId = Brand<string, 'CardModelId'>;
 export type CardTemplateId = Brand<string, 'CardTemplateId'>;
+export type ReviewEventId = Brand<string, 'ReviewEventId'>;
+export type StudySessionId = Brand<string, 'StudySessionId'>;
 
 // Union type of all entity IDs
 export type EntityId =
@@ -25,7 +27,9 @@ export type EntityId =
   | MediaId
   | UserId
   | CardModelId
-  | CardTemplateId;
+  | CardTemplateId
+  | ReviewEventId
+  | StudySessionId;
 
 // Entity type discriminator
 export type EntityType =
@@ -36,7 +40,9 @@ export type EntityType =
   | 'media'
   | 'user'
   | 'cardModel'
-  | 'cardTemplate';
+  | 'cardTemplate'
+  | 'reviewEvent'
+  | 'studySession';
 
 // Prefix mapping for each entity type
 export const ENTITY_PREFIXES: Record<EntityType, string> = {
@@ -48,6 +54,8 @@ export const ENTITY_PREFIXES: Record<EntityType, string> = {
   user: 'usr',
   cardModel: 'mdl',
   cardTemplate: 'tpl',
+  reviewEvent: 'evt',  // rev_ already taken by review, use evt_ for review events
+  studySession: 'ses',
 } as const;
 
 // Reverse mapping for parsing
@@ -60,4 +68,6 @@ export const PREFIX_TO_ENTITY: Record<string, EntityType> = {
   usr: 'user',
   mdl: 'cardModel',
   tpl: 'cardTemplate',
+  evt: 'reviewEvent',
+  ses: 'studySession',
 } as const;

@@ -1,0 +1,248 @@
+/**
+ * Drizzle ORM Schema: review_events
+ *
+ * Enriched review event data for AI/ML analytics.
+ * This is an append-only event log capturing behavioral signals during reviews.
+ *
+ * Design principles:
+ * - Capture generously: storage is cheap, missing data is forever
+ * - Denormalize for query speed: include deck_id, card_tags directly
+ * - Use JSONB for flexible nested data: preceding_reviews, option_interactions
+ * - Partial indexes for common analytical queries
+ */
+
+import {
+  pgTable,
+  varchar,
+  smallint,
+  integer,
+  boolean,
+  decimal,
+  text,
+  timestamp,
+  jsonb,
+  index,
+  pgEnum,
+} from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+export const responseTypeEnum = pgEnum('response_type', [
+  'self_rating',
+  'typed_response',
+  'multiple_choice',
+  'cloze_fill',
+]);
+
+export const deviceTypeEnum = pgEnum('device_type', [
+  'mobile',
+  'tablet',
+  'desktop',
+  'unknown',
+]);
+
+export const cardStateEnum = pgEnum('card_state', [
+  'new',
+  'learning',
+  'review',
+  'relearning',
+]);
+
+export const reviewEventStatusEnum = pgEnum('review_event_status', [
+  'started',      // Review began, card shown
+  'interacting',  // User is actively interacting
+  'completed',    // Review finished with rating
+  'abandoned',    // User left without completing
+]);
+
+// ============================================================
+// TYPES FOR JSONB COLUMNS
+// ============================================================
+
+export interface PrecedingReview {
+  card_id: string;
+  rating: number;
+  duration_ms: number;
+  was_correct: boolean;
+}
+
+export interface OptionInteraction {
+  option_index: number;
+  hover_ms: number;
+  click_count?: number;
+}
+
+export interface InteractionEvent {
+  type: 'keystroke' | 'paste' | 'focus' | 'blur' | 'scroll' | 'flip' | 'hover';
+  timestamp_ms: number;  // Relative to review start
+  data?: Record<string, unknown>;
+}
+
+// ============================================================
+// MAIN TABLE
+// ============================================================
+
+export const reviewEvents = pgTable(
+  'review_events',
+  {
+    // ========== IDENTITY ==========
+    // Prefixed ULID: evt_01HXXXXXXXXXXXXXXXXXXXXXXX
+    eventId: varchar('event_id', { length: 30 }).primaryKey(),
+
+    // Core references
+    userId: varchar('user_id', { length: 30 }).notNull(),
+    cardId: varchar('card_id', { length: 30 }).notNull(),
+    deckId: varchar('deck_id', { length: 30 }).notNull(),
+    sessionId: varchar('session_id', { length: 30 }),  // Groups reviews in a study session
+
+    // Event lifecycle status
+    status: reviewEventStatusEnum('status').notNull().default('started'),
+
+    // ========== OUTCOME (filled on completion) ==========
+    rating: smallint('rating'),  // 1-4, null until completed
+    wasCorrect: boolean('was_correct'),  // Derived from rating >= 3
+
+    // ========== TIMING DATA ==========
+    // Time from card shown to first user interaction
+    timeToFirstInteractionMs: integer('time_to_first_interaction_ms'),
+
+    // Time from first interaction to answer submission/reveal
+    timeToAnswerMs: integer('time_to_answer_ms'),
+
+    // Total time card was visible
+    totalDurationMs: integer('total_duration_ms'),
+
+    // For self-rating: time between showing answer and selecting rating
+    hesitationBeforeRatingMs: integer('hesitation_before_rating_ms'),
+
+    // ========== SESSION CONTEXT ==========
+    positionInSession: smallint('position_in_session'),
+    timeSinceSessionStartMs: integer('time_since_session_start_ms'),
+
+    // Local time context for circadian analysis
+    localHour: smallint('local_hour'),
+    localDayOfWeek: smallint('local_day_of_week'),
+    timezoneOffsetMinutes: smallint('timezone_offset_minutes'),
+
+    // Last 3-5 cards reviewed in this session
+    precedingReviews: jsonb('preceding_reviews').$type<PrecedingReview[]>().default([]),
+
+    // ========== RESPONSE QUALITY ==========
+    responseType: responseTypeEnum('response_type').notNull().default('self_rating'),
+
+    // For typed responses
+    userResponseText: text('user_response_text'),
+    expectedResponseText: text('expected_response_text'),
+    responseSimilarityScore: decimal('response_similarity_score', { precision: 4, scale: 3 }),
+
+    // Editing behavior
+    keystrokeCount: integer('keystroke_count'),
+    backspaceCount: integer('backspace_count'),
+    pasteCount: smallint('paste_count'),
+    editCount: smallint('edit_count'),
+
+    // For multiple choice
+    optionInteractions: jsonb('option_interactions').$type<OptionInteraction[]>(),
+
+    // Streaming interaction log (appended during review)
+    interactionLog: jsonb('interaction_log').$type<InteractionEvent[]>().default([]),
+
+    // ========== DEVICE & CONTEXT ==========
+    deviceType: deviceTypeEnum('device_type').default('unknown'),
+    viewportWidth: smallint('viewport_width'),
+    viewportHeight: smallint('viewport_height'),
+
+    wasBackgrounded: boolean('was_backgrounded').default(false),
+    timeBackgroundedMs: integer('time_backgrounded_ms'),
+
+    inputMethod: varchar('input_method', { length: 20 }),
+    clientVersion: varchar('client_version', { length: 20 }),
+    platform: varchar('platform', { length: 50 }),
+    userAgent: text('user_agent'),
+
+    // ========== SCHEDULING METADATA (FSRS) ==========
+    cardStateBefore: cardStateEnum('card_state_before'),
+    cardStateAfter: cardStateEnum('card_state_after'),
+
+    predictedRecallProbability: decimal('predicted_recall_probability', { precision: 5, scale: 4 }),
+
+    actualIntervalDays: decimal('actual_interval_days', { precision: 10, scale: 4 }),
+    scheduledIntervalDays: decimal('scheduled_interval_days', { precision: 10, scale: 4 }),
+    overdueDays: decimal('overdue_days', { precision: 10, scale: 4 }),
+
+    easeFactorBefore: decimal('ease_factor_before', { precision: 4, scale: 2 }),
+    easeFactorAfter: decimal('ease_factor_after', { precision: 4, scale: 2 }),
+
+    intervalBeforeDays: decimal('interval_before_days', { precision: 10, scale: 4 }),
+    intervalAfterDays: decimal('interval_after_days', { precision: 10, scale: 4 }),
+
+    repetitionCount: integer('repetition_count'),
+    lapseCount: integer('lapse_count'),
+
+    // ========== CONTENT CONTEXT ==========
+    frontContentLength: integer('front_content_length'),
+    backContentLength: integer('back_content_length'),
+    hasMedia: boolean('has_media').default(false),
+    mediaTypes: text('media_types').array(),
+    cardTags: text('card_tags').array(),
+
+    // ========== METADATA ==========
+    // Client timestamp when event was created
+    clientCreatedAt: timestamp('client_created_at', { withTimezone: true }),
+
+    // Server timestamp when event was received
+    serverReceivedAt: timestamp('server_received_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    // Server timestamp when event was completed
+    completedAt: timestamp('completed_at', { withTimezone: true }),
+
+    // Link to legacy study_sessions if applicable
+    legacySessionId: varchar('legacy_session_id', { length: 30 }),
+
+    // For debugging/tracing
+    clientRequestId: varchar('client_request_id', { length: 50 }),
+  },
+  (table) => ({
+    // Primary lookup patterns
+    userIdIdx: index('idx_review_events_user_id').on(table.userId),
+    cardIdIdx: index('idx_review_events_card_id').on(table.cardId),
+    deckIdIdx: index('idx_review_events_deck_id').on(table.deckId),
+    sessionIdIdx: index('idx_review_events_session_id').on(table.sessionId),
+
+    // Time-based queries
+    serverReceivedAtIdx: index('idx_review_events_server_received_at').on(table.serverReceivedAt),
+    userReceivedAtIdx: index('idx_review_events_user_received').on(table.userId, table.serverReceivedAt),
+
+    // Analytics queries
+    userCardIdx: index('idx_review_events_user_card').on(table.userId, table.cardId, table.serverReceivedAt),
+    ratingIdx: index('idx_review_events_rating').on(table.rating),
+
+    // Status-based queries (for cleanup of abandoned events)
+    statusIdx: index('idx_review_events_status').on(table.status),
+
+    // Pattern analysis
+    localHourIdx: index('idx_review_events_local_hour').on(table.userId, table.localHour),
+    deviceIdx: index('idx_review_events_device').on(table.userId, table.deviceType),
+
+    // FSRS analysis
+    recallProbIdx: index('idx_review_events_recall_prob').on(table.predictedRecallProbability),
+
+    // Tag-based analysis (GIN)
+    tagsIdx: index('idx_review_events_tags').using('gin', table.cardTags),
+
+    // Session analysis
+    sessionPositionIdx: index('idx_review_events_session_position').on(table.sessionId, table.positionInSession),
+  }),
+);
+
+// ============================================================
+// TYPE EXPORTS
+// ============================================================
+
+export type ReviewEvent = typeof reviewEvents.$inferSelect;
+export type NewReviewEvent = typeof reviewEvents.$inferInsert;
