@@ -159,7 +159,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // ============================================================
 
   const sendHeartbeat = useCallback(async () => {
-    if (!sessionRef.current || !sessionRef.current.isActive) return;
+    if (!sessionRef.current?.isActive) return;
 
     const now = Date.now();
 
@@ -204,7 +204,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (!sessionRef.current || !sessionRef.current.isActive) return;
+      if (!sessionRef.current?.isActive) return;
 
       const now = Date.now();
 
@@ -228,7 +228,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       } else {
         // Coming back - end the break
         setSession((prev) => {
-          if (!prev || !prev.currentBreak) return prev;
+          if (!prev?.currentBreak) return prev;
 
           const breakEnd = now - prev.startedAt;
           const breakDuration = prev.currentBreak.startMs
@@ -262,7 +262,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (!sessionRef.current || !sessionRef.current.isActive) return;
+      if (!sessionRef.current?.isActive) return;
 
       // Use sendBeacon for reliable delivery
       const beaconUrl = `${API_BASE_URL}/api/sessions/${sessionRef.current.sessionId}/beacon`;
@@ -342,7 +342,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const endSession = useCallback(
     async (wasInterrupted = false): Promise<SessionStatistics | null> => {
-      if (!session || !session.isActive) return null;
+      if (!session?.isActive) return null;
 
       stopHeartbeat();
 
@@ -388,7 +388,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
 
   const pauseSession = useCallback(() => {
-    if (!session || !session.isActive || session.isPaused) return;
+    if (!session?.isActive || session?.isPaused) return;
 
     const now = Date.now();
 
@@ -418,12 +418,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [session, stopHeartbeat]);
 
   const resumeSession = useCallback(() => {
-    if (!session || !session.isActive || !session.isPaused) return;
+    if (!session?.isActive || !session?.isPaused) return;
 
     const now = Date.now();
 
     setSession((prev) => {
-      if (!prev || !prev.currentBreak) return prev;
+      if (!prev?.currentBreak) return prev;
 
       const breakEnd = now - prev.startedAt;
       const breakDuration = prev.currentBreak.startMs
@@ -459,7 +459,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const recordCardCompleted = useCallback(
     (rating: 1 | 2 | 3 | 4, responseTimeMs: number, isNewCard: boolean) => {
-      if (!session || !session.isActive) return;
+      if (!session?.isActive) return;
 
       setSession((prev) => {
         if (!prev) return null;

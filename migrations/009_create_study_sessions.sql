@@ -24,10 +24,10 @@ CREATE TYPE session_type AS ENUM (
     'learn_new'     -- Focus on new cards only
 );
 
--- Session state enum -- NOSONAR: ENUM values must be string literals
+-- Session state enum
 CREATE TYPE session_state AS ENUM (
-    'in_progress',  -- Active session
-    'completed',    -- User explicitly finished
+    'in_progress',  -- NOSONAR: Active session
+    'completed',    -- NOSONAR: User explicitly finished
     'abandoned',    -- No heartbeat for timeout period
     'interrupted'   -- App crash/browser close detected
 );
