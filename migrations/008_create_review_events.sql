@@ -1,5 +1,6 @@
 -- Migration: Create enriched review_events table for analytics
 -- This is an append-only event log optimized for ML/analytics, separate from study_sessions
+-- Note: String duplication for ENUM values and JSONB defaults is intentional in DDL (S1192)
 --
 -- Design principles:
 -- - Capture generously: storage is cheap, missing data is forever

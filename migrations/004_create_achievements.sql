@@ -1,5 +1,6 @@
 -- Migration: Create achievements system tables
 -- Description: Achievement definitions and user achievement tracking
+-- Note: String duplication for enum values in seed data is intentional (S1192)
 
 -- Create ENUM types to avoid string literal duplication
 DO $$ BEGIN

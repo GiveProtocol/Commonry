@@ -1,6 +1,7 @@
 -- Migration: Create session_tracking table for robust session tracking
 -- This enables session-level analytics, heartbeat-based liveness detection,
 -- and provides context for review_events.
+-- Note: String duplication for ENUM values and JSONB defaults is intentional in DDL (S1192)
 --
 -- Design principles:
 -- - Sessions are the unit of study analysis (one sitting)
