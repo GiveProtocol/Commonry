@@ -25,7 +25,7 @@ CREATE TYPE device_type AS ENUM ('mobile', 'tablet', 'desktop', 'unknown');
 CREATE TYPE card_state AS ENUM ('new', 'learning', 'review', 'relearning');
 
 -- Review event lifecycle status
-CREATE TYPE review_event_status AS ENUM ('started', 'interacting', 'completed', 'abandoned');
+CREATE TYPE review_event_status AS ENUM ('started', 'interacting', 'completed', 'abandoned'); -- NOSONAR: ENUM values must be string literals
 
 -- Main review events table
 CREATE TABLE review_events (
@@ -43,7 +43,7 @@ CREATE TABLE review_events (
     session_id VARCHAR(30),        -- Groups reviews in a single study session (ses_)
 
     -- Event lifecycle status
-    status review_event_status NOT NULL DEFAULT 'started',
+    status review_event_status NOT NULL DEFAULT 'started', -- NOSONAR: enum value
 
     -- Outcome (NULL until completed)
     rating SMALLINT CHECK (rating BETWEEN 1 AND 4),
@@ -82,7 +82,7 @@ CREATE TABLE review_events (
 
     -- Preceding cards context (last 3-5 cards reviewed in this session)
     -- Format: [{"card_id": "crd_xxx", "rating": 3, "duration_ms": 5000, "was_correct": true}, ...]
-    preceding_reviews JSONB DEFAULT '[]',
+    preceding_reviews JSONB DEFAULT '[]', -- NOSONAR: empty array default
 
     -- ============================================================
     -- RESPONSE QUALITY DATA
@@ -111,7 +111,7 @@ CREATE TABLE review_events (
 
     -- Streaming interaction log (appended during review via PATCH)
     -- Format: [{"type": "keystroke", "timestamp_ms": 1234, "data": {...}}, ...]
-    interaction_log JSONB DEFAULT '[]',
+    interaction_log JSONB DEFAULT '[]', -- NOSONAR: empty array default
 
     -- ============================================================
     -- DEVICE & CONTEXT
@@ -208,7 +208,7 @@ CREATE INDEX idx_review_events_user_received ON review_events(user_id, server_re
 -- Status-based queries (for finding incomplete events)
 CREATE INDEX idx_review_events_status ON review_events(status);
 CREATE INDEX idx_review_events_incomplete ON review_events(user_id, status, server_received_at)
-    WHERE status IN ('started', 'interacting');
+    WHERE status IN ('started', 'interacting'); -- NOSONAR: partial index on enum values
 
 -- Analytics queries
 CREATE INDEX idx_review_events_user_card ON review_events(user_id, card_id, server_received_at);
@@ -247,9 +247,9 @@ RETURNS VOID AS $$
 BEGIN
     UPDATE review_events
     SET
-        interaction_log = COALESCE(interaction_log, '[]'::jsonb) || p_interaction,
+        interaction_log = COALESCE(interaction_log, '[]'::jsonb) || p_interaction, -- NOSONAR: empty array fallback
         status = CASE
-            WHEN status = 'started' THEN 'interacting'::review_event_status
+            WHEN status = 'started' THEN 'interacting'::review_event_status -- NOSONAR: enum values
             ELSE status
         END
     WHERE event_id = p_event_id;
@@ -270,7 +270,7 @@ RETURNS VOID AS $$
 BEGIN
     UPDATE review_events
     SET
-        status = 'completed'::review_event_status,
+        status = 'completed'::review_event_status, -- NOSONAR: enum value
         rating = p_rating,
         was_correct = (p_rating >= 3),
         total_duration_ms = p_total_duration_ms,
@@ -313,7 +313,7 @@ BEGIN
             interval_after_days
         )
     WHERE event_id = p_event_id
-      AND status != 'completed';  -- Prevent double-completion
+      AND status != 'completed';  -- NOSONAR: enum value - Prevent double-completion
 END;
 $$ LANGUAGE plpgsql;
 
