@@ -74,7 +74,7 @@ export function createStudySessionRoutes(pool, authenticateToken) {
     safeHandler(async (req, res) => {
       const result = await service.startSession(req.userId, req.body);
       res.status(result.success ? 201 : 200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -99,10 +99,10 @@ export function createStudySessionRoutes(pool, authenticateToken) {
       const result = await service.recordHeartbeat(
         sessionId,
         req.userId,
-        req.body
+        req.body,
       );
       res.status(200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -134,7 +134,7 @@ export function createStudySessionRoutes(pool, authenticateToken) {
 
       const result = await service.recordBreak(sessionId, req.userId, req.body);
       res.status(200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -159,10 +159,10 @@ export function createStudySessionRoutes(pool, authenticateToken) {
       const result = await service.completeSession(
         sessionId,
         req.userId,
-        req.body
+        req.body,
       );
       res.status(200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -192,7 +192,7 @@ export function createStudySessionRoutes(pool, authenticateToken) {
 
       // Beacon endpoints should return minimal response
       res.status(200).end();
-    })
+    }),
   );
 
   // ============================================================
@@ -206,7 +206,7 @@ export function createStudySessionRoutes(pool, authenticateToken) {
     safeHandler(async (req, res) => {
       const result = await service.getActiveSession(req.userId);
       res.status(200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -221,7 +221,7 @@ export function createStudySessionRoutes(pool, authenticateToken) {
       const limit = Math.min(parseInt(req.query.limit, 10) || 10, 50);
       const result = await service.getRecentSessions(req.userId, limit);
       res.status(200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -245,7 +245,7 @@ export function createStudySessionRoutes(pool, authenticateToken) {
 
       const result = await service.getSession(sessionId, req.userId);
       res.status(200).json(result);
-    })
+    }),
   );
 
   return router;

@@ -62,7 +62,7 @@ interface SessionContextType {
   recordCardCompleted: (
     rating: 1 | 2 | 3 | 4,
     responseTimeMs: number,
-    isNewCard: boolean
+    isNewCard: boolean,
   ) => void;
 
   // Getters
@@ -111,7 +111,7 @@ function getTimeContext() {
 }
 
 function createInitialSessionState(
-  sessionId: StudySessionId
+  sessionId: StudySessionId,
 ): ClientSessionState {
   const now = Date.now();
   return {
@@ -145,7 +145,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   // Refs for intervals and cleanup
   const heartbeatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
-    null
+    null,
   );
   const sessionRef = useRef<ClientSessionState | null>(null);
 
@@ -174,7 +174,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
               ...prev,
               lastHeartbeatSentAt: now,
             }
-          : null
+          : null,
       );
     } catch (error) {
       console.warn("[SessionContext] Heartbeat failed:", error);
@@ -186,7 +186,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
     heartbeatIntervalRef.current = setInterval(
       sendHeartbeat,
-      HEARTBEAT_INTERVAL_MS
+      HEARTBEAT_INTERVAL_MS,
     );
     sendHeartbeat(); // Send immediately
   }, [sendHeartbeat]);
@@ -337,7 +337,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
       return null;
     },
-    [isAuthenticated, session, startHeartbeat]
+    [isAuthenticated, session, startHeartbeat],
   );
 
   const endSession = useCallback(
@@ -369,7 +369,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       try {
         const response = await api.completeStudySession(
           session.sessionId,
-          payload
+          payload,
         );
 
         setSession(null);
@@ -384,7 +384,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setSession(null);
       return null;
     },
-    [session, stopHeartbeat]
+    [session, stopHeartbeat],
   );
 
   const pauseSession = useCallback(() => {
@@ -477,14 +477,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             [ratingKey]: prev.cardsByRating[ratingKey] + 1,
           },
           newCardsCompleted: prev.newCardsCompleted + (isNewCard ? 1 : 0),
-          reviewCardsCompleted:
-            prev.reviewCardsCompleted + (isNewCard ? 0 : 1),
+          reviewCardsCompleted: prev.reviewCardsCompleted + (isNewCard ? 0 : 1),
           responseTimes: [...prev.responseTimes, responseTimeMs],
           lastCardCompletedAt: Date.now(),
         };
       });
     },
-    [session]
+    [session],
   );
 
   // ============================================================

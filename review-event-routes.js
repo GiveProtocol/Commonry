@@ -74,7 +74,7 @@ export function createReviewEventRoutes(pool, authenticateToken) {
         // Return 200 with error details - don't fail the client
         res.status(200).json(result);
       }
-    })
+    }),
   );
 
   // ============================================================
@@ -110,11 +110,11 @@ export function createReviewEventRoutes(pool, authenticateToken) {
       const result = await service.recordInteraction(
         eventId,
         req.userId,
-        req.body
+        req.body,
       );
 
       res.status(200).json(result);
-    })
+    }),
   );
 
   // ============================================================
@@ -140,7 +140,7 @@ export function createReviewEventRoutes(pool, authenticateToken) {
       const result = await service.completeReviewEvent(
         eventId,
         req.userId,
-        req.body
+        req.body,
       );
 
       if (result.success) {
@@ -149,7 +149,7 @@ export function createReviewEventRoutes(pool, authenticateToken) {
         // Return 200 with error details - don't fail the client
         res.status(200).json(result);
       }
-    })
+    }),
   );
 
   // ============================================================
@@ -169,7 +169,7 @@ export function createReviewEventRoutes(pool, authenticateToken) {
         // Return 200 with error details - don't fail the client
         res.status(200).json(result);
       }
-    })
+    }),
   );
 
   // ============================================================
@@ -221,7 +221,7 @@ export function createReviewEventRoutes(pool, authenticateToken) {
         errorCount,
         events: results,
       });
-    })
+    }),
   );
 
   // ============================================================
@@ -243,7 +243,7 @@ export function createReviewEventRoutes(pool, authenticateToken) {
         abandonedCount,
         maxAgeMinutes,
       });
-    })
+    }),
   );
 
   return router;

@@ -201,13 +201,10 @@ class ApiService {
    * @returns Promise with event ID and server timestamp.
    */
   async startReviewEvent(payload: StartReviewEventPayload) {
-    return this.request<StartReviewEventResponse>(
-      "/api/reviews/events/start",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-    );
+    return this.request<StartReviewEventResponse>("/api/reviews/events/start", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   }
 
   /**
@@ -235,7 +232,10 @@ class ApiService {
    * @param payload - Completion data including rating and timing.
    * @returns Promise with completion confirmation.
    */
-  async completeReviewEvent(eventId: string, payload: CompleteReviewEventPayload) {
+  async completeReviewEvent(
+    eventId: string,
+    payload: CompleteReviewEventPayload,
+  ) {
     return this.request<CompleteReviewEventResponse>(
       `/api/reviews/events/${eventId}/complete`,
       {
@@ -251,7 +251,9 @@ class ApiService {
    * @param payload - Complete event payload.
    * @returns Promise with event details.
    */
-  async recordCompleteReviewEvent(payload: CompleteReviewEventPayload & StartReviewEventPayload) {
+  async recordCompleteReviewEvent(
+    payload: CompleteReviewEventPayload & StartReviewEventPayload,
+  ) {
     return this.request<{
       success: boolean;
       eventId: string;
@@ -305,7 +307,10 @@ class ApiService {
    * @param payload - Heartbeat data with incremental counts.
    * @returns Promise with heartbeat confirmation.
    */
-  async sendSessionHeartbeat(sessionId: string, payload: HeartbeatPayload = {}) {
+  async sendSessionHeartbeat(
+    sessionId: string,
+    payload: HeartbeatPayload = {},
+  ) {
     return this.request<HeartbeatResponse>(
       `/api/sessions/${sessionId}/heartbeat`,
       {
@@ -334,7 +339,10 @@ class ApiService {
    * @param payload - Completion data with final counts and state.
    * @returns Promise with session statistics.
    */
-  async completeStudySession(sessionId: string, payload: CompleteSessionPayload) {
+  async completeStudySession(
+    sessionId: string,
+    payload: CompleteSessionPayload,
+  ) {
     return this.request<CompleteSessionResponse>(
       `/api/sessions/${sessionId}/complete`,
       {
@@ -349,9 +357,10 @@ class ApiService {
    * @returns Promise with active session or null.
    */
   async getActiveSession() {
-    return this.request<{ success: boolean; session: StudySessionRecord | null }>(
-      "/api/sessions/active",
-    );
+    return this.request<{
+      success: boolean;
+      session: StudySessionRecord | null;
+    }>("/api/sessions/active");
   }
 
   /**

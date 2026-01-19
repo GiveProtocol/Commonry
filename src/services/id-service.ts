@@ -191,7 +191,9 @@ export class IdService {
    * @returns True if the id is a ReviewEventId; otherwise, false.
    */
   static isReviewEventId(id: string): id is ReviewEventId {
-    return id.startsWith(`${ENTITY_PREFIXES.reviewEvent}_`) && this.isValidId(id);
+    return (
+      id.startsWith(`${ENTITY_PREFIXES.reviewEvent}_`) && this.isValidId(id)
+    );
   }
 
   /**
@@ -200,7 +202,9 @@ export class IdService {
    * @returns True if the id is a StudySessionId; otherwise, false.
    */
   static isStudySessionId(id: string): id is StudySessionId {
-    return id.startsWith(`${ENTITY_PREFIXES.studySession}_`) && this.isValidId(id);
+    return (
+      id.startsWith(`${ENTITY_PREFIXES.studySession}_`) && this.isValidId(id)
+    );
   }
 
   // ===== Parsing Methods =====

@@ -11,18 +11,26 @@
  * - *Builder: Mutable state during capture
  */
 
-import { CardId, DeckId, ReviewEventId, StudySessionId } from './ids';
+import { CardId, DeckId, ReviewEventId, StudySessionId } from "./ids";
 
 // ============================================================
 // ENUMS (match database)
 // ============================================================
 
-export type ResponseType = 'self_rating' | 'typed_response' | 'multiple_choice' | 'cloze_fill';
-export type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'unknown';
-export type CardState = 'new' | 'learning' | 'review' | 'relearning';
-export type ReviewEventStatus = 'started' | 'interacting' | 'completed' | 'abandoned';
-export type InputMethod = 'touch' | 'mouse' | 'keyboard' | 'stylus';
-export type Platform = 'web' | 'ios' | 'android' | 'electron';
+export type ResponseType =
+  | "self_rating"
+  | "typed_response"
+  | "multiple_choice"
+  | "cloze_fill";
+export type DeviceType = "mobile" | "tablet" | "desktop" | "unknown";
+export type CardState = "new" | "learning" | "review" | "relearning";
+export type ReviewEventStatus =
+  | "started"
+  | "interacting"
+  | "completed"
+  | "abandoned";
+export type InputMethod = "touch" | "mouse" | "keyboard" | "stylus";
+export type Platform = "web" | "ios" | "android" | "electron";
 
 // ============================================================
 // JSONB COLUMN TYPES
@@ -52,19 +60,19 @@ export interface OptionInteraction {
  */
 export interface InteractionEvent {
   type:
-    | 'keystroke'
-    | 'backspace'
-    | 'paste'
-    | 'focus'
-    | 'blur'
-    | 'scroll'
-    | 'flip'       // Card flipped to show answer
-    | 'hover'
-    | 'touch_start'
-    | 'touch_end'
-    | 'background'  // App went to background
-    | 'foreground'; // App came back to foreground
-  timestampMs: number;  // Relative to review start
+    | "keystroke"
+    | "backspace"
+    | "paste"
+    | "focus"
+    | "blur"
+    | "scroll"
+    | "flip" // Card flipped to show answer
+    | "hover"
+    | "touch_start"
+    | "touch_end"
+    | "background" // App went to background
+    | "foreground"; // App came back to foreground
+  timestampMs: number; // Relative to review start
   data?: Record<string, unknown>;
 }
 
@@ -86,7 +94,7 @@ export interface StartReviewEventPayload {
   sessionId?: StudySessionId;
 
   // Client timestamp
-  clientCreatedAt: string;  // ISO 8601
+  clientCreatedAt: string; // ISO 8601
 
   // Device context (captured once at start)
   deviceType: DeviceType;
@@ -391,7 +399,7 @@ export interface ReviewEventBuilder {
  */
 export interface StudySession {
   sessionId: StudySessionId;
-  startedAt: number;  // performance.now()
+  startedAt: number; // performance.now()
   reviewCount: number;
   precedingReviews: PrecedingReview[];
 }
@@ -404,7 +412,7 @@ export interface StudySession {
  * Type guard to check if a response is an error
  */
 export function isErrorResponse(
-  response: ReviewEventResponse<unknown>
+  response: ReviewEventResponse<unknown>,
 ): response is ReviewEventErrorResponse {
   return (response as ReviewEventErrorResponse).success === false;
 }
@@ -412,9 +420,10 @@ export function isErrorResponse(
 /**
  * Converts snake_case API response to camelCase
  */
-export type CamelCase<S extends string> = S extends `${infer P1}_${infer P2}${infer P3}`
-  ? `${Lowercase<P1>}${Uppercase<P2>}${CamelCase<P3>}`
-  : Lowercase<S>;
+export type CamelCase<S extends string> =
+  S extends `${infer P1}_${infer P2}${infer P3}`
+    ? `${Lowercase<P1>}${Uppercase<P2>}${CamelCase<P3>}`
+    : Lowercase<S>;
 
 /**
  * Converts an object's keys from snake_case to camelCase

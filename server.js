@@ -1217,7 +1217,10 @@ app.use("/api/sync", authenticateToken, syncRoutes);
 // POST   /api/reviews/events/:id/complete  - Complete a review event
 // POST   /api/reviews/events               - Record complete event (single request)
 // POST   /api/reviews/events/batch         - Batch record complete events
-app.use("/api/reviews/events", createReviewEventRoutes(pool, authenticateToken));
+app.use(
+  "/api/reviews/events",
+  createReviewEventRoutes(pool, authenticateToken),
+);
 
 // ==================== STUDY SESSION LIFECYCLE ENDPOINTS ====================
 
@@ -1340,7 +1343,12 @@ app.post("/api/review-events", authenticateToken, async (req, res) => {
   const event = req.body;
 
   // Validate required fields
-  if (!event.event_id || !event.card_id || !event.deck_id || event.rating === undefined) {
+  if (
+    !event.event_id ||
+    !event.card_id ||
+    !event.deck_id ||
+    event.rating === undefined
+  ) {
     return res.status(400).json({
       error: "event_id, card_id, deck_id, and rating are required",
     });
@@ -1403,7 +1411,9 @@ app.post("/api/review-events", authenticateToken, async (req, res) => {
         event.backspace_count,
         event.paste_count,
         event.edit_count,
-        event.option_interactions ? JSON.stringify(event.option_interactions) : null,
+        event.option_interactions
+          ? JSON.stringify(event.option_interactions)
+          : null,
         event.device_type || "unknown",
         event.viewport_width,
         event.viewport_height,
@@ -1516,7 +1526,9 @@ app.post("/api/review-events/batch", authenticateToken, async (req, res) => {
           event.backspace_count,
           event.paste_count,
           event.edit_count,
-          event.option_interactions ? JSON.stringify(event.option_interactions) : null,
+          event.option_interactions
+            ? JSON.stringify(event.option_interactions)
+            : null,
           event.device_type || "unknown",
           event.viewport_width,
           event.viewport_height,

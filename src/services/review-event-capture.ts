@@ -11,8 +11,8 @@
  * - Queue for resilience: buffer data when offline
  */
 
-import { CardId } from '../types/ids';
-import { Card } from '../lib/srs-engine';
+import { CardId } from "../types/ids";
+import { Card } from "../lib/srs-engine";
 import {
   ReviewEventBuilder,
   StartReviewEventPayload,
@@ -26,15 +26,15 @@ import {
   InputMethod,
   Platform,
   StudySession,
-} from '../types/review-events';
-import { api } from './api';
-import { IdService } from './id-service';
+} from "../types/review-events";
+import { api } from "./api";
+import { IdService } from "./id-service";
 
 // ============================================================
 // CONSTANTS
 // ============================================================
 
-const CLIENT_VERSION = '1.0.0';
+const CLIENT_VERSION = "1.0.0";
 const INTERACTION_BATCH_SIZE = 10;
 const INTERACTION_FLUSH_INTERVAL_MS = 5000;
 
@@ -46,32 +46,34 @@ function detectDeviceType(): DeviceType {
   const width = window.innerWidth;
   const userAgent = navigator.userAgent.toLowerCase();
 
-  if (/mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) {
-    return 'mobile';
+  if (
+    /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
+  ) {
+    return "mobile";
   }
   if (/ipad|tablet|playbook|silk/i.test(userAgent)) {
-    return 'tablet';
+    return "tablet";
   }
-  if (width < 768) return 'mobile';
-  if (width < 1024) return 'tablet';
-  return 'desktop';
+  if (width < 768) return "mobile";
+  if (width < 1024) return "tablet";
+  return "desktop";
 }
 
 function detectInputMethod(): InputMethod {
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
+  const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
-  if (hasTouch && !hasFinePointer) return 'touch';
-  if (hasFinePointer) return 'mouse';
-  return 'keyboard';
+  if (hasTouch && !hasFinePointer) return "touch";
+  if (hasFinePointer) return "mouse";
+  return "keyboard";
 }
 
 function detectPlatform(): Platform {
   const userAgent = navigator.userAgent.toLowerCase();
-  if (userAgent.includes('electron')) return 'electron';
-  if (/iphone|ipad|ipod/.test(userAgent)) return 'ios';
-  if (userAgent.includes('android')) return 'android';
-  return 'web';
+  if (userAgent.includes("electron")) return "electron";
+  if (/iphone|ipad|ipod/.test(userAgent)) return "ios";
+  if (userAgent.includes("android")) return "android";
+  return "web";
 }
 
 function getTimeContext() {
@@ -104,7 +106,7 @@ function calculateSimilarity(str1: string, str2: string): number {
       matrix[i][j] = Math.min(
         matrix[i - 1][j] + 1,
         matrix[i][j - 1] + 1,
-        matrix[i - 1][j - 1] + cost
+        matrix[i - 1][j - 1] + cost,
       );
     }
   }
@@ -141,14 +143,18 @@ export class StudySessionManager {
    * Set an external session ID (from SessionContext).
    * This allows coordination with the new session tracking system.
    */
-  setSessionId(sessionId: StudySession['sessionId']): void {
+  setSessionId(sessionId: StudySession["sessionId"]): void {
     this.session.sessionId = sessionId;
     this.session.startedAt = performance.now();
     this.session.reviewCount = 0;
     this.session.precedingReviews = [];
   }
 
-  recordCompletedReview(cardId: CardId, rating: number, durationMs: number): void {
+  recordCompletedReview(
+    cardId: CardId,
+    rating: number,
+    durationMs: number,
+  ): void {
     this.session.reviewCount++;
 
     const review: PrecedingReview = {
@@ -199,7 +205,7 @@ export class ReviewEventCaptureService {
 
   private setupEventListeners(): void {
     // Visibility tracking
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener("visibilitychange", () => {
       if (!this.currentBuilder) return;
 
       const now = performance.now();
@@ -208,24 +214,25 @@ export class ReviewEventCaptureService {
       if (document.hidden) {
         this.currentBuilder.isInBackground = true;
         this.currentBuilder.backgroundStartedAt = now;
-        this.recordInteraction({ type: 'background', timestampMs });
+        this.recordInteraction({ type: "background", timestampMs });
       } else {
         if (this.currentBuilder.backgroundStartedAt !== null) {
-          const backgroundDuration = now - this.currentBuilder.backgroundStartedAt;
+          const backgroundDuration =
+            now - this.currentBuilder.backgroundStartedAt;
           this.currentBuilder.totalBackgroundMs += backgroundDuration;
         }
         this.currentBuilder.isInBackground = false;
         this.currentBuilder.backgroundStartedAt = null;
-        this.recordInteraction({ type: 'foreground', timestampMs });
+        this.recordInteraction({ type: "foreground", timestampMs });
       }
     });
 
     // Online/offline tracking
-    window.addEventListener('online', () => {
+    window.addEventListener("online", () => {
       this.isOnline = true;
       this.flushInteractionBuffer();
     });
-    window.addEventListener('offline', () => {
+    window.addEventListener("offline", () => {
       this.isOnline = false;
     });
   }
@@ -243,7 +250,7 @@ export class ReviewEventCaptureService {
    * This allows the ReviewEventCaptureService to use the same session ID
    * as the new robust session tracking system.
    */
-  setSessionId(sessionId: StudySession['sessionId']): void {
+  setSessionId(sessionId: StudySession["sessionId"]): void {
     this.sessionManager.setSessionId(sessionId);
   }
 
@@ -255,7 +262,10 @@ export class ReviewEventCaptureService {
   // START REVIEW
   // ============================================================
 
-  async startCardReview(card: Card, responseType: ResponseType = 'self_rating'): Promise<string | null> {
+  async startCardReview(
+    card: Card,
+    responseType: ResponseType = "self_rating",
+  ): Promise<string | null> {
     // Generate event ID
     const eventId = IdService.generateReviewEventId();
 
@@ -279,7 +289,7 @@ export class ReviewEventCaptureService {
       cardId: card.id,
       deckId: card.deckId,
       sessionId: session.sessionId,
-      status: 'started',
+      status: "started",
       cardShownAt: performance.now(),
       firstInteractionAt: null,
       answerShownAt: null,
@@ -288,7 +298,7 @@ export class ReviewEventCaptureService {
       keystrokeCount: 0,
       backspaceCount: 0,
       pasteCount: 0,
-      currentResponse: '',
+      currentResponse: "",
       responseSnapshots: [],
       isInBackground: false,
       backgroundStartedAt: null,
@@ -315,7 +325,8 @@ export class ReviewEventCaptureService {
       responseType,
       predictedRecallProbability: undefined, // TODO: Add FSRS calculation
       actualIntervalDays: card.lastReview
-        ? (Date.now() - new Date(card.lastReview).getTime()) / (1000 * 60 * 60 * 24)
+        ? (Date.now() - new Date(card.lastReview).getTime()) /
+          (1000 * 60 * 60 * 24)
         : undefined,
       scheduledIntervalDays: card.interval || undefined,
       overdueDays: undefined, // Calculated server-side
@@ -323,9 +334,16 @@ export class ReviewEventCaptureService {
       intervalBeforeDays: card.interval || undefined,
       repetitionCount: card.repetitions || 0,
       lapseCount: card.lapses || 0,
-      frontContentLength: (card.front?.length || 0) + (card.frontHtml?.length || 0),
-      backContentLength: (card.back?.length || 0) + (card.backHtml?.length || 0),
-      hasMedia: !!(card.frontImage || card.backImage || card.frontAudio || card.backAudio),
+      frontContentLength:
+        (card.front?.length || 0) + (card.frontHtml?.length || 0),
+      backContentLength:
+        (card.back?.length || 0) + (card.backHtml?.length || 0),
+      hasMedia: !!(
+        card.frontImage ||
+        card.backImage ||
+        card.frontAudio ||
+        card.backAudio
+      ),
       mediaTypes: this.getMediaTypes(card),
       cardTags: [], // TODO: Get from card
     };
@@ -334,11 +352,14 @@ export class ReviewEventCaptureService {
     try {
       const response = await api.startReviewEvent(payload);
       if (response.data?.success) {
-        this.currentBuilder.status = 'started';
+        this.currentBuilder.status = "started";
         return eventId;
       }
     } catch (error) {
-      console.warn('[ReviewEventCapture] Failed to start event, will complete locally:', error);
+      console.warn(
+        "[ReviewEventCapture] Failed to start event, will complete locally:",
+        error,
+      );
     }
 
     return eventId;
@@ -346,8 +367,8 @@ export class ReviewEventCaptureService {
 
   private getMediaTypes(card: Card): string[] {
     const types: string[] = [];
-    if (card.frontImage || card.backImage) types.push('image');
-    if (card.frontAudio || card.backAudio) types.push('audio');
+    if (card.frontImage || card.backImage) types.push("image");
+    if (card.frontAudio || card.backAudio) types.push("audio");
     return types;
   }
 
@@ -382,9 +403,10 @@ export class ReviewEventCaptureService {
     if (this.currentBuilder.firstInteractionAt === null) {
       this.currentBuilder.firstInteractionAt = performance.now();
       const timestampMs = Math.round(
-        this.currentBuilder.firstInteractionAt - this.currentBuilder.cardShownAt
+        this.currentBuilder.firstInteractionAt -
+          this.currentBuilder.cardShownAt,
       );
-      this.recordInteraction({ type: 'focus', timestampMs });
+      this.recordInteraction({ type: "focus", timestampMs });
     }
   }
 
@@ -394,14 +416,16 @@ export class ReviewEventCaptureService {
     this.recordFirstInteraction();
     this.currentBuilder.keystrokeCount++;
 
-    const isBackspace = key === 'Backspace' || key === 'Delete';
+    const isBackspace = key === "Backspace" || key === "Delete";
     if (isBackspace) {
       this.currentBuilder.backspaceCount++;
     }
 
-    const timestampMs = Math.round(performance.now() - this.currentBuilder.cardShownAt);
+    const timestampMs = Math.round(
+      performance.now() - this.currentBuilder.cardShownAt,
+    );
     this.recordInteraction({
-      type: isBackspace ? 'backspace' : 'keystroke',
+      type: isBackspace ? "backspace" : "keystroke",
       timestampMs,
       data: { key: isBackspace ? key : undefined },
     });
@@ -413,8 +437,10 @@ export class ReviewEventCaptureService {
     this.recordFirstInteraction();
     this.currentBuilder.pasteCount++;
 
-    const timestampMs = Math.round(performance.now() - this.currentBuilder.cardShownAt);
-    this.recordInteraction({ type: 'paste', timestampMs });
+    const timestampMs = Math.round(
+      performance.now() - this.currentBuilder.cardShownAt,
+    );
+    this.recordInteraction({ type: "paste", timestampMs });
   }
 
   recordAnswerShown(): void {
@@ -422,9 +448,9 @@ export class ReviewEventCaptureService {
 
     this.currentBuilder.answerShownAt = performance.now();
     const timestampMs = Math.round(
-      this.currentBuilder.answerShownAt - this.currentBuilder.cardShownAt
+      this.currentBuilder.answerShownAt - this.currentBuilder.cardShownAt,
     );
-    this.recordInteraction({ type: 'flip', timestampMs });
+    this.recordInteraction({ type: "flip", timestampMs });
   }
 
   updateResponse(response: string): void {
@@ -434,7 +460,9 @@ export class ReviewEventCaptureService {
 
   snapshotResponse(): void {
     if (!this.currentBuilder) return;
-    this.currentBuilder.responseSnapshots.push(this.currentBuilder.currentResponse);
+    this.currentBuilder.responseSnapshots.push(
+      this.currentBuilder.currentResponse,
+    );
   }
 
   recordOptionHover(optionIndex: number, durationMs: number): void {
@@ -443,9 +471,11 @@ export class ReviewEventCaptureService {
     const current = this.currentBuilder.optionHovers.get(optionIndex) || 0;
     this.currentBuilder.optionHovers.set(optionIndex, current + durationMs);
 
-    const timestampMs = Math.round(performance.now() - this.currentBuilder.cardShownAt);
+    const timestampMs = Math.round(
+      performance.now() - this.currentBuilder.cardShownAt,
+    );
     this.recordInteraction({
-      type: 'hover',
+      type: "hover",
       timestampMs,
       data: { optionIndex, durationMs },
     });
@@ -457,7 +487,11 @@ export class ReviewEventCaptureService {
       this.flushTimer = null;
     }
 
-    if (this.interactionBuffer.length === 0 || !this.currentBuilder || !this.isOnline) {
+    if (
+      this.interactionBuffer.length === 0 ||
+      !this.currentBuilder ||
+      !this.isOnline
+    ) {
       return;
     }
 
@@ -467,7 +501,10 @@ export class ReviewEventCaptureService {
     const payload: InteractionPayload = {
       interactions,
       timeToFirstInteractionMs: this.currentBuilder.firstInteractionAt
-        ? Math.round(this.currentBuilder.firstInteractionAt - this.currentBuilder.cardShownAt)
+        ? Math.round(
+            this.currentBuilder.firstInteractionAt -
+              this.currentBuilder.cardShownAt,
+          )
         : undefined,
       wasBackgrounded: this.currentBuilder.totalBackgroundMs > 0,
       timeBackgroundedMs: Math.round(this.currentBuilder.totalBackgroundMs),
@@ -475,11 +512,15 @@ export class ReviewEventCaptureService {
 
     try {
       // Use async mode for fire-and-forget
-      await api.recordReviewInteraction(this.currentBuilder.eventId, payload, true);
+      await api.recordReviewInteraction(
+        this.currentBuilder.eventId,
+        payload,
+        true,
+      );
     } catch (error) {
       // Re-add to buffer for retry
       this.interactionBuffer.unshift(...interactions);
-      console.warn('[ReviewEventCapture] Failed to flush interactions:', error);
+      console.warn("[ReviewEventCapture] Failed to flush interactions:", error);
     }
   }
 
@@ -494,7 +535,7 @@ export class ReviewEventCaptureService {
     expectedResponse?: string,
   ): Promise<boolean> {
     if (!this.currentBuilder) {
-      console.warn('[ReviewEventCapture] No active review to complete');
+      console.warn("[ReviewEventCapture] No active review to complete");
       return false;
     }
 
@@ -510,9 +551,10 @@ export class ReviewEventCaptureService {
     const timeToFirstInteractionMs = builder.firstInteractionAt
       ? Math.round(builder.firstInteractionAt - builder.cardShownAt)
       : undefined;
-    const timeToAnswerMs = builder.answerShownAt && builder.firstInteractionAt
-      ? Math.round(builder.answerShownAt - builder.firstInteractionAt)
-      : undefined;
+    const timeToAnswerMs =
+      builder.answerShownAt && builder.firstInteractionAt
+        ? Math.round(builder.answerShownAt - builder.firstInteractionAt)
+        : undefined;
     const hesitationBeforeRatingMs = builder.answerShownAt
       ? Math.round(now - builder.answerShownAt)
       : undefined;
@@ -526,21 +568,28 @@ export class ReviewEventCaptureService {
     // Calculate similarity for typed responses
     let responseSimilarityScore: number | undefined;
     if (userResponse && expectedResponse) {
-      responseSimilarityScore = calculateSimilarity(userResponse, expectedResponse);
+      responseSimilarityScore = calculateSimilarity(
+        userResponse,
+        expectedResponse,
+      );
     }
 
     // Build option interactions
-    const optionInteractions = builder.optionHovers.size > 0
-      ? Array.from(builder.optionHovers.entries()).map(([optionIndex, hoverMs]) => ({
-          optionIndex,
-          hoverMs: Math.round(hoverMs),
-        }))
-      : undefined;
+    const optionInteractions =
+      builder.optionHovers.size > 0
+        ? Array.from(builder.optionHovers.entries()).map(
+            ([optionIndex, hoverMs]) => ({
+              optionIndex,
+              hoverMs: Math.round(hoverMs),
+            }),
+          )
+        : undefined;
 
     // Calculate edit count
-    const editCount = builder.responseSnapshots.length > 1
-      ? builder.responseSnapshots.length - 1
-      : undefined;
+    const editCount =
+      builder.responseSnapshots.length > 1
+        ? builder.responseSnapshots.length - 1
+        : undefined;
 
     // Determine card state after review
     const cardStateAfter = this.determineStateAfter(card, rating);
@@ -569,7 +618,11 @@ export class ReviewEventCaptureService {
     };
 
     // Record in session manager
-    this.sessionManager.recordCompletedReview(builder.cardId, rating, totalDurationMs);
+    this.sessionManager.recordCompletedReview(
+      builder.cardId,
+      rating,
+      totalDurationMs,
+    );
 
     // Clear current builder
     this.currentBuilder = null;
@@ -579,18 +632,21 @@ export class ReviewEventCaptureService {
       const response = await api.completeReviewEvent(builder.eventId, payload);
       return response.data?.success ?? false;
     } catch (error) {
-      console.error('[ReviewEventCapture] Failed to complete review event:', error);
+      console.error(
+        "[ReviewEventCapture] Failed to complete review event:",
+        error,
+      );
       // TODO: Queue for retry
       return false;
     }
   }
 
   private determineStateAfter(card: Card, rating: number): CardState {
-    if (rating === 1) return 'relearning';
-    if (card.status === 'new' || card.status === 'learning') {
-      return rating >= 3 ? 'review' : 'learning';
+    if (rating === 1) return "relearning";
+    if (card.status === "new" || card.status === "learning") {
+      return rating >= 3 ? "review" : "learning";
     }
-    return 'review';
+    return "review";
   }
 
   private calculateNewEaseFactor(currentEase: number, rating: number): number {
@@ -601,7 +657,7 @@ export class ReviewEventCaptureService {
 
   private calculateNewInterval(card: Card, rating: number): number {
     if (rating === 1) return 1;
-    if (card.status === 'new' || card.status === 'learning') {
+    if (card.status === "new" || card.status === "learning") {
       return rating === 4 ? 4 : 1;
     }
     if (card.repetitions === 0) return 1;

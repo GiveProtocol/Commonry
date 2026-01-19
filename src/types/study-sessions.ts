@@ -11,15 +11,24 @@
  * - Client*: Client-side state
  */
 
-import type { StudySessionId, UserId, DeckId } from './ids';
+import type { StudySessionId, UserId, DeckId } from "./ids";
 
 // ============================================================
 // ENUMS (match database)
 // ============================================================
 
-export type SessionType = 'regular' | 'diagnostic' | 'cram' | 'speed_review' | 'learn_new';
-export type SessionState = 'in_progress' | 'completed' | 'abandoned' | 'interrupted';
-export type BreakReason = 'background' | 'pause' | 'idle' | 'manual';
+export type SessionType =
+  | "regular"
+  | "diagnostic"
+  | "cram"
+  | "speed_review"
+  | "learn_new";
+export type SessionState =
+  | "in_progress"
+  | "completed"
+  | "abandoned"
+  | "interrupted";
+export type BreakReason = "background" | "pause" | "idle" | "manual";
 
 // ============================================================
 // JSONB COLUMN TYPES
@@ -29,8 +38,8 @@ export type BreakReason = 'background' | 'pause' | 'idle' | 'manual';
  * A break period during a study session
  */
 export interface SessionBreak {
-  startMs: number;       // Relative to session start
-  endMs: number | null;  // Null if break is ongoing
+  startMs: number; // Relative to session start
+  endMs: number | null; // Null if break is ongoing
   reason: BreakReason;
 }
 
@@ -38,16 +47,16 @@ export interface SessionBreak {
  * Response time trend analysis (linear regression)
  */
 export interface ResponseTimeTrend {
-  slope: number;        // Negative = getting faster, positive = slowing down
-  rSquared: number;     // Goodness of fit (0-1)
-  sampleCount: number;  // Number of data points
+  slope: number; // Negative = getting faster, positive = slowing down
+  rSquared: number; // Goodness of fit (0-1)
+  sampleCount: number; // Number of data points
 }
 
 /**
  * Difficulty distribution breakdown
  */
 export interface DifficultyDistribution {
-  new: number;         // Percentage (0-1)
+  new: number; // Percentage (0-1)
   learning: number;
   review: number;
   relearning: number;
@@ -72,7 +81,7 @@ export interface StartSessionPayload {
   targetDurationMinutes?: number;
 
   // Device context (captured once at start)
-  deviceType: 'mobile' | 'tablet' | 'desktop' | 'unknown';
+  deviceType: "mobile" | "tablet" | "desktop" | "unknown";
   clientVersion: string;
   platform: string;
   userAgent?: string;
@@ -102,9 +111,9 @@ export interface HeartbeatPayload {
  * Sent when user pauses or resumes
  */
 export interface BreakPayload {
-  action: 'start' | 'end';
+  action: "start" | "end";
   reason: BreakReason;
-  timestampMs?: number;  // Relative to session start
+  timestampMs?: number; // Relative to session start
 }
 
 /**
@@ -112,7 +121,7 @@ export interface BreakPayload {
  * Sent when user finishes or closes the session
  */
 export interface CompleteSessionPayload {
-  finalState: 'completed' | 'interrupted';
+  finalState: "completed" | "interrupted";
 
   // Final counts (in case heartbeats were missed)
   cardsCompleted?: number;
@@ -258,7 +267,7 @@ export interface StudySessionRecord {
  */
 export interface ClientSessionState {
   sessionId: StudySessionId;
-  startedAt: number;  // Date.now() timestamp
+  startedAt: number; // Date.now() timestamp
 
   // Running totals
   cardsCompleted: number;
@@ -273,7 +282,7 @@ export interface ClientSessionState {
   reviewCardsCompleted: number;
 
   // Timing
-  responseTimes: number[];      // For trend calculation
+  responseTimes: number[]; // For trend calculation
   totalActiveTimeMs: number;
   lastCardCompletedAt: number;
 
@@ -320,7 +329,7 @@ export interface SessionStats {
  * Type guard to check if a response is an error
  */
 export function isSessionErrorResponse(
-  response: SessionResponse<unknown>
+  response: SessionResponse<unknown>,
 ): response is SessionErrorResponse {
   return (response as SessionErrorResponse).success === false;
 }
@@ -328,7 +337,9 @@ export function isSessionErrorResponse(
 /**
  * Calculate linear regression for response time trend
  */
-export function calculateResponseTimeTrend(responseTimes: number[]): ResponseTimeTrend | null {
+export function calculateResponseTimeTrend(
+  responseTimes: number[],
+): ResponseTimeTrend | null {
   if (responseTimes.length < 3) return null;
 
   const n = responseTimes.length;
@@ -379,7 +390,7 @@ export function calculateResponseTimeTrend(responseTimes: number[]): ResponseTim
  */
 export function calculateFatigueScore(
   responseTimes: number[],
-  correctAnswers: boolean[]
+  correctAnswers: boolean[],
 ): number {
   if (responseTimes.length < 5) return 0;
 
@@ -393,16 +404,21 @@ export function calculateFatigueScore(
   const secondHalfCorrect = correctAnswers.slice(midpoint);
 
   // Average response times
-  const avgFirst = firstHalfTimes.reduce((a, b) => a + b, 0) / firstHalfTimes.length;
-  const avgSecond = secondHalfTimes.reduce((a, b) => a + b, 0) / secondHalfTimes.length;
+  const avgFirst =
+    firstHalfTimes.reduce((a, b) => a + b, 0) / firstHalfTimes.length;
+  const avgSecond =
+    secondHalfTimes.reduce((a, b) => a + b, 0) / secondHalfTimes.length;
 
   // Accuracy rates
-  const accFirst = firstHalfCorrect.filter(Boolean).length / firstHalfCorrect.length;
-  const accSecond = secondHalfCorrect.filter(Boolean).length / secondHalfCorrect.length;
+  const accFirst =
+    firstHalfCorrect.filter(Boolean).length / firstHalfCorrect.length;
+  const accSecond =
+    secondHalfCorrect.filter(Boolean).length / secondHalfCorrect.length;
 
   // Fatigue indicators:
   // 1. Response time increase (slowing down)
-  const timeSlowdown = avgFirst > 0 ? Math.max(0, (avgSecond - avgFirst) / avgFirst) : 0;
+  const timeSlowdown =
+    avgFirst > 0 ? Math.max(0, (avgSecond - avgFirst) / avgFirst) : 0;
 
   // 2. Accuracy decline
   const accuracyDecline = Math.max(0, accFirst - accSecond);
