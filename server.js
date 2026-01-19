@@ -592,7 +592,7 @@ app.post("/api/discourse/prepare-sso", authenticateToken, (req, res) => {
       console.log(
         `[SSO] Session saved successfully for user: ${sanitizeForLog(req.userId)}`,
       );
-      res.json({ success: true, message: "Session established" });
+      return res.json({ success: true, message: "Session established" });
     });
   } catch (error) {
     console.error("Prepare SSO error:", error);
@@ -933,7 +933,7 @@ app.put("/api/profile/privacy", authenticateToken, async (req, res) => {
       [req.userId],
     );
 
-    let result;
+    let result = null;
 
     if (existingResult.rows.length === 0) {
       // Create new privacy settings
@@ -1291,8 +1291,8 @@ app.post("/api/study-sessions/batch", authenticateToken, async (req, res) => {
     await client.query("BEGIN");
 
     const results = [];
-    for (const session of sessions) {
-      const { cardId, timeSpentMs, rating, difficultyRating } = session;
+    for (const studySession of sessions) {
+      const { cardId, timeSpentMs, rating, difficultyRating } = studySession;
 
       // Generate ULID for each session
       const sessionId = generateULID("rev");
@@ -1575,7 +1575,7 @@ app.get("/api/statistics/user/:userId", authenticateToken, async (req, res) => {
   const { period } = req.query; // 'today', 'week', 'month', 'all'
 
   try {
-    let stats;
+    let stats = null;
 
     if (period === "today") {
       const result = await pool.query(
@@ -2046,7 +2046,7 @@ app.get("/api/browse/categories/:slug", async (req, res) => {
     const category = categoryResult.rows[0];
 
     // Build sort clause
-    let orderBy;
+    let orderBy = "";
     switch (sort) {
       case "newest":
         orderBy = "d.created_at DESC";
@@ -2073,8 +2073,8 @@ app.get("/api/browse/categories/:slug", async (req, res) => {
     const tagSlugs = tags ? tags.split(",").filter(Boolean) : [];
 
     // Build query with optional tag filtering
-    let deckQuery;
-    let queryParams;
+    let deckQuery = "";
+    let queryParams = [];
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     if (tagSlugs.length > 0) {
@@ -2191,7 +2191,7 @@ app.get("/api/browse/categories/:slug", async (req, res) => {
       [category.id],
     );
 
-    res.json({
+    return res.json({
       category: {
         id: category.id,
         name: category.name,
@@ -2217,7 +2217,7 @@ app.get("/api/browse/categories/:slug", async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching category decks:", error);
-    res.status(500).json({ error: "Failed to fetch decks" });
+    return res.status(500).json({ error: "Failed to fetch decks" });
   }
 });
 
