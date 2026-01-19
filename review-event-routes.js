@@ -143,12 +143,8 @@ export function createReviewEventRoutes(pool, authenticateToken) {
         req.body
       );
 
-      if (result.success) {
-        res.status(200).json(result);
-      } else {
-        // Return 200 with error details - don't fail the client
-        res.status(200).json(result);
-      }
+      // Always return 200 - don't fail the client even on errors
+      res.status(200).json(result);
     })
   );
 
