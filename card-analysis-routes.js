@@ -206,7 +206,11 @@ export function createCardAnalysisRoutes(pool, authenticateToken) {
  * @param {function} requireAdmin - Admin check middleware (optional)
  * @returns {express.Router}
  */
-export function createAdminAnalysisRoutes(pool, authenticateToken, requireAdmin) {
+export function createAdminAnalysisRoutes(
+  pool,
+  authenticateToken,
+  requireAdmin,
+) {
   const router = express.Router();
   const analysisService = new CardAnalysisService(pool);
 
@@ -263,7 +267,7 @@ export function createAdminAnalysisRoutes(pool, authenticateToken, requireAdmin)
          FROM card_analysis
          WHERE status = 'completed'
          GROUP BY detected_domain
-         ORDER BY count DESC`
+         ORDER BY count DESC`,
       );
 
       // Get complexity distribution
@@ -272,7 +276,7 @@ export function createAdminAnalysisRoutes(pool, authenticateToken, requireAdmin)
          FROM card_analysis
          WHERE status = 'completed'
          GROUP BY complexity_level
-         ORDER BY count DESC`
+         ORDER BY count DESC`,
       );
 
       // Get analysis method distribution
@@ -280,7 +284,7 @@ export function createAdminAnalysisRoutes(pool, authenticateToken, requireAdmin)
         `SELECT analysis_method, COUNT(*) as count
          FROM card_analysis
          GROUP BY analysis_method
-         ORDER BY count DESC`
+         ORDER BY count DESC`,
       );
 
       // Get overall counts
@@ -290,7 +294,7 @@ export function createAdminAnalysisRoutes(pool, authenticateToken, requireAdmin)
            COUNT(DISTINCT card_id) as unique_cards,
            AVG(domain_confidence) as avg_confidence
          FROM card_analysis
-         WHERE status = 'completed'`
+         WHERE status = 'completed'`,
       );
 
       res.json({
