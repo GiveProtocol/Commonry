@@ -62,7 +62,7 @@ export class AnalysisJobProcessor {
 
     this.isRunning = true;
     console.log(
-      `[AnalysisJobProcessor] Starting with worker ID: ${this.options.workerId}`
+      `[AnalysisJobProcessor] Starting with worker ID: ${this.options.workerId}`,
     );
 
     // Start polling for jobs
@@ -116,10 +116,10 @@ export class AnalysisJobProcessor {
    */
   async processJobs() {
     // Claim jobs atomically using SKIP LOCKED
-    const result = await this.pool.query("SELECT * FROM claim_analysis_job($1, $2)", [
-      this.options.workerId,
-      this.options.batchSize,
-    ]);
+    const result = await this.pool.query(
+      "SELECT * FROM claim_analysis_job($1, $2)",
+      [this.options.workerId, this.options.batchSize],
+    );
 
     const jobs = result.rows;
 
@@ -138,7 +138,7 @@ export class AnalysisJobProcessor {
       } catch (error) {
         console.error(
           `[AnalysisJobProcessor] Error processing job ${job.job_id}:`,
-          error
+          error,
         );
 
         // Mark job as failed
@@ -156,7 +156,7 @@ export class AnalysisJobProcessor {
    */
   async processJob(job) {
     console.log(
-      `[AnalysisJobProcessor] Processing job ${job.job_id} (type: ${job.job_type})`
+      `[AnalysisJobProcessor] Processing job ${job.job_id} (type: ${job.job_type})`,
     );
 
     switch (job.job_type) {
@@ -186,13 +186,10 @@ export class AnalysisJobProcessor {
       });
 
       // Mark job as completed
-      await this.pool.query("SELECT complete_analysis_job($1, $2, $3, $4, $5)", [
-        jobId,
-        true,
-        null,
-        1,
-        0,
-      ]);
+      await this.pool.query(
+        "SELECT complete_analysis_job($1, $2, $3, $4, $5)",
+        [jobId, true, null, 1, 0],
+      );
 
       console.log(`[AnalysisJobProcessor] Completed single card job: ${jobId}`);
     } catch (error) {
@@ -201,16 +198,13 @@ export class AnalysisJobProcessor {
 
       if (!isRetryable || job.attempt_count >= job.max_attempts) {
         // Mark as permanently failed
-        await this.pool.query("SELECT complete_analysis_job($1, $2, $3, $4, $5)", [
-          jobId,
-          false,
-          error.message,
-          0,
-          1,
-        ]);
+        await this.pool.query(
+          "SELECT complete_analysis_job($1, $2, $3, $4, $5)",
+          [jobId, false, error.message, 0, 1],
+        );
         console.error(
           `[AnalysisJobProcessor] Job ${jobId} failed permanently:`,
-          error.message
+          error.message,
         );
       } else {
         // Will be retried (complete_analysis_job handles retry logic)
@@ -236,7 +230,7 @@ export class AnalysisJobProcessor {
     } = job;
 
     console.log(
-      `[AnalysisJobProcessor] Processing batch job for deck ${deckId} (${totalCards} cards)`
+      `[AnalysisJobProcessor] Processing batch job for deck ${deckId} (${totalCards} cards)`,
     );
 
     let processedCount = 0;
@@ -246,7 +240,7 @@ export class AnalysisJobProcessor {
       // Get all cards in the deck
       const cardsResult = await this.pool.query(
         "SELECT card_id FROM cards WHERE deck_client_id = $1",
-        [deckId]
+        [deckId],
       );
 
       const cards = cardsResult.rows;
@@ -268,7 +262,7 @@ export class AnalysisJobProcessor {
         } catch (error) {
           console.warn(
             `[AnalysisJobProcessor] Failed to analyze card ${card.card_id}:`,
-            error.message
+            error.message,
           );
           failedCount++;
         }
@@ -280,26 +274,20 @@ export class AnalysisJobProcessor {
       }
 
       // Mark batch job as completed
-      await this.pool.query("SELECT complete_analysis_job($1, $2, $3, $4, $5)", [
-        jobId,
-        true,
-        null,
-        processedCount,
-        failedCount,
-      ]);
+      await this.pool.query(
+        "SELECT complete_analysis_job($1, $2, $3, $4, $5)",
+        [jobId, true, null, processedCount, failedCount],
+      );
 
       console.log(
-        `[AnalysisJobProcessor] Completed batch job ${jobId}: ${processedCount} processed, ${failedCount} failed`
+        `[AnalysisJobProcessor] Completed batch job ${jobId}: ${processedCount} processed, ${failedCount} failed`,
       );
     } catch (error) {
       // Mark batch job as failed
-      await this.pool.query("SELECT complete_analysis_job($1, $2, $3, $4, $5)", [
-        jobId,
-        false,
-        error.message,
-        processedCount,
-        failedCount,
-      ]);
+      await this.pool.query(
+        "SELECT complete_analysis_job($1, $2, $3, $4, $5)",
+        [jobId, false, error.message, processedCount, failedCount],
+      );
 
       throw error;
     }
@@ -313,7 +301,7 @@ export class AnalysisJobProcessor {
       `UPDATE analysis_jobs
        SET processed_cards = $2, failed_cards = $3, updated_at = CURRENT_TIMESTAMP
        WHERE job_id = $1`,
-      [jobId, processed, failed]
+      [jobId, processed, failed],
     );
   }
 
@@ -327,7 +315,10 @@ export class AnalysisJobProcessor {
       try {
         await this.releaseStaleJobs();
       } catch (error) {
-        console.error("[AnalysisJobProcessor] Error releasing stale jobs:", error);
+        console.error(
+          "[AnalysisJobProcessor] Error releasing stale jobs:",
+          error,
+        );
       }
     }, this.options.staleCheckInterval);
   }
@@ -343,7 +334,9 @@ export class AnalysisJobProcessor {
     const releasedCount = result.rows[0]?.release_stale_jobs || 0;
 
     if (releasedCount > 0) {
-      console.log(`[AnalysisJobProcessor] Released ${releasedCount} stale jobs`);
+      console.log(
+        `[AnalysisJobProcessor] Released ${releasedCount} stale jobs`,
+      );
     }
   }
 
@@ -356,12 +349,12 @@ export class AnalysisJobProcessor {
        SET status = 'pending', locked_by = NULL, locked_at = NULL
        WHERE locked_by = $1 AND status = 'processing'
        RETURNING job_id`,
-      [this.options.workerId]
+      [this.options.workerId],
     );
 
     if (result.rows.length > 0) {
       console.log(
-        `[AnalysisJobProcessor] Released ${result.rows.length} jobs on shutdown`
+        `[AnalysisJobProcessor] Released ${result.rows.length} jobs on shutdown`,
       );
     }
   }
