@@ -12,6 +12,9 @@ BEGIN;
 -- ============================================================
 -- ENUMS
 -- ============================================================
+-- NOSONAR: plsql:S1192 - ENUM values must be referenced by literal strings in PostgreSQL.
+-- The duplication between analysis_status and job_status ENUMs is intentional for type safety.
+-- These are separate domain concepts that happen to share similar state names.
 
 -- Drop types if they exist (for re-running migration during development)
 DROP TYPE IF EXISTS complexity_level CASCADE;
