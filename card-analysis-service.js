@@ -62,7 +62,7 @@ export class CardAnalysisService {
     // Fetch card content
     const cardResult = await this.pool.query(
       "SELECT card_id, front_content, back_content FROM cards WHERE card_id = $1",
-      [cardId]
+      [cardId],
     );
 
     if (cardResult.rows.length === 0) {
@@ -75,17 +75,22 @@ export class CardAnalysisService {
     const combinedText = `${frontText} ${backText}`;
 
     // Run rule-based analysis
-    const analysis = this.runRuleBasedAnalysis(frontText, backText, combinedText);
+    const analysis = this.runRuleBasedAnalysis(
+      frontText,
+      backText,
+      combinedText,
+    );
 
     // Determine if LLM is needed
-    const needsLLM = analysis.domainConfidence < this.options.minDomainConfidence;
+    const needsLLM =
+      analysis.domainConfidence < this.options.minDomainConfidence;
     const status = needsLLM ? "needs_llm" : "completed";
     const method = needsLLM ? "hybrid" : "rule_based";
 
     // Get current analysis version
     const versionResult = await this.pool.query(
       "SELECT MAX(analysis_version) as max_version FROM card_analysis WHERE card_id = $1",
-      [cardId]
+      [cardId],
     );
     const newVersion = (versionResult.rows[0]?.max_version || 0) + 1;
 
@@ -117,7 +122,7 @@ export class CardAnalysisService {
         method,
         JSON.stringify(analysis.rawAnalysis),
         status,
-      ]
+      ],
     );
 
     return {
@@ -143,7 +148,7 @@ export class CardAnalysisService {
       `INSERT INTO analysis_jobs (job_id, card_id, job_type, priority, user_id)
        VALUES ($1, $2, 'single', $3, $4)
        ON CONFLICT DO NOTHING`,
-      [jobId, cardId, priority, userId]
+      [jobId, cardId, priority, userId],
     );
 
     return { jobId, cardId };
@@ -160,7 +165,7 @@ export class CardAnalysisService {
     // Get card count for progress tracking
     const countResult = await this.pool.query(
       "SELECT COUNT(*) as total FROM cards WHERE deck_client_id = $1",
-      [deckId]
+      [deckId],
     );
     const totalCards = parseInt(countResult.rows[0]?.total || 0);
 
@@ -168,7 +173,7 @@ export class CardAnalysisService {
     await this.pool.query(
       `INSERT INTO analysis_jobs (job_id, deck_id, job_type, priority, user_id, total_cards)
        VALUES ($1, $2, 'batch', $3, $4, $5)`,
-      [jobId, deckId, priority, userId, totalCards]
+      [jobId, deckId, priority, userId, totalCards],
     );
 
     return { jobId, deckId, totalCards };
@@ -212,7 +217,7 @@ export class CardAnalysisService {
        FROM cards c
        LEFT JOIN card_analysis ca ON c.card_id = ca.card_id
        WHERE ${whereClause}`,
-      params
+      params,
     );
 
     // Queue jobs for each card
@@ -222,7 +227,7 @@ export class CardAnalysisService {
       await this.pool.query(
         `INSERT INTO analysis_jobs (job_id, card_id, job_type, priority, user_id)
          VALUES ($1, $2, 'reanalysis', $3, $4)`,
-        [jobId, row.card_id, priority, userId]
+        [jobId, row.card_id, priority, userId],
       );
       jobs.push({ jobId, cardId: row.card_id });
     }
@@ -239,7 +244,8 @@ export class CardAnalysisService {
    */
   runRuleBasedAnalysis(frontText, backText, combinedText) {
     const domainResult = this.detectDomain(combinedText);
-    const complexityResult = CardAnalysisService.analyzeComplexity(combinedText);
+    const complexityResult =
+      CardAnalysisService.analyzeComplexity(combinedText);
     const cardType = CardAnalysisService.detectCardType(frontText, backText);
     const language = CardAnalysisService.detectLanguage(combinedText);
     const concepts = this.extractConcepts(combinedText);
@@ -337,7 +343,8 @@ export class CardAnalysisService {
     const wordLengthScore = Math.min(avgWordLength / 10, 1);
 
     // Factor 2: Average sentence length
-    const avgSentenceLength = sentences.length > 0 ? words.length / sentences.length : words.length;
+    const avgSentenceLength =
+      sentences.length > 0 ? words.length / sentences.length : words.length;
     const sentenceLengthScore = Math.min(avgSentenceLength / 30, 1);
 
     // Factor 3: Vocabulary diversity (unique words / total words)
@@ -388,14 +395,28 @@ export class CardAnalysisService {
     const backLower = back.toLowerCase();
 
     // Cloze detection: {{c1::text}} or [...] or _____
-    if (/\{\{c\d+::.*?\}\}/.test(front) || /\[\.\.\.?\]/.test(front) || /_{3,}/.test(front)) {
+    if (
+      /\{\{c\d+::.*?\}\}/.test(front) ||
+      /\[\.\.\.?\]/.test(front) ||
+      /_{3,}/.test(front)
+    ) {
       return "cloze";
     }
 
     // Q&A detection: starts with question word or ends with ?
-    const questionWords = ["what", "who", "where", "when", "why", "how", "which", "whose", "whom"];
+    const questionWords = [
+      "what",
+      "who",
+      "where",
+      "when",
+      "why",
+      "how",
+      "which",
+      "whose",
+      "whom",
+    ];
     const startsWithQuestion = questionWords.some((w) =>
-      frontLower.trim().startsWith(w)
+      frontLower.trim().startsWith(w),
     );
     const endsWithQuestion = front.trim().endsWith("?");
 
@@ -536,12 +557,16 @@ export class CardAnalysisService {
    */
   mergeAnalysis(ruleAnalysis, llmAnalysis) {
     // If LLM provided better results, use those
-    if (llmAnalysis.status === "completed" && llmAnalysis.confidence > ruleAnalysis.domainConfidence) {
+    if (
+      llmAnalysis.status === "completed" &&
+      llmAnalysis.confidence > ruleAnalysis.domainConfidence
+    ) {
       return {
         ...ruleAnalysis,
         detectedDomain: llmAnalysis.domain,
         domainConfidence: llmAnalysis.confidence,
-        extractedConcepts: llmAnalysis.concepts || ruleAnalysis.extractedConcepts,
+        extractedConcepts:
+          llmAnalysis.concepts || ruleAnalysis.extractedConcepts,
         rawAnalysis: {
           ...ruleAnalysis.rawAnalysis,
           llmAnalysis,
@@ -565,7 +590,7 @@ export class CardAnalysisService {
        WHERE card_id = $1
        ORDER BY analysis_version DESC
        LIMIT 1`,
-      [cardId]
+      [cardId],
     );
 
     return result.rows[0] || null;
@@ -582,7 +607,7 @@ export class CardAnalysisService {
         COUNT(*) as count
        FROM analysis_jobs
        WHERE status IN ('pending', 'processing')
-       GROUP BY status, job_type`
+       GROUP BY status, job_type`,
     );
 
     const summary = {
@@ -593,7 +618,10 @@ export class CardAnalysisService {
 
     for (const row of result.rows) {
       summary[row.status] = (summary[row.status] || 0) + parseInt(row.count);
-      summary.byType[row.job_type] = summary.byType[row.job_type] || { pending: 0, processing: 0 };
+      summary.byType[row.job_type] = summary.byType[row.job_type] || {
+        pending: 0,
+        processing: 0,
+      };
       summary.byType[row.job_type][row.status] = parseInt(row.count);
     }
 
@@ -645,19 +673,21 @@ export class CardAnalysisService {
    * @returns {string} Plain text with HTML tags removed
    */
   stripHtml(html) {
-    return html
-      // NOSONAR: This regex is safe - [^>]* is a negated character class that cannot
-      // match >, so there's no backtracking. It runs in O(n) linear time.
-      .replace(/<[^>]*>/g, " ")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      // &amp; must be unescaped LAST to avoid double-unescaping (e.g., &amp;lt; → &lt; → <)
-      .replace(/&amp;/g, "&")
-      .replace(/\s+/g, " ")
-      .trim();
+    return (
+      html
+        // NOSONAR: This regex is safe - [^>]* is a negated character class that cannot
+        // match >, so there's no backtracking. It runs in O(n) linear time.
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        // &amp; must be unescaped LAST to avoid double-unescaping (e.g., &amp;lt; → &lt; → <)
+        .replace(/&amp;/g, "&")
+        .replace(/\s+/g, " ")
+        .trim()
+    );
   }
 
   /**
