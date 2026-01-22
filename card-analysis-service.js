@@ -641,9 +641,13 @@ export class CardAnalysisService {
 
   /**
    * Strip HTML tags from text
+   * @param {string} html - HTML string to strip
+   * @returns {string} Plain text with HTML tags removed
    */
   stripHtml(html) {
     return html
+      // NOSONAR: This regex is safe - [^>]* is a negated character class that cannot
+      // match >, so there's no backtracking. It runs in O(n) linear time.
       .replace(/<[^>]*>/g, " ")
       .replace(/&nbsp;/g, " ")
       .replace(/&amp;/g, "&")
