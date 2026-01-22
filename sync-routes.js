@@ -341,8 +341,8 @@ router.post("/", async (req, res) => {
     if (createdCardServerIds.length > 0) {
       Promise.all(
         createdCardServerIds.map((cardId) =>
-          cardAnalysisService.queueCardForAnalysis(cardId, { userId })
-        )
+          cardAnalysisService.queueCardForAnalysis(cardId, { userId }),
+        ),
       ).catch((err) => {
         console.warn("Failed to queue cards for analysis:", err.message);
       });

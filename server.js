@@ -19,7 +19,10 @@ import { handleDiscourseSSORequest } from "./discourse-sso.js";
 import syncRoutes from "./sync-routes.js";
 import { createReviewEventRoutes } from "./review-event-routes.js";
 import { createStudySessionRoutes } from "./study-session-routes.js";
-import { createCardAnalysisRoutes, createAdminAnalysisRoutes } from "./card-analysis-routes.js";
+import {
+  createCardAnalysisRoutes,
+  createAdminAnalysisRoutes,
+} from "./card-analysis-routes.js";
 import { AnalysisJobProcessor } from "./analysis-job-processor.js";
 
 dotenv.config();
@@ -1249,7 +1252,10 @@ app.use("/api/analysis", createCardAnalysisRoutes(pool, authenticateToken));
 // Mount admin analysis routes
 // POST   /api/admin/analysis/reanalyze - Re-analyze cards by criteria
 // GET    /api/admin/analysis/stats - Get analysis statistics
-app.use("/api/admin/analysis", createAdminAnalysisRoutes(pool, authenticateToken));
+app.use(
+  "/api/admin/analysis",
+  createAdminAnalysisRoutes(pool, authenticateToken),
+);
 
 // ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
