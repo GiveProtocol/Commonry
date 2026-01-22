@@ -650,11 +650,12 @@ export class CardAnalysisService {
       // match >, so there's no backtracking. It runs in O(n) linear time.
       .replace(/<[^>]*>/g, " ")
       .replace(/&nbsp;/g, " ")
-      .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
+      // &amp; must be unescaped LAST to avoid double-unescaping (e.g., &amp;lt; → &lt; → <)
+      .replace(/&amp;/g, "&")
       .replace(/\s+/g, " ")
       .trim();
   }
