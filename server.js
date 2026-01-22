@@ -19,6 +19,8 @@ import { handleDiscourseSSORequest } from "./discourse-sso.js";
 import syncRoutes from "./sync-routes.js";
 import { createReviewEventRoutes } from "./review-event-routes.js";
 import { createStudySessionRoutes } from "./study-session-routes.js";
+import { createCardAnalysisRoutes, createAdminAnalysisRoutes } from "./card-analysis-routes.js";
+import { AnalysisJobProcessor } from "./analysis-job-processor.js";
 
 dotenv.config();
 
@@ -1234,6 +1236,20 @@ app.use(
 // GET    /api/sessions/recent        - Get recent sessions
 // GET    /api/sessions/:id           - Get session details
 app.use("/api/sessions", createStudySessionRoutes(pool, authenticateToken));
+
+// ==================== CARD ANALYSIS ENDPOINTS ====================
+
+// Mount card analysis routes
+// GET    /api/analysis/cards/:cardId - Get analysis results
+// POST   /api/analysis/cards/:cardId - Trigger analysis (immediate or queued)
+// POST   /api/analysis/decks/:deckId - Queue deck for batch analysis
+// GET    /api/analysis/backlog - Get job queue status
+app.use("/api/analysis", createCardAnalysisRoutes(pool, authenticateToken));
+
+// Mount admin analysis routes
+// POST   /api/admin/analysis/reanalyze - Re-analyze cards by criteria
+// GET    /api/admin/analysis/stats - Get analysis statistics
+app.use("/api/admin/analysis", createAdminAnalysisRoutes(pool, authenticateToken));
 
 // ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
@@ -2691,7 +2707,38 @@ app.get("/api/browse/subscriptions", authenticateToken, async (req, res) => {
   }
 });
 
+// ==================== JOB PROCESSORS ====================
+
+// Start the analysis job processor for background card analysis
+const analysisProcessor = new AnalysisJobProcessor(pool);
+analysisProcessor.start();
+
+// ==================== SERVER STARTUP ====================
+
 const PORT = 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
+
+// ==================== GRACEFUL SHUTDOWN ====================
+
+async function gracefulShutdown(signal) {
+  console.log(`\n${signal} received. Starting graceful shutdown...`);
+
+  // Stop accepting new connections
+  server.close(() => {
+    console.log("HTTP server closed");
+  });
+
+  // Stop the analysis job processor
+  await analysisProcessor.stop();
+
+  // Close database pool
+  await pool.end();
+  console.log("Database pool closed");
+
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));

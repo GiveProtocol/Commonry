@@ -8,8 +8,12 @@
 import express from "express";
 import pool from "./db.js";
 import { ulid } from "ulid";
+import { CardAnalysisService } from "./card-analysis-service.js";
 
 const router = express.Router();
+
+// Initialize analysis service for queueing
+const cardAnalysisService = new CardAnalysisService(pool);
 
 /**
  * Generate ULID with prefix
@@ -54,6 +58,9 @@ router.post("/", async (req, res) => {
       },
       errors: [],
     };
+
+    // Track created card serverIds for analysis queueing
+    const createdCardServerIds = [];
 
     // Process deck operations
     if (decks && Array.isArray(decks)) {
@@ -194,6 +201,7 @@ router.post("/", async (req, res) => {
               ],
             );
             response.cards.created.push(data.id);
+            createdCardServerIds.push(serverId); // Track for analysis
           } else if (operation === "update") {
             // Check for conflicts
             const existing = await client.query(
@@ -267,6 +275,7 @@ router.post("/", async (req, res) => {
                 ],
               );
               response.cards.created.push(data.id);
+              createdCardServerIds.push(serverId); // Track for analysis
             }
           } else if (operation === "delete") {
             // Soft delete card
@@ -327,6 +336,17 @@ router.post("/", async (req, res) => {
     }
 
     await client.query("COMMIT");
+
+    // Queue created cards for analysis (non-blocking, don't fail sync if this fails)
+    if (createdCardServerIds.length > 0) {
+      Promise.all(
+        createdCardServerIds.map((cardId) =>
+          cardAnalysisService.queueCardForAnalysis(cardId, { userId })
+        )
+      ).catch((err) => {
+        console.warn("Failed to queue cards for analysis:", err.message);
+      });
+    }
 
     res.json(response);
   } catch (error) {
