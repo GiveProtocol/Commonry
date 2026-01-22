@@ -22,6 +22,16 @@ function generateULID(prefix) {
   return `${prefix}_${ulid()}`;
 }
 
+/**
+ * Service for analyzing flashcard content.
+ *
+ * Provides rule-based analysis including domain detection, complexity scoring,
+ * card type detection, language detection, and concept extraction.
+ *
+ * @example
+ * const service = new CardAnalysisService(pool);
+ * const analysis = await service.analyzeCard(cardId);
+ */
 export class CardAnalysisService {
   constructor(pool, options = {}) {
     this.pool = pool;
@@ -229,9 +239,9 @@ export class CardAnalysisService {
    */
   runRuleBasedAnalysis(frontText, backText, combinedText) {
     const domainResult = this.detectDomain(combinedText);
-    const complexityResult = this.analyzeComplexity(combinedText);
-    const cardType = this.detectCardType(frontText, backText);
-    const language = this.detectLanguage(combinedText);
+    const complexityResult = CardAnalysisService.analyzeComplexity(combinedText);
+    const cardType = CardAnalysisService.detectCardType(frontText, backText);
+    const language = CardAnalysisService.detectLanguage(combinedText);
     const concepts = this.extractConcepts(combinedText);
 
     return {
@@ -310,8 +320,10 @@ export class CardAnalysisService {
 
   /**
    * Analyze text complexity based on vocabulary and structure
+   * @param {string} text - Text to analyze
+   * @returns {object} Complexity analysis with level, score, and factors
    */
-  analyzeComplexity(text) {
+  static analyzeComplexity(text) {
     const words = text.split(/\s+/).filter((w) => w.length > 0);
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
 
@@ -344,15 +356,13 @@ export class CardAnalysisService {
       longWordScore * 0.25;
 
     // Map score to level
-    let level;
+    let level = "expert";
     if (score < 0.25) {
       level = "elementary";
     } else if (score < 0.5) {
       level = "intermediate";
     } else if (score < 0.75) {
       level = "advanced";
-    } else {
-      level = "expert";
     }
 
     return {
@@ -369,8 +379,11 @@ export class CardAnalysisService {
 
   /**
    * Detect card type based on content patterns
+   * @param {string} front - Front text of the card
+   * @param {string} back - Back text of the card
+   * @returns {string} Detected card type (cloze, qa, definition, basic)
    */
-  detectCardType(front, back) {
+  static detectCardType(front, back) {
     const frontLower = front.toLowerCase();
     const backLower = back.toLowerCase();
 
@@ -408,50 +421,52 @@ export class CardAnalysisService {
 
   /**
    * Detect primary language using script detection
+   * @param {string} text - Text to analyze
+   * @returns {string} ISO 639-1 language code
    */
-  detectLanguage(text) {
+  static detectLanguage(text) {
     // Check for Japanese first (Hiragana or Katakana, with or without Kanji)
-    if (/[\u3040-\u309f\u30a0-\u30ff]/.test(text)) {
+    if (/[\u3040-\u309f\u30a0-\u30ff]/u.test(text)) {
       return "ja";
     }
 
     // Check for Korean (Hangul)
-    if (/[\uac00-\ud7af\u1100-\u11ff]/.test(text)) {
+    if (/[\uac00-\ud7af\u1100-\u11ff]/u.test(text)) {
       return "ko";
     }
 
     // Check for Chinese (CJK characters without Japanese kana)
-    if (/[\u4e00-\u9fff]/.test(text)) {
+    if (/[\u4e00-\u9fff]/u.test(text)) {
       return "zh";
     }
 
     // Check for Cyrillic (Russian, etc.)
-    if (/[\u0400-\u04ff]/.test(text)) {
+    if (/[\u0400-\u04ff]/u.test(text)) {
       return "ru";
     }
 
     // Check for Arabic
-    if (/[\u0600-\u06ff]/.test(text)) {
+    if (/[\u0600-\u06ff]/u.test(text)) {
       return "ar";
     }
 
     // Check for Hebrew
-    if (/[\u0590-\u05ff]/.test(text)) {
+    if (/[\u0590-\u05ff]/u.test(text)) {
       return "he";
     }
 
     // Check for Greek
-    if (/[\u0370-\u03ff]/.test(text)) {
+    if (/[\u0370-\u03ff]/u.test(text)) {
       return "el";
     }
 
     // Check for Devanagari (Hindi, Sanskrit)
-    if (/[\u0900-\u097f]/.test(text)) {
+    if (/[\u0900-\u097f]/u.test(text)) {
       return "hi";
     }
 
     // Check for Thai
-    if (/[\u0e00-\u0e7f]/.test(text)) {
+    if (/[\u0e00-\u0e7f]/u.test(text)) {
       return "th";
     }
 

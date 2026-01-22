@@ -16,6 +16,18 @@
 import { ulid } from "ulid";
 import { CardAnalysisService } from "./card-analysis-service.js";
 
+/**
+ * Background job processor for card content analysis.
+ *
+ * Uses PostgreSQL-based job queue with atomic claiming (SKIP LOCKED)
+ * to prevent duplicate processing across multiple workers.
+ *
+ * @example
+ * const processor = new AnalysisJobProcessor(pool);
+ * processor.start();
+ * // On shutdown:
+ * await processor.stop();
+ */
 export class AnalysisJobProcessor {
   constructor(pool, options = {}) {
     this.pool = pool;
@@ -185,7 +197,7 @@ export class AnalysisJobProcessor {
       console.log(`[AnalysisJobProcessor] Completed single card job: ${jobId}`);
     } catch (error) {
       // Check if this is a retryable error
-      const isRetryable = this.isRetryableError(error);
+      const isRetryable = AnalysisJobProcessor.isRetryableError(error);
 
       if (!isRetryable || job.attempt_count >= job.max_attempts) {
         // Mark as permanently failed
@@ -356,30 +368,25 @@ export class AnalysisJobProcessor {
 
   /**
    * Check if an error is retryable
+   * @param {Error} error - The error to check
+   * @returns {boolean} Whether the error is retryable
    */
-  isRetryableError(error) {
-    // Network errors are retryable
-    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
-      return true;
-    }
-
-    // Database connection errors are retryable
-    if (error.code === "ECONNRESET" || error.code === "57P01") {
-      return true;
-    }
-
-    // Rate limit errors are retryable
-    if (error.message.includes("rate limit")) {
-      return true;
-    }
-
+  static isRetryableError(error) {
     // "Card not found" is not retryable
     if (error.message.includes("not found")) {
       return false;
     }
 
-    // Default to retryable
-    return true;
+    // Network errors, database connection errors, and rate limits are retryable
+    // Default to retryable for unknown errors
+    return (
+      error.code === "ECONNREFUSED" ||
+      error.code === "ETIMEDOUT" ||
+      error.code === "ECONNRESET" ||
+      error.code === "57P01" ||
+      error.message.includes("rate limit") ||
+      !error.message.includes("not found")
+    );
   }
 }
 
