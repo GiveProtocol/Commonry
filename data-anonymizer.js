@@ -170,7 +170,7 @@ export class DataAnonymizer {
    * @param {Object|string} clientInfo - Client info object or JSON string
    * @returns {string} 'mobile', 'tablet', 'desktop', or 'unknown'
    */
-  anonymizeClientInfo(clientInfo) {
+  static anonymizeClientInfo(clientInfo) {
     if (!clientInfo) return "unknown";
 
     const info =
@@ -190,7 +190,7 @@ export class DataAnonymizer {
    * @param {string} userAgent - The user agent string
    * @returns {string} Platform name or 'Other'
    */
-  anonymizeUserAgent(userAgent) {
+  static anonymizeUserAgent(userAgent) {
     if (!userAgent) return "Unknown";
 
     for (const [platform, pattern] of Object.entries(PLATFORM_PATTERNS)) {
@@ -210,7 +210,7 @@ export class DataAnonymizer {
    * @param {string} [unit='ms'] - Output unit: 'ms', 'seconds', 'minutes'
    * @returns {number} Offset from base time
    */
-  relativizeTimestamp(timestamp, baseTime, unit = "ms") {
+  static relativizeTimestamp(timestamp, baseTime, unit = "ms") {
     if (!timestamp || !baseTime) return null;
 
     const ts = new Date(timestamp).getTime();
@@ -251,7 +251,7 @@ export class DataAnonymizer {
       // RELATIVIZE: Timestamps
       session_start_offset: 0, // Always 0 for session start
       session_duration_seconds: session.ended_at && session.started_at
-        ? this.relativizeTimestamp(session.ended_at, session.started_at, "seconds")
+        ? DataAnonymizer.relativizeTimestamp(session.ended_at, session.started_at, "seconds")
         : session.total_time_seconds || null,
 
       // KEEP: Metrics
@@ -263,8 +263,8 @@ export class DataAnonymizer {
       session_type: session.session_type,
 
       // ANONYMIZE: Client info
-      client_type: this.anonymizeClientInfo(session.client_info),
-      platform_category: this.anonymizeUserAgent(session.user_agent),
+      client_type: DataAnonymizer.anonymizeClientInfo(session.client_info),
+      platform_category: DataAnonymizer.anonymizeUserAgent(session.user_agent),
 
       // REMOVE: ip_address, user_agent (full), email, etc.
       // These fields are simply not included
@@ -289,7 +289,7 @@ export class DataAnonymizer {
       anonymous_learner_id: anonymousLearnerId,
 
       // RELATIVIZE: Timestamp
-      event_offset_ms: this.relativizeTimestamp(
+      event_offset_ms: DataAnonymizer.relativizeTimestamp(
         event.created_at,
         sessionStart,
         "ms"
@@ -375,14 +375,14 @@ export class DataAnonymizer {
 
     for (const record of records) {
       try {
-        let anonymizedRecord;
+        let anonymizedRecord = null;
 
         switch (type) {
           case "session":
             anonymizedRecord = await this.anonymizeSession(record);
             break;
 
-          case "review":
+          case "review": {
             const sessionStart =
               context.sessionStarts?.[record.session_id] || record.created_at;
             anonymizedRecord = await this.anonymizeReviewEvent(
@@ -390,6 +390,7 @@ export class DataAnonymizer {
               sessionStart
             );
             break;
+          }
 
           case "statistics":
             anonymizedRecord = await this.anonymizeStatistics(record);

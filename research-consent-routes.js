@@ -144,7 +144,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
       const needsUpdate =
         hasConsented && settings.research_consent_version !== CONSENT_VERSION;
 
-      res.json({
+      return res.json({
         success: true,
         consent: {
           hasConsented,
@@ -158,7 +158,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
       });
     } catch (error) {
       console.error("[ResearchConsentRoutes] Error getting consent:", error);
-      res.status(500).json({
+      return res.status(500).json({
         error: "Failed to get consent status",
         message: error.message,
       });
@@ -233,7 +233,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
         `[ResearchConsentRoutes] User ${req.userId} ${consent ? "opted in" : "opted out"} of research`
       );
 
-      res.json({
+      return res.json({
         success: true,
         message: consent
           ? "Thank you for participating in research!"
@@ -249,7 +249,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
       });
     } catch (error) {
       console.error("[ResearchConsentRoutes] Error updating consent:", error);
-      res.status(500).json({
+      return res.status(500).json({
         error: "Failed to update consent",
         message: error.message,
       });

@@ -547,13 +547,14 @@ async function seed() {
 const isMainModule = process.argv[1]?.endsWith("data-dictionary-seed.js");
 if (isMainModule) {
   seed()
-    .then(() => {
+    .then(async () => {
       console.log("Done.");
-      process.exit(0);
+      await pool.end();
     })
-    .catch((error) => {
+    .catch(async (error) => {
       console.error("Failed:", error);
-      process.exit(1);
+      await pool.end();
+      throw error;
     });
 }
 
