@@ -303,7 +303,9 @@ export function createAdminAnalysisRoutes(
           totals: {
             analyses: Number.parseInt(totalStats.rows[0].total_analyses, 10),
             uniqueCards: Number.parseInt(totalStats.rows[0].unique_cards, 10),
-            avgConfidence: Number.parseFloat(totalStats.rows[0].avg_confidence || 0),
+            avgConfidence: Number.parseFloat(
+              totalStats.rows[0].avg_confidence || 0,
+            ),
           },
           byDomain: domainStats.rows.map((r) => ({
             domain: r.detected_domain,
