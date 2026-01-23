@@ -236,6 +236,30 @@ function generateULID(prefix) {
 }
 
 /**
+ * Transform a deck database row into API response format
+ * @param {object} deck - Raw deck row from database
+ * @param {object} options - Transformation options
+ * @param {boolean} [options.isFeatured] - Override isFeatured value (defaults to !!deck.featuredAt)
+ * @returns {object} Transformed deck object
+ */
+function transformDeckResponse(deck, options = {}) {
+  const isFeatured = options.isFeatured !== undefined
+    ? options.isFeatured
+    : !!deck.featuredAt;
+
+  return {
+    ...deck,
+    subscriberCount: parseInt(deck.subscriberCount) || 0,
+    cardCount: parseInt(deck.cardCount) || 0,
+    isFeatured,
+    author: {
+      username: deck.authorUsername,
+      displayName: deck.authorDisplayName,
+    },
+  };
+}
+
+/**
  * Get user and check privacy setting - common pattern in profile routes
  * @returns {object|null} Returns user object or null, sends response if error
  */
@@ -2292,16 +2316,7 @@ app.get("/api/browse/categories/:slug", async (req, res) => {
         description: category.description,
         iconEmoji: category.icon_emoji,
       },
-      decks: decksResult.rows.map((deck) => ({
-        ...deck,
-        subscriberCount: parseInt(deck.subscriberCount) || 0,
-        cardCount: parseInt(deck.cardCount) || 0,
-        isFeatured: !!deck.featuredAt,
-        author: {
-          username: deck.authorUsername,
-          displayName: deck.authorDisplayName,
-        },
-      })),
+      decks: decksResult.rows.map((deck) => transformDeckResponse(deck)),
       tags: tagsResult.rows,
       total,
       page: parseInt(page),
@@ -2368,16 +2383,7 @@ app.get("/api/browse/featured", async (req, res) => {
 
     const result = await pool.query(query, params);
     res.json(
-      result.rows.map((deck) => ({
-        ...deck,
-        subscriberCount: parseInt(deck.subscriberCount) || 0,
-        cardCount: parseInt(deck.cardCount) || 0,
-        isFeatured: true,
-        author: {
-          username: deck.authorUsername,
-          displayName: deck.authorDisplayName,
-        },
-      })),
+      result.rows.map((deck) => transformDeckResponse(deck, { isFeatured: true })),
     );
   } catch (error) {
     console.error("Error fetching featured decks:", error);
@@ -2453,14 +2459,7 @@ app.get("/api/browse/decks/:deckId", async (req, res) => {
     );
 
     res.json({
-      ...deck,
-      subscriberCount: parseInt(deck.subscriberCount) || 0,
-      cardCount: parseInt(deck.cardCount) || 0,
-      isFeatured: !!deck.featuredAt,
-      author: {
-        username: deck.authorUsername,
-        displayName: deck.authorDisplayName,
-      },
+      ...transformDeckResponse(deck),
       categories: categoriesResult.rows,
       tags: tagsResult.rows,
       sampleCards: cardsResult.rows,
@@ -2755,17 +2754,7 @@ app.get("/api/browse/subscriptions", authenticateToken, async (req, res) => {
       [userId],
     );
 
-    res.json(
-      result.rows.map((deck) => ({
-        ...deck,
-        subscriberCount: parseInt(deck.subscriberCount) || 0,
-        cardCount: parseInt(deck.cardCount) || 0,
-        author: {
-          username: deck.authorUsername,
-          displayName: deck.authorDisplayName,
-        },
-      })),
-    );
+    res.json(result.rows.map((deck) => transformDeckResponse(deck)));
   } catch (error) {
     console.error("Error fetching subscriptions:", error);
     res.status(500).json({ error: "Failed to fetch subscriptions" });
