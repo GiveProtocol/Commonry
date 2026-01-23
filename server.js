@@ -183,7 +183,7 @@ const requireAdmin = async (req, res, next) => {
     // Check if user has admin role
     const result = await pool.query(
       "SELECT role FROM users WHERE user_id = $1",
-      [req.userId]
+      [req.userId],
     );
 
     if (result.rows.length === 0) {
@@ -243,9 +243,8 @@ function generateULID(prefix) {
  * @returns {object} Transformed deck object
  */
 function transformDeckResponse(deck, options = {}) {
-  const isFeatured = options.isFeatured !== undefined
-    ? options.isFeatured
-    : !!deck.featuredAt;
+  const isFeatured =
+    options.isFeatured !== undefined ? options.isFeatured : !!deck.featuredAt;
 
   return {
     ...deck,
@@ -1331,7 +1330,12 @@ const researchExportService = new ResearchExportService(pool, dataAnonymizer);
 // GET    /api/admin/research/schemas              - Get schema versions
 app.use(
   "/api/admin/research",
-  createResearchExportRoutes(pool, researchExportService, authenticateToken, requireAdmin)
+  createResearchExportRoutes(
+    pool,
+    researchExportService,
+    authenticateToken,
+    requireAdmin,
+  ),
 );
 
 // Mount user research consent routes
@@ -2383,7 +2387,9 @@ app.get("/api/browse/featured", async (req, res) => {
 
     const result = await pool.query(query, params);
     res.json(
-      result.rows.map((deck) => transformDeckResponse(deck, { isFeatured: true })),
+      result.rows.map((deck) =>
+        transformDeckResponse(deck, { isFeatured: true }),
+      ),
     );
   } catch (error) {
     console.error("Error fetching featured decks:", error);
@@ -2771,7 +2777,7 @@ analysisProcessor.start();
 const researchExportProcessor = new ResearchExportProcessor(
   pool,
   researchExportService,
-  { pollInterval: 30000 } // Poll every 30 seconds
+  { pollInterval: 30000 }, // Poll every 30 seconds
 );
 researchExportProcessor.start();
 
