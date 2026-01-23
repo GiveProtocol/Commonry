@@ -245,7 +245,7 @@ function generateULID(prefix) {
 function transformDeckResponse(deck, options = {}) {
   const isFeatured = options.isFeatured !== undefined
     ? options.isFeatured
-    : !!deck.featuredAt;
+    : Boolean(deck.featuredAt);
 
   return {
     ...deck,
