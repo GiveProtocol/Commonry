@@ -45,12 +45,12 @@ export function createCardAnalysisRoutes(pool, authenticateToken) {
         version: analysis.analysis_version,
         domain: {
           primary: analysis.detected_domain,
-          confidence: parseFloat(analysis.domain_confidence),
+          confidence: Number.parseFloat(analysis.domain_confidence),
           secondary: analysis.secondary_domains,
         },
         complexity: {
           level: analysis.complexity_level,
-          score: parseFloat(analysis.complexity_score),
+          score: Number.parseFloat(analysis.complexity_score),
         },
         concepts: analysis.extracted_concepts,
         cardType: analysis.detected_card_type,
@@ -301,21 +301,21 @@ export function createAdminAnalysisRoutes(
         success: true,
         stats: {
           totals: {
-            analyses: parseInt(totalStats.rows[0].total_analyses),
-            uniqueCards: parseInt(totalStats.rows[0].unique_cards),
-            avgConfidence: parseFloat(totalStats.rows[0].avg_confidence || 0),
+            analyses: Number.parseInt(totalStats.rows[0].total_analyses, 10),
+            uniqueCards: Number.parseInt(totalStats.rows[0].unique_cards, 10),
+            avgConfidence: Number.parseFloat(totalStats.rows[0].avg_confidence || 0),
           },
           byDomain: domainStats.rows.map((r) => ({
             domain: r.detected_domain,
-            count: parseInt(r.count),
+            count: Number.parseInt(r.count, 10),
           })),
           byComplexity: complexityStats.rows.map((r) => ({
             level: r.complexity_level,
-            count: parseInt(r.count),
+            count: Number.parseInt(r.count, 10),
           })),
           byMethod: methodStats.rows.map((r) => ({
             method: r.analysis_method,
-            count: parseInt(r.count),
+            count: Number.parseInt(r.count, 10),
           })),
         },
       });
