@@ -24,6 +24,11 @@ import {
   createAdminAnalysisRoutes,
 } from "./card-analysis-routes.js";
 import { AnalysisJobProcessor } from "./analysis-job-processor.js";
+import { createResearchExportRoutes } from "./research-export-routes.js";
+import { createResearchConsentRoutes } from "./research-consent-routes.js";
+import { ResearchExportService } from "./research-export-service.js";
+import { ResearchExportProcessor } from "./research-export-processor.js";
+import { DataAnonymizer } from "./data-anonymizer.js";
 
 dotenv.config();
 
@@ -168,6 +173,33 @@ const authenticateToken = (req, res, next) => {
     return null;
   } catch (error) {
     return res.status(403).json({ error: "Invalid or expired token" });
+  }
+};
+
+// Admin authorization middleware
+// Requires authenticateToken to be called first
+const requireAdmin = async (req, res, next) => {
+  try {
+    // Check if user has admin role
+    const result = await pool.query(
+      "SELECT role FROM users WHERE user_id = $1",
+      [req.userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(403).json({ error: "User not found" });
+    }
+
+    const { role } = result.rows[0];
+    if (role !== "admin") {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+
+    next();
+    return null;
+  } catch (error) {
+    console.error("Error checking admin status:", error);
+    return res.status(500).json({ error: "Failed to verify admin status" });
   }
 };
 
@@ -1256,6 +1288,33 @@ app.use(
   "/api/admin/analysis",
   createAdminAnalysisRoutes(pool, authenticateToken),
 );
+
+// ==================== RESEARCH DATA EXPORT ENDPOINTS ====================
+
+// Initialize research export services
+const dataAnonymizer = new DataAnonymizer(pool);
+const researchExportService = new ResearchExportService(pool, dataAnonymizer);
+
+// Mount research admin routes (requires authentication + admin role)
+// POST   /api/admin/research/exports              - Create export job
+// GET    /api/admin/research/exports              - List exports
+// GET    /api/admin/research/exports/:id          - Get export status
+// GET    /api/admin/research/exports/:id/download - Download export file
+// POST   /api/admin/research/exports/:id/cancel   - Cancel export
+// GET    /api/admin/research/dictionary           - Get data dictionary
+// GET    /api/admin/research/consent-stats        - Get consent statistics
+// POST   /api/admin/research/rotate-alids         - Rotate anonymous IDs
+// GET    /api/admin/research/schemas              - Get schema versions
+app.use(
+  "/api/admin/research",
+  createResearchExportRoutes(pool, researchExportService, authenticateToken, requireAdmin)
+);
+
+// Mount user research consent routes
+// GET    /api/user/research-consent      - Get current consent status
+// POST   /api/user/research-consent      - Update consent (opt-in/out)
+// GET    /api/user/research-consent/info - Get research program information
+app.use("/api/user", createResearchConsentRoutes(pool, authenticateToken));
 
 // ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
@@ -2719,6 +2778,14 @@ app.get("/api/browse/subscriptions", authenticateToken, async (req, res) => {
 const analysisProcessor = new AnalysisJobProcessor(pool);
 analysisProcessor.start();
 
+// Start the research export processor for background data exports
+const researchExportProcessor = new ResearchExportProcessor(
+  pool,
+  researchExportService,
+  { pollInterval: 30000 } // Poll every 30 seconds
+);
+researchExportProcessor.start();
+
 // ==================== SERVER STARTUP ====================
 
 const PORT = 3000;
@@ -2738,6 +2805,9 @@ async function gracefulShutdown(signal) {
 
   // Stop the analysis job processor
   await analysisProcessor.stop();
+
+  // Stop the research export processor
+  await researchExportProcessor.stop();
 
   // Close database pool
   await pool.end();
