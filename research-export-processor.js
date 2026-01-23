@@ -48,7 +48,7 @@ export class ResearchExportProcessor {
 
     this.isRunning = true;
     console.log(
-      `[ResearchExportProcessor] Starting with worker ID: ${this.options.workerId}`
+      `[ResearchExportProcessor] Starting with worker ID: ${this.options.workerId}`,
     );
 
     // Start polling for jobs
@@ -71,7 +71,7 @@ export class ResearchExportProcessor {
     // Wait for current export to complete if any
     if (this.currentExport) {
       console.log(
-        `[ResearchExportProcessor] Waiting for current export to complete: ${this.currentExport}`
+        `[ResearchExportProcessor] Waiting for current export to complete: ${this.currentExport}`,
       );
       // Give it some time to finish, but don't wait forever
       await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -91,7 +91,7 @@ export class ResearchExportProcessor {
     } catch (error) {
       console.error(
         "[ResearchExportProcessor] Error in poll cycle:",
-        error.message
+        error.message,
       );
     }
 
@@ -114,7 +114,7 @@ export class ResearchExportProcessor {
 
     const job = result.rows[0];
     console.log(
-      `[ResearchExportProcessor] Claimed export job: ${job.export_id} (type: ${job.export_type})`
+      `[ResearchExportProcessor] Claimed export job: ${job.export_id} (type: ${job.export_type})`,
     );
 
     this.currentExport = job.export_id;
@@ -124,7 +124,7 @@ export class ResearchExportProcessor {
     } catch (error) {
       console.error(
         `[ResearchExportProcessor] Export ${job.export_id} failed:`,
-        error.message
+        error.message,
       );
       // Error handling is done in exportService.processExport
     } finally {
@@ -145,13 +145,13 @@ export class ResearchExportProcessor {
 
       const duration = Math.round((Date.now() - startTime) / 1000);
       console.log(
-        `[ResearchExportProcessor] Completed export ${job.export_id} in ${duration}s: ${result.recordCount} records`
+        `[ResearchExportProcessor] Completed export ${job.export_id} in ${duration}s: ${result.recordCount} records`,
       );
     } catch (error) {
       const duration = Math.round((Date.now() - startTime) / 1000);
       console.error(
         `[ResearchExportProcessor] Export ${job.export_id} failed after ${duration}s:`,
-        error.message
+        error.message,
       );
       throw error;
     }
@@ -179,13 +179,13 @@ export class ResearchExportProcessor {
    */
   async forceProcess(exportId) {
     console.log(
-      `[ResearchExportProcessor] Force processing export: ${exportId}`
+      `[ResearchExportProcessor] Force processing export: ${exportId}`,
     );
 
     // Claim the job if it's pending
     const checkResult = await this.pool.query(
       "SELECT status FROM research_exports WHERE export_id = $1",
-      [exportId]
+      [exportId],
     );
 
     if (checkResult.rows.length === 0) {
@@ -200,11 +200,11 @@ export class ResearchExportProcessor {
         `UPDATE research_exports
          SET status = 'processing', started_at = CURRENT_TIMESTAMP
          WHERE export_id = $1`,
-        [exportId]
+        [exportId],
       );
     } else if (status !== "processing") {
       throw new Error(
-        `Export ${exportId} cannot be processed (status: ${status})`
+        `Export ${exportId} cannot be processed (status: ${status})`,
       );
     }
 

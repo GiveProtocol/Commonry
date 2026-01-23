@@ -183,7 +183,7 @@ const requireAdmin = async (req, res, next) => {
     // Check if user has admin role
     const result = await pool.query(
       "SELECT role FROM users WHERE user_id = $1",
-      [req.userId]
+      [req.userId],
     );
 
     if (result.rows.length === 0) {
@@ -1307,7 +1307,12 @@ const researchExportService = new ResearchExportService(pool, dataAnonymizer);
 // GET    /api/admin/research/schemas              - Get schema versions
 app.use(
   "/api/admin/research",
-  createResearchExportRoutes(pool, researchExportService, authenticateToken, requireAdmin)
+  createResearchExportRoutes(
+    pool,
+    researchExportService,
+    authenticateToken,
+    requireAdmin,
+  ),
 );
 
 // Mount user research consent routes
@@ -2782,7 +2787,7 @@ analysisProcessor.start();
 const researchExportProcessor = new ResearchExportProcessor(
   pool,
   researchExportService,
-  { pollInterval: 30000 } // Poll every 30 seconds
+  { pollInterval: 30000 }, // Poll every 30 seconds
 );
 researchExportProcessor.start();
 

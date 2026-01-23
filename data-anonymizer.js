@@ -106,7 +106,7 @@ export class DataAnonymizer {
       `SELECT user_id, anonymous_id
        FROM anonymous_learner_ids
        WHERE user_id = ANY($1) AND valid_until IS NULL`,
-      [uncached]
+      [uncached],
     );
 
     for (const row of result.rows) {
@@ -238,7 +238,9 @@ export class DataAnonymizer {
    * @returns {Promise<Object>} Anonymized session object
    */
   async anonymizeSession(session) {
-    const anonymousLearnerId = await this.getAnonymousLearnerId(session.user_id);
+    const anonymousLearnerId = await this.getAnonymousLearnerId(
+      session.user_id,
+    );
 
     return {
       // HASH: IDs
@@ -250,9 +252,14 @@ export class DataAnonymizer {
 
       // RELATIVIZE: Timestamps
       session_start_offset: 0, // Always 0 for session start
-      session_duration_seconds: session.ended_at && session.started_at
-        ? this.relativizeTimestamp(session.ended_at, session.started_at, "seconds")
-        : session.total_time_seconds || null,
+      session_duration_seconds:
+        session.ended_at && session.started_at
+          ? this.relativizeTimestamp(
+              session.ended_at,
+              session.started_at,
+              "seconds",
+            )
+          : session.total_time_seconds || null,
 
       // KEEP: Metrics
       cards_studied: session.cards_studied,
@@ -292,7 +299,7 @@ export class DataAnonymizer {
       event_offset_ms: this.relativizeTimestamp(
         event.created_at,
         sessionStart,
-        "ms"
+        "ms",
       ),
 
       // KEEP: Learning metrics
@@ -367,7 +374,9 @@ export class DataAnonymizer {
 
     // Preload ALIDs for all users in batch (optimization)
     if (type !== "card_analysis") {
-      const userIds = [...new Set(records.map((r) => r.user_id).filter(Boolean))];
+      const userIds = [
+        ...new Set(records.map((r) => r.user_id).filter(Boolean)),
+      ];
       await this.preloadALIDs(userIds);
     }
 
@@ -387,7 +396,7 @@ export class DataAnonymizer {
               context.sessionStarts?.[record.session_id] || record.created_at;
             anonymizedRecord = await this.anonymizeReviewEvent(
               record,
-              sessionStart
+              sessionStart,
             );
             break;
 
@@ -407,7 +416,7 @@ export class DataAnonymizer {
       } catch (error) {
         console.error(
           `[DataAnonymizer] Error anonymizing ${type} record:`,
-          error.message
+          error.message,
         );
         // Skip records that fail anonymization
       }

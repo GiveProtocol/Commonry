@@ -32,7 +32,7 @@ export function createResearchExportRoutes(
   pool,
   exportService,
   authenticateToken,
-  requireAdmin
+  requireAdmin,
 ) {
   const router = Router();
 
@@ -49,11 +49,23 @@ export function createResearchExportRoutes(
       if (!type) {
         return res.status(400).json({
           error: "Export type is required",
-          validTypes: ["sessions", "reviews", "statistics", "card_analysis", "full"],
+          validTypes: [
+            "sessions",
+            "reviews",
+            "statistics",
+            "card_analysis",
+            "full",
+          ],
         });
       }
 
-      const validTypes = ["sessions", "reviews", "statistics", "card_analysis", "full"];
+      const validTypes = [
+        "sessions",
+        "reviews",
+        "statistics",
+        "card_analysis",
+        "full",
+      ];
       if (!validTypes.includes(type)) {
         return res.status(400).json({
           error: `Invalid export type: ${type}`,
@@ -141,7 +153,7 @@ export function createResearchExportRoutes(
           message: error.message,
         });
       }
-    }
+    },
   );
 
   // ============================================================
@@ -181,7 +193,7 @@ export function createResearchExportRoutes(
         res.setHeader("Content-Type", "application/x-ndjson");
         res.setHeader(
           "Content-Disposition",
-          `attachment; filename="${filename}"`
+          `attachment; filename="${filename}"`,
         );
         res.setHeader("X-Export-Checksum", exportJob.checksum || "");
         res.setHeader("X-Export-Record-Count", exportJob.recordCount || 0);
@@ -190,13 +202,16 @@ export function createResearchExportRoutes(
         const fileStream = fs.createReadStream(exportJob.outputPath);
         fileStream.pipe(res);
       } catch (error) {
-        console.error("[ResearchExportRoutes] Error downloading export:", error);
+        console.error(
+          "[ResearchExportRoutes] Error downloading export:",
+          error,
+        );
         res.status(500).json({
           error: "Failed to download export",
           message: error.message,
         });
       }
-    }
+    },
   );
 
   // ============================================================
@@ -230,7 +245,7 @@ export function createResearchExportRoutes(
           `UPDATE research_exports
            SET status = 'cancelled', completed_at = CURRENT_TIMESTAMP
            WHERE export_id = $1`,
-          [req.params.id]
+          [req.params.id],
         );
 
         res.json({
@@ -244,7 +259,7 @@ export function createResearchExportRoutes(
           message: error.message,
         });
       }
-    }
+    },
   );
 
   // ============================================================
@@ -269,14 +284,14 @@ export function createResearchExportRoutes(
       } catch (error) {
         console.error(
           "[ResearchExportRoutes] Error getting data dictionary:",
-          error
+          error,
         );
         res.status(500).json({
           error: "Failed to get data dictionary",
           message: error.message,
         });
       }
-    }
+    },
   );
 
   // ============================================================
@@ -299,14 +314,14 @@ export function createResearchExportRoutes(
       } catch (error) {
         console.error(
           "[ResearchExportRoutes] Error getting consent stats:",
-          error
+          error,
         );
         res.status(500).json({
           error: "Failed to get consent statistics",
           message: error.message,
         });
       }
-    }
+    },
   );
 
   // ============================================================
@@ -346,7 +361,7 @@ export function createResearchExportRoutes(
           message: error.message,
         });
       }
-    }
+    },
   );
 
   // ============================================================
@@ -359,7 +374,7 @@ export function createResearchExportRoutes(
       const result = await pool.query(
         `SELECT version_id, version, export_type, is_current, created_at, release_notes
          FROM export_schema_versions
-         ORDER BY export_type, created_at DESC`
+         ORDER BY export_type, created_at DESC`,
       );
 
       res.json({
@@ -376,7 +391,7 @@ export function createResearchExportRoutes(
     } catch (error) {
       console.error(
         "[ResearchExportRoutes] Error getting schema versions:",
-        error
+        error,
       );
       res.status(500).json({
         error: "Failed to get schema versions",
