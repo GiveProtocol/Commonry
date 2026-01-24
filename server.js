@@ -1298,7 +1298,7 @@ app.use("/api/sync", authenticateToken, syncRoutes);
 // POST   /api/reviews/events/batch         - Batch record complete events
 app.use(
   "/api/reviews/events",
-  createReviewEventRoutes(pool, authenticateToken),
+  createReviewEventRoutes(pool, authenticateToken, requireAdmin),
 );
 
 // ==================== STUDY SESSION LIFECYCLE ENDPOINTS ====================

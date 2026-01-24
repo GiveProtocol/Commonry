@@ -18,9 +18,10 @@ import { ReviewEventService } from "./review-event-service.js";
  *
  * @param {import('pg').Pool} pool - PostgreSQL connection pool
  * @param {Function} authenticateToken - Authentication middleware
+ * @param {Function} requireAdmin - Admin authorization middleware (optional)
  * @returns {Router} Express router
  */
-export function createReviewEventRoutes(pool, authenticateToken) {
+export function createReviewEventRoutes(pool, authenticateToken, requireAdmin) {
   const router = Router();
   const service = new ReviewEventService(pool);
 
@@ -225,11 +226,14 @@ export function createReviewEventRoutes(pool, authenticateToken) {
   // POST /api/reviews/events/admin/cleanup
   // ============================================================
 
+  const adminMiddleware = requireAdmin
+    ? [authenticateToken, requireAdmin]
+    : [authenticateToken];
+
   router.post(
     "/admin/cleanup",
-    authenticateToken,
+    ...adminMiddleware,
     safeHandler(async (req, res) => {
-      // TODO: Add admin role check
       const maxAgeMinutes = parseInt(req.query.maxAge, 10) || 30;
 
       const abandonedCount = await service.markAbandonedEvents(maxAgeMinutes);

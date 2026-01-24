@@ -14,14 +14,8 @@ interface StudyViewProps {
 }
 
 export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
-  const { user, isAuthenticated } = useAuth();
-  const {
-    startSession,
-    endSession,
-    recordCardCompleted,
-    isSessionActive,
-    getSessionStats,
-  } = useSession();
+  const { isAuthenticated } = useAuth();
+  const { startSession, endSession, recordCardCompleted } = useSession();
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [dueCards, setDueCards] = useState<Card[]>([]);
   const [allCards, setAllCards] = useState<Card[]>([]);
@@ -253,8 +247,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
 
       setIsLoading(true);
 
-      // TODO: Implement actual Anki import
-      // For now, we'll simulate it
+      // Placeholder: simulates import delay while Anki import is being built
       setTimeout(() => {
         setIsLoading(false);
         setShowImport(false);
