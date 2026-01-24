@@ -227,7 +227,10 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             // Start review event for the next card (fire-and-forget)
             if (isAuthenticated && nextCard) {
               reviewEventCapture.startCardReview(nextCard).catch((error) => {
-                console.warn("[StudyView] Failed to start review event:", error);
+                console.warn(
+                  "[StudyView] Failed to start review event:",
+                  error,
+                );
               });
             }
           }, 500);
