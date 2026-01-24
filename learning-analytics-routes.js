@@ -93,7 +93,7 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         success: true,
         data: profile,
       });
-    })
+    }),
   );
 
   /**
@@ -110,14 +110,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
       const weeks = parseInt(req.query.weeks, 10) || 12;
       const velocityHistory = await service.getUserVelocityHistory(
         req.params.userId,
-        Math.min(weeks, 52) // Cap at 52 weeks
+        Math.min(weeks, 52), // Cap at 52 weeks
       );
 
       res.json({
         success: true,
         data: velocityHistory,
       });
-    })
+    }),
   );
 
   /**
@@ -134,14 +134,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
       const days = parseInt(req.query.days, 10) || 30;
       const dailySummary = await service.getDailySummary(
         req.params.userId,
-        Math.min(days, 365) // Cap at 365 days
+        Math.min(days, 365), // Cap at 365 days
       );
 
       res.json({
         success: true,
         data: dailySummary,
       });
-    })
+    }),
   );
 
   // ============================================================
@@ -166,14 +166,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
       const strugglingCards = await service.getStrugglingCards(
         req.params.userId,
         Math.max(0, Math.min(threshold, 1)), // Clamp to 0-1
-        Math.min(limit, 100) // Cap at 100
+        Math.min(limit, 100), // Cap at 100
       );
 
       res.json({
         success: true,
         data: strugglingCards,
       });
-    })
+    }),
   );
 
   /**
@@ -185,13 +185,15 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
     authenticateToken,
     authorizeUserAccess,
     asyncHandler(async (req, res) => {
-      const cardsByDeck = await service.getStrugglingCardsByDeck(req.params.userId);
+      const cardsByDeck = await service.getStrugglingCardsByDeck(
+        req.params.userId,
+      );
 
       res.json({
         success: true,
         data: cardsByDeck,
       });
-    })
+    }),
   );
 
   // ============================================================
@@ -211,14 +213,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
     asyncHandler(async (req, res) => {
       const patterns = await service.detectInterferencePatterns(
         req.params.userId,
-        req.query.deckId || null
+        req.query.deckId || null,
       );
 
       res.json({
         success: true,
         data: patterns,
       });
-    })
+    }),
   );
 
   /**
@@ -234,14 +236,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
     asyncHandler(async (req, res) => {
       const gaps = await service.detectPrerequisiteGaps(
         req.params.userId,
-        req.query.deckId || null
+        req.query.deckId || null,
       );
 
       res.json({
         success: true,
         data: gaps,
       });
-    })
+    }),
   );
 
   /**
@@ -259,7 +261,7 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         success: true,
         data: analysis,
       });
-    })
+    }),
   );
 
   /**
@@ -277,7 +279,7 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         success: true,
         data: analysis,
       });
-    })
+    }),
   );
 
   // ============================================================
@@ -309,14 +311,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
 
       const metrics = await service.getCardDifficultyMetrics(
         req.params.cardId,
-        compareUserId
+        compareUserId,
       );
 
       res.json({
         success: true,
         data: metrics,
       });
-    })
+    }),
   );
 
   // ============================================================
@@ -337,14 +339,14 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
 
       const hardestCards = await service.getDeckHardestCards(
         req.params.deckId,
-        Math.min(limit, 50) // Cap at 50
+        Math.min(limit, 50), // Cap at 50
       );
 
       res.json({
         success: true,
         data: hardestCards,
       });
-    })
+    }),
   );
 
   // ============================================================
@@ -362,7 +364,7 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
       // Verify the session belongs to the authenticated user
       const sessionCheck = await pool.query(
         `SELECT user_id FROM session_tracking WHERE session_id = $1`,
-        [req.params.sessionId]
+        [req.params.sessionId],
       );
 
       if (sessionCheck.rows.length === 0) {
@@ -381,7 +383,9 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         });
       }
 
-      const health = await service.getSessionHealthIndicators(req.params.sessionId);
+      const health = await service.getSessionHealthIndicators(
+        req.params.sessionId,
+      );
 
       if (!health) {
         return res.status(404).json({
@@ -395,7 +399,7 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         success: true,
         data: health,
       });
-    })
+    }),
   );
 
   /**
@@ -409,7 +413,7 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
       // Verify the session belongs to the authenticated user
       const sessionCheck = await pool.query(
         `SELECT user_id FROM session_tracking WHERE session_id = $1`,
-        [req.params.sessionId]
+        [req.params.sessionId],
       );
 
       if (sessionCheck.rows.length === 0) {
@@ -428,13 +432,15 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         });
       }
 
-      const liveHealth = await service.getLiveSessionHealth(req.params.sessionId);
+      const liveHealth = await service.getLiveSessionHealth(
+        req.params.sessionId,
+      );
 
       res.json({
         success: true,
         data: liveHealth,
       });
-    })
+    }),
   );
 
   return router;
