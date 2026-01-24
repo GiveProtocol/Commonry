@@ -86,6 +86,34 @@ function getTimeContext() {
 }
 
 // ============================================================
+// FSRS RECALL PROBABILITY
+// ============================================================
+
+/**
+ * Calculate predicted recall probability using FSRS forgetting curve.
+ * Formula: P(recall) = e^(-t/S) where t = time elapsed, S = stability
+ *
+ * For cards without explicit stability, we estimate from interval:
+ * At the scheduled review time (t = interval), P should be ~0.9 (FSRS default)
+ * So: 0.9 = e^(-interval/S) => S = -interval / ln(0.9) ≈ interval / 0.105
+ */
+function calculateRecallProbability(card: Card): number | undefined {
+  if (!card.lastReview || !card.interval) return undefined;
+
+  const lastReviewMs = new Date(card.lastReview).getTime();
+  const elapsedDays = (Date.now() - lastReviewMs) / (1000 * 60 * 60 * 24);
+
+  // Estimate stability from interval (at interval, P ≈ 0.9)
+  const stability = card.interval / 0.105;
+
+  // FSRS forgetting curve: P = e^(-t/S)
+  const probability = Math.exp(-elapsedDays / stability);
+
+  // Clamp to valid range [0, 1]
+  return Math.max(0, Math.min(1, probability));
+}
+
+// ============================================================
 // SIMILARITY CALCULATION
 // ============================================================
 
@@ -191,16 +219,80 @@ export class StudySessionManager {
 // REVIEW EVENT CAPTURE SERVICE
 // ============================================================
 
+interface QueuedCompletion {
+  eventId: string;
+  payload: CompleteReviewEventPayload;
+  retryCount: number;
+  queuedAt: number;
+}
+
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_QUEUE_KEY = "commonry_review_retry_queue";
+
 export class ReviewEventCaptureService {
   private currentBuilder: ReviewEventBuilder | null = null;
   private sessionManager: StudySessionManager;
   private interactionBuffer: InteractionEvent[] = [];
   private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private isOnline: boolean = navigator.onLine;
+  private retryQueue: QueuedCompletion[] = [];
 
   constructor() {
     this.sessionManager = new StudySessionManager();
+    this.loadRetryQueue();
     this.setupEventListeners();
+  }
+
+  private loadRetryQueue(): void {
+    try {
+      const stored = localStorage.getItem(RETRY_QUEUE_KEY);
+      if (stored) {
+        this.retryQueue = JSON.parse(stored);
+      }
+    } catch {
+      this.retryQueue = [];
+    }
+  }
+
+  private saveRetryQueue(): void {
+    try {
+      localStorage.setItem(RETRY_QUEUE_KEY, JSON.stringify(this.retryQueue));
+    } catch {
+      // Storage quota exceeded or unavailable
+    }
+  }
+
+  private queueForRetry(eventId: string, payload: CompleteReviewEventPayload): void {
+    this.retryQueue.push({
+      eventId,
+      payload,
+      retryCount: 0,
+      queuedAt: Date.now(),
+    });
+    this.saveRetryQueue();
+  }
+
+  private async flushRetryQueue(): Promise<void> {
+    if (!this.isOnline || this.retryQueue.length === 0) return;
+
+    const queue = [...this.retryQueue];
+    this.retryQueue = [];
+
+    for (const item of queue) {
+      if (item.retryCount >= MAX_RETRY_ATTEMPTS) {
+        console.warn(`[ReviewEventCapture] Dropping event ${item.eventId} after ${MAX_RETRY_ATTEMPTS} retries`);
+        continue;
+      }
+
+      try {
+        await api.completeReviewEvent(item.eventId, item.payload);
+      } catch {
+        item.retryCount++;
+        this.retryQueue.push(item);
+      }
+    }
+
+    this.saveRetryQueue();
   }
 
   private setupEventListeners(): void {
@@ -231,6 +323,7 @@ export class ReviewEventCaptureService {
     window.addEventListener("online", () => {
       this.isOnline = true;
       this.flushInteractionBuffer();
+      this.flushRetryQueue();
     });
     window.addEventListener("offline", () => {
       this.isOnline = false;
@@ -323,7 +416,7 @@ export class ReviewEventCaptureService {
       precedingReviews: this.sessionManager.getPrecedingReviews(),
       cardStateBefore: card.status as CardState,
       responseType,
-      predictedRecallProbability: undefined, // TODO: Add FSRS calculation
+      predictedRecallProbability: calculateRecallProbability(card),
       actualIntervalDays: card.lastReview
         ? (Date.now() - new Date(card.lastReview).getTime()) /
           (1000 * 60 * 60 * 24)
@@ -345,7 +438,7 @@ export class ReviewEventCaptureService {
         card.backAudio
       ),
       mediaTypes: this.getMediaTypes(card),
-      cardTags: [], // TODO: Get from card
+      cardTags: [], // Card.tags not yet implemented in schema
     };
 
     // Send to server (fire and forget - don't block the review)
@@ -632,10 +725,10 @@ export class ReviewEventCaptureService {
       return response.data?.success ?? false;
     } catch (error) {
       console.error(
-        "[ReviewEventCapture] Failed to complete review event:",
+        "[ReviewEventCapture] Failed to complete review event, queuing for retry:",
         error,
       );
-      // TODO: Queue for retry
+      this.queueForRetry(builder.eventId, payload);
       return false;
     }
   }
