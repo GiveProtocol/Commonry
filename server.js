@@ -149,6 +149,22 @@ app.use(
 // JWT tokens are sent via Authorization header, not cookies, so they're not vulnerable to CSRF
 // Discourse SSO is protected by signed payloads (sig parameter) instead
 
+// Root route - API info
+app.get("/", (req, res) => {
+  res.json({
+    name: "Commonry API",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      auth: "/api/auth/*",
+      decks: "/api/decks/*",
+      sync: "/api/sync/*",
+      profile: "/api/profile/:username",
+      research: "/api/user/research-consent/*",
+    },
+  });
+});
+
 // JWT configuration
 const JWT_SECRET =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
