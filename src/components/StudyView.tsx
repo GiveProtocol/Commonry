@@ -77,7 +77,11 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
       setDueCards(cardsForReview);
 
       // Start session if authenticated and we have cards
-      if (isAuthenticated && cardsForReview.length > 0 && !sessionStartedRef.current) {
+      if (
+        isAuthenticated &&
+        cardsForReview.length > 0 &&
+        !sessionStartedRef.current
+      ) {
         sessionStartedRef.current = true;
         await startSession({
           sessionType: "regular",
@@ -185,7 +189,10 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               }
             })
             .catch((error) => {
-              console.warn("[StudyView] Failed to capture review event:", error);
+              console.warn(
+                "[StudyView] Failed to capture review event:",
+                error,
+              );
             });
 
           // Record in session context
@@ -219,7 +226,8 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
 
             // Start review event for the next card
             if (isAuthenticated && nextCard) {
-              const eventId = await reviewEventCapture.startCardReview(nextCard);
+              const eventId =
+                await reviewEventCapture.startCardReview(nextCard);
               currentEventIdRef.current = eventId;
             }
           }, 500);
@@ -237,7 +245,15 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
         console.error("Failed to record review:", error);
       }
     },
-    [currentCard, dueCards, sessionStats, cardStartTime, isAuthenticated, recordCardCompleted, endSession],
+    [
+      currentCard,
+      dueCards,
+      sessionStats,
+      cardStartTime,
+      isAuthenticated,
+      recordCardCompleted,
+      endSession,
+    ],
   );
 
   const handleFileImport = useCallback(
