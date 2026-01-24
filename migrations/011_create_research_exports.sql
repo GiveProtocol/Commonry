@@ -2,6 +2,11 @@
 -- Description: Privacy-by-design infrastructure for anonymized learning data exports
 -- Key principles: Consent-aware, privacy-first, reproducible, cost-efficient
 
+-- ==================== EXTENSIONS ====================
+
+-- Required for gen_random_bytes() and sha256()
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- ==================== ENUMS ====================
 
 -- Export job status
@@ -23,7 +28,7 @@ END $$;
 -- Anonymous Learner IDs (ALIDs)
 -- Maps real user_id to rotating anonymous learner IDs
 CREATE TABLE IF NOT EXISTS anonymous_learner_ids (
-    alid_id VARCHAR(30) PRIMARY KEY,                    -- alid_[ulid]
+    alid_id VARCHAR(50) PRIMARY KEY,                    -- alid_[ulid]
     user_id VARCHAR(50) NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     anonymous_id VARCHAR(64) NOT NULL,                  -- SHA-256 hash (salted)
     rotation_salt VARCHAR(32) NOT NULL,                 -- Per-rotation salt
@@ -162,7 +167,7 @@ COMMENT ON COLUMN privacy_settings.data_retention_preference IS 'How long to ret
 CREATE OR REPLACE FUNCTION get_or_create_alid(p_user_id VARCHAR(50))
 RETURNS VARCHAR(64) AS $$
 DECLARE
-    v_alid_id VARCHAR(30);
+    v_alid_id VARCHAR(50);
     v_anonymous_id VARCHAR(64);
     v_salt VARCHAR(32);
 BEGIN
@@ -205,7 +210,7 @@ BEGIN
     -- Encode timestamp (10 chars)
     timestamp_part := '';
     FOR i IN REVERSE 9..0 LOOP
-        timestamp_part := substring(encoding FROM ((ms % 32) + 1) FOR 1) || timestamp_part;
+        timestamp_part := substring(encoding FROM ((ms % 32)::INT + 1) FOR 1) || timestamp_part;
         ms := ms / 32;
     END LOOP;
 
