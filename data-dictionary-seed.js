@@ -115,7 +115,8 @@ const DATA_DICTIONARY = [
     sourceColumn: "session_id",
     dataType: "string",
     classification: "hash",
-    description: "SHA-256 hash of original session ID. Links sessions to review events.",
+    description:
+      "SHA-256 hash of original session ID. Links sessions to review events.",
     exampleValues: ["1a2b3c4d5e6f...", "f6e5d4c3b2a1..."],
   },
   {
@@ -125,7 +126,8 @@ const DATA_DICTIONARY = [
     sourceColumn: "deck_id",
     dataType: "string",
     classification: "hash",
-    description: "SHA-256 hash of deck ID. Null if session spans multiple decks.",
+    description:
+      "SHA-256 hash of deck ID. Null if session spans multiple decks.",
     exampleValues: ["abc123def456...", null],
   },
   {
@@ -135,7 +137,8 @@ const DATA_DICTIONARY = [
     sourceColumn: null,
     dataType: "integer",
     classification: "relativize",
-    description: "Always 0. Reference point for other timestamps in the session.",
+    description:
+      "Always 0. Reference point for other timestamps in the session.",
     exampleValues: ["0"],
   },
   {
@@ -185,7 +188,8 @@ const DATA_DICTIONARY = [
     sourceColumn: "total_time_seconds",
     dataType: "integer",
     classification: "keep",
-    description: "Total active study time in seconds (may differ from duration).",
+    description:
+      "Total active study time in seconds (may differ from duration).",
     exampleValues: ["280", "1500", "40"],
   },
   {
@@ -225,7 +229,8 @@ const DATA_DICTIONARY = [
     sourceColumn: "user_agent",
     dataType: "string",
     classification: "anonymize",
-    description: "Anonymized platform/browser category derived from user agent.",
+    description:
+      "Anonymized platform/browser category derived from user agent.",
     exampleValues: ["iOS", "Android", "Chrome", "Safari", "Firefox"],
   },
 
@@ -267,7 +272,8 @@ const DATA_DICTIONARY = [
     sourceColumn: "anonymous_id",
     dataType: "string",
     classification: "hash",
-    description: "SHA-256 hash of user ID. Links to other exports for same learner.",
+    description:
+      "SHA-256 hash of user ID. Links to other exports for same learner.",
     exampleValues: ["a1b2c3d4e5f6...", "9f8e7d6c5b4a..."],
   },
   {
@@ -277,7 +283,8 @@ const DATA_DICTIONARY = [
     sourceColumn: "created_at",
     dataType: "integer",
     classification: "relativize",
-    description: "Milliseconds from session start. Preserves temporal ordering.",
+    description:
+      "Milliseconds from session start. Preserves temporal ordering.",
     exampleValues: ["0", "15000", "120500"],
   },
   {
@@ -496,7 +503,7 @@ async function seed() {
           JSON.stringify({}),
           JSON.stringify({}),
           schema.releaseNotes,
-        ]
+        ],
       );
     }
     console.log(`  Seeded ${SCHEMA_VERSIONS.length} schema versions`);
@@ -527,7 +534,7 @@ async function seed() {
           field.classification,
           field.description,
           field.exampleValues,
-        ]
+        ],
       );
     }
     console.log(`  Seeded ${DATA_DICTIONARY.length} data dictionary entries`);

@@ -48,8 +48,7 @@ how people learn and improve spaced repetition algorithms.
   dataCategories: [
     {
       name: "Study Sessions",
-      description:
-        "When you study, how long, and how many cards you review",
+      description: "When you study, how long, and how many cards you review",
       fields: [
         "Session duration",
         "Cards studied count",
@@ -121,7 +120,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
                 data_retention_preference
          FROM privacy_settings
          WHERE user_id = $1`,
-        [req.userId]
+        [req.userId],
       );
 
       if (result.rows.length === 0) {
@@ -211,7 +210,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
           consent,
           consent ? CONSENT_VERSION : null,
           dataRetentionPreference || "standard",
-        ]
+        ],
       );
 
       const settings = result.rows[0];
@@ -223,14 +222,14 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
         } catch (alidError) {
           console.error(
             "[ResearchConsentRoutes] Error creating ALID:",
-            alidError
+            alidError,
           );
           // Don't fail the request - ALID will be created on first export
         }
       }
 
       console.log(
-        `[ResearchConsentRoutes] User ${req.userId} ${consent ? "opted in" : "opted out"} of research`
+        `[ResearchConsentRoutes] User ${req.userId} ${consent ? "opted in" : "opted out"} of research`,
       );
 
       return res.json({
