@@ -480,6 +480,8 @@ export class SyncService {
       case "session":
         await db.sessions.update(entityId, merged as Parameters<typeof db.sessions.update>[1]);
         break;
+      default:
+        throw new Error(`Unknown entity type: ${entityType}`);
     }
 
     // Mark as synced
