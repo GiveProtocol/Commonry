@@ -929,7 +929,7 @@ export class LearningAnalyticsService {
       parts.push(`Avoid studying ${troughRange} if possible`);
     }
 
-    return parts.join(". ") + ".";
+    return `${parts.join(". ")}.`;
   }
 
   // ============================================================

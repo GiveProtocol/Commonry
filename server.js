@@ -2234,8 +2234,8 @@ app.get("/api/browse/categories/:slug", async (req, res) => {
     const decksResult = await pool.query(deckQuery, queryParams);
 
     // Get total count for pagination
-    let countQuery;
-    let countParams;
+    let countQuery = "";
+    let countParams = [];
     if (tagSlugs.length > 0) {
       countQuery = `
         SELECT COUNT(DISTINCT d.deck_id)
@@ -2307,8 +2307,8 @@ app.get("/api/browse/featured", async (req, res) => {
   try {
     const { categorySlug, limit = 6 } = req.query;
 
-    let query;
-    let params;
+    let query = "";
+    let params = [];
 
     if (categorySlug) {
       query = `
@@ -2433,7 +2433,7 @@ app.get("/api/browse/decks/:deckId", async (req, res) => {
       [deckId],
     );
 
-    res.json({
+    return res.json({
       ...transformDeckResponse(deck),
       categories: categoriesResult.rows,
       tags: tagsResult.rows,
@@ -2441,7 +2441,7 @@ app.get("/api/browse/decks/:deckId", async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching deck details:", error);
-    res.status(500).json({ error: "Failed to fetch deck details" });
+    return res.status(500).json({ error: "Failed to fetch deck details" });
   }
 });
 
@@ -2546,11 +2546,11 @@ app.post("/api/decks/:deckId/publish", authenticateToken, async (req, res) => {
 
     await client.query("COMMIT");
 
-    res.json({ success: true, message: "Deck published to The Commons" });
+    return res.json({ success: true, message: "Deck published to The Commons" });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error publishing deck:", error);
-    res.status(500).json({ error: "Failed to publish deck" });
+    return res.status(500).json({ error: "Failed to publish deck" });
   } finally {
     client.release();
   }
@@ -2776,8 +2776,7 @@ async function gracefulShutdown(signal) {
   // Close database pool
   await pool.end();
   console.log("Database pool closed");
-
-  process.exit(0);
+  console.log("Graceful shutdown complete");
 }
 
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
