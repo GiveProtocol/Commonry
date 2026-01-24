@@ -29,6 +29,7 @@ import { createResearchConsentRoutes } from "./research-consent-routes.js";
 import { ResearchExportService } from "./research-export-service.js";
 import { ResearchExportProcessor } from "./research-export-processor.js";
 import { DataAnonymizer } from "./data-anonymizer.js";
+import { createLearningAnalyticsRoutes } from "./learning-analytics-routes.js";
 
 dotenv.config();
 
@@ -1361,6 +1362,24 @@ app.use(
 // POST   /api/user/research-consent      - Update consent (opt-in/out)
 // GET    /api/user/research-consent/info - Get research program information
 app.use("/api/user", createResearchConsentRoutes(pool, authenticateToken));
+
+// ==================== LEARNING ANALYTICS ENDPOINTS ====================
+
+// Mount learning analytics routes
+// GET    /api/analytics/users/:userId/profile              - Comprehensive learning profile
+// GET    /api/analytics/users/:userId/velocity             - Velocity history
+// GET    /api/analytics/users/:userId/daily-summary        - Daily learning summary
+// GET    /api/analytics/users/:userId/struggling-cards     - Struggling cards
+// GET    /api/analytics/users/:userId/struggling-cards/by-deck - Struggling cards by deck
+// GET    /api/analytics/users/:userId/patterns/interference    - Interference patterns
+// GET    /api/analytics/users/:userId/patterns/prerequisites   - Prerequisite gaps
+// GET    /api/analytics/users/:userId/patterns/fatigue         - Fatigue decay analysis
+// GET    /api/analytics/users/:userId/patterns/time-of-day     - Circadian effects
+// GET    /api/analytics/cards/:cardId/difficulty           - Card difficulty metrics
+// GET    /api/analytics/decks/:deckId/hardest              - Hardest cards in deck
+// GET    /api/analytics/sessions/:sessionId/health         - Session health analysis
+// GET    /api/analytics/sessions/:sessionId/health/live    - Live session health
+app.use("/api/analytics", createLearningAnalyticsRoutes(pool, authenticateToken));
 
 // ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
