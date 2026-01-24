@@ -31,7 +31,6 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
   });
   const [cardStartTime, setCardStartTime] = useState<number>(Date.now());
   const sessionStartedRef = useRef(false);
-  const currentEventIdRef = useRef<string | null>(null);
 
   const loadStats = () => {
     // Load saved stats from localStorage
@@ -95,10 +94,11 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
       setCurrentCard(firstCard);
       setCardStartTime(Date.now());
 
-      // Start review event capture for the first card
+      // Start review event capture for the first card (fire-and-forget)
       if (firstCard && isAuthenticated) {
-        const eventId = await reviewEventCapture.startCardReview(firstCard);
-        currentEventIdRef.current = eventId;
+        reviewEventCapture.startCardReview(firstCard).catch((error) => {
+          console.warn("[StudyView] Failed to start review event:", error);
+        });
       }
     } catch (error) {
       console.error("Failed to load cards:", error);
@@ -224,11 +224,11 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
             setCurrentCard(nextCard);
             setCardStartTime(Date.now());
 
-            // Start review event for the next card
+            // Start review event for the next card (fire-and-forget)
             if (isAuthenticated && nextCard) {
-              const eventId =
-                await reviewEventCapture.startCardReview(nextCard);
-              currentEventIdRef.current = eventId;
+              reviewEventCapture.startCardReview(nextCard).catch((error) => {
+                console.warn("[StudyView] Failed to start review event:", error);
+              });
             }
           }, 500);
         } else {
