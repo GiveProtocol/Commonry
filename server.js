@@ -1379,7 +1379,10 @@ app.use("/api/user", createResearchConsentRoutes(pool, authenticateToken));
 // GET    /api/analytics/decks/:deckId/hardest              - Hardest cards in deck
 // GET    /api/analytics/sessions/:sessionId/health         - Session health analysis
 // GET    /api/analytics/sessions/:sessionId/health/live    - Live session health
-app.use("/api/analytics", createLearningAnalyticsRoutes(pool, authenticateToken));
+app.use(
+  "/api/analytics",
+  createLearningAnalyticsRoutes(pool, authenticateToken),
+);
 
 // ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
@@ -2546,7 +2549,10 @@ app.post("/api/decks/:deckId/publish", authenticateToken, async (req, res) => {
 
     await client.query("COMMIT");
 
-    return res.json({ success: true, message: "Deck published to The Commons" });
+    return res.json({
+      success: true,
+      message: "Deck published to The Commons",
+    });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error publishing deck:", error);

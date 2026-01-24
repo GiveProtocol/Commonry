@@ -37,23 +37,24 @@ export class LearningAnalyticsService {
   async getUserLearningProfile(userId) {
     try {
       // Run queries in parallel
-      const [velocityResult, patternsResult, struggleResult] = await Promise.all([
-        this.pool.query(
-          `SELECT *
+      const [velocityResult, patternsResult, struggleResult] =
+        await Promise.all([
+          this.pool.query(
+            `SELECT *
            FROM v_user_learning_velocity
            WHERE user_id = $1
            ORDER BY week_start DESC
            LIMIT 1`,
-          [userId]
-        ),
-        this.pool.query(
-          `SELECT *
+            [userId],
+          ),
+          this.pool.query(
+            `SELECT *
            FROM v_user_session_patterns
            WHERE user_id = $1`,
-          [userId]
-        ),
-        this.pool.query(
-          `SELECT
+            [userId],
+          ),
+          this.pool.query(
+            `SELECT
              COUNT(*) AS total_struggling_cards,
              COUNT(*) FILTER (WHERE struggle_type = 'high_fail_rate') AS high_fail_rate_cards,
              COUNT(*) FILTER (WHERE struggle_type = 'repeated_lapses') AS repeated_lapse_cards,
@@ -62,9 +63,9 @@ export class LearningAnalyticsService {
              AVG(struggle_score) AS avg_struggle_score
            FROM v_user_struggle_indicators
            WHERE user_id = $1`,
-          [userId]
-        ),
-      ]);
+            [userId],
+          ),
+        ]);
 
       const velocity = velocityResult.rows[0] || null;
       const patterns = patternsResult.rows[0] || null;
@@ -96,7 +97,8 @@ export class LearningAnalyticsService {
               preferredDay: patterns.preferred_day,
               activeHours: patterns.active_hours || [],
               avgSessionMinutes: parseFloat(patterns.avg_session_minutes) || 0,
-              avgCardsPerSession: parseFloat(patterns.avg_cards_per_session) || 0,
+              avgCardsPerSession:
+                parseFloat(patterns.avg_cards_per_session) || 0,
               consistencyRatio: parseFloat(patterns.consistency_ratio) || 0,
               totalStudyDays: parseInt(patterns.total_study_days, 10) || 0,
               totalSessions: parseInt(patterns.total_sessions, 10) || 0,
@@ -110,10 +112,14 @@ export class LearningAnalyticsService {
             }
           : null,
         struggleMetrics: {
-          totalStrugglingCards: parseInt(struggleMetrics.total_struggling_cards, 10) || 0,
-          highFailRateCards: parseInt(struggleMetrics.high_fail_rate_cards, 10) || 0,
-          repeatedLapseCards: parseInt(struggleMetrics.repeated_lapse_cards, 10) || 0,
-          gettingWorseCards: parseInt(struggleMetrics.getting_worse_cards, 10) || 0,
+          totalStrugglingCards:
+            parseInt(struggleMetrics.total_struggling_cards, 10) || 0,
+          highFailRateCards:
+            parseInt(struggleMetrics.high_fail_rate_cards, 10) || 0,
+          repeatedLapseCards:
+            parseInt(struggleMetrics.repeated_lapse_cards, 10) || 0,
+          gettingWorseCards:
+            parseInt(struggleMetrics.getting_worse_cards, 10) || 0,
           slowRecallCards: parseInt(struggleMetrics.slow_recall_cards, 10) || 0,
           avgStruggleScore: struggleMetrics.avg_struggle_score
             ? parseFloat(struggleMetrics.avg_struggle_score)
@@ -121,7 +127,10 @@ export class LearningAnalyticsService {
         },
       };
     } catch (err) {
-      console.error("[LearningAnalyticsService] getUserLearningProfile error:", err);
+      console.error(
+        "[LearningAnalyticsService] getUserLearningProfile error:",
+        err,
+      );
       throw err;
     }
   }
@@ -149,7 +158,7 @@ export class LearningAnalyticsService {
          WHERE user_id = $1
          ORDER BY week_start DESC
          LIMIT $2`,
-        [userId, weeks]
+        [userId, weeks],
       );
 
       return result.rows.map((row) => ({
@@ -165,7 +174,10 @@ export class LearningAnalyticsService {
           : null,
       }));
     } catch (err) {
-      console.error("[LearningAnalyticsService] getUserVelocityHistory error:", err);
+      console.error(
+        "[LearningAnalyticsService] getUserVelocityHistory error:",
+        err,
+      );
       throw err;
     }
   }
@@ -188,7 +200,7 @@ export class LearningAnalyticsService {
         `SELECT *
          FROM v_card_difficulty_metrics
          WHERE card_id = $1`,
-        [cardId]
+        [cardId],
       );
 
       const global = globalResult.rows[0] || null;
@@ -203,13 +215,17 @@ export class LearningAnalyticsService {
              AVG(total_duration_ms) AS user_avg_time_ms
            FROM review_events
            WHERE card_id = $1 AND user_id = $2 AND status = 'completed'`,
-          [cardId, userId]
+          [cardId, userId],
         );
 
-        if (userResult.rows[0] && parseInt(userResult.rows[0].review_count, 10) > 0) {
+        if (
+          userResult.rows[0] &&
+          parseInt(userResult.rows[0].review_count, 10) > 0
+        ) {
           userSpecific = {
             reviewCount: parseInt(userResult.rows[0].review_count, 10),
-            userSuccessRate: parseFloat(userResult.rows[0].user_success_rate) || 0,
+            userSuccessRate:
+              parseFloat(userResult.rows[0].user_success_rate) || 0,
             userAvgTimeMs: parseFloat(userResult.rows[0].user_avg_time_ms) || 0,
           };
         }
@@ -226,9 +242,15 @@ export class LearningAnalyticsService {
       // Calculate comparison if both exist
       let comparison = null;
       if (userSpecific && global) {
-        const successDiff = userSpecific.userSuccessRate - parseFloat(global.global_success_rate);
+        const successDiff =
+          userSpecific.userSuccessRate - parseFloat(global.global_success_rate);
         comparison = {
-          performanceVsGlobal: successDiff > 0.1 ? "above_average" : successDiff < -0.1 ? "below_average" : "average",
+          performanceVsGlobal:
+            successDiff > 0.1
+              ? "above_average"
+              : successDiff < -0.1
+                ? "below_average"
+                : "average",
           successRateDifference: Math.round(successDiff * 100) / 100,
         };
       }
@@ -249,7 +271,10 @@ export class LearningAnalyticsService {
         comparison,
       };
     } catch (err) {
-      console.error("[LearningAnalyticsService] getCardDifficultyMetrics error:", err);
+      console.error(
+        "[LearningAnalyticsService] getCardDifficultyMetrics error:",
+        err,
+      );
       throw err;
     }
   }
@@ -273,7 +298,7 @@ export class LearningAnalyticsService {
          ) deck_cards ON cdm.card_id = deck_cards.card_id
          ORDER BY cdm.global_success_rate ASC
          LIMIT $2`,
-        [deckId, limit]
+        [deckId, limit],
       );
 
       return result.rows.map((row) => ({
@@ -285,7 +310,10 @@ export class LearningAnalyticsService {
         avgResponseTimeMs: parseInt(row.avg_response_time_ms, 10),
       }));
     } catch (err) {
-      console.error("[LearningAnalyticsService] getDeckHardestCards error:", err);
+      console.error(
+        "[LearningAnalyticsService] getDeckHardestCards error:",
+        err,
+      );
       throw err;
     }
   }
@@ -306,7 +334,7 @@ export class LearningAnalyticsService {
         `SELECT *
          FROM v_session_health_indicators
          WHERE session_id = $1`,
-        [sessionId]
+        [sessionId],
       );
 
       const row = result.rows[0];
@@ -325,7 +353,10 @@ export class LearningAnalyticsService {
         recommendations: this._getSessionRecommendations(row),
       };
     } catch (err) {
-      console.error("[LearningAnalyticsService] getSessionHealthIndicators error:", err);
+      console.error(
+        "[LearningAnalyticsService] getSessionHealthIndicators error:",
+        err,
+      );
       throw err;
     }
   }
@@ -366,7 +397,7 @@ export class LearningAnalyticsService {
            (SELECT accuracy FROM quarter_stats WHERE quarter = (SELECT MAX(quarter) FROM quarter_stats)) AS latest_quarter_accuracy,
            (SELECT avg_time FROM quarter_stats WHERE quarter = 1) AS q1_avg_time,
            (SELECT avg_time FROM quarter_stats WHERE quarter = (SELECT MAX(quarter) FROM quarter_stats)) AS latest_quarter_time`,
-        [sessionId]
+        [sessionId],
       );
 
       const row = result.rows[0];
@@ -404,12 +435,16 @@ export class LearningAnalyticsService {
         accuracyDecay: Math.round(accuracyDecay * 1000) / 1000,
         paceDecayPct: Math.round(paceDecay * 100),
         health,
-        recommendation: health === "fatigued" || health === "declining"
-          ? "Consider taking a break or ending the session"
-          : null,
+        recommendation:
+          health === "fatigued" || health === "declining"
+            ? "Consider taking a break or ending the session"
+            : null,
       };
     } catch (err) {
-      console.error("[LearningAnalyticsService] getLiveSessionHealth error:", err);
+      console.error(
+        "[LearningAnalyticsService] getLiveSessionHealth error:",
+        err,
+      );
       throw err;
     }
   }
@@ -428,13 +463,19 @@ export class LearningAnalyticsService {
       recommendations.push("High fatigue detected. Consider shorter sessions.");
     }
     if (accuracyDecay > 0.15) {
-      recommendations.push("Significant accuracy decline. Take breaks every 15-20 cards.");
+      recommendations.push(
+        "Significant accuracy decline. Take breaks every 15-20 cards.",
+      );
     }
     if (paceDecayPct > 30) {
-      recommendations.push("Response time increased significantly. You may be losing focus.");
+      recommendations.push(
+        "Response time increased significantly. You may be losing focus.",
+      );
     }
     if (recommendations.length === 0) {
-      recommendations.push("Good session! Your performance was consistent throughout.");
+      recommendations.push(
+        "Good session! Your performance was consistent throughout.",
+      );
     }
 
     return recommendations;
@@ -460,7 +501,7 @@ export class LearningAnalyticsService {
          WHERE user_id = $1 AND struggle_score >= $2
          ORDER BY struggle_score DESC
          LIMIT $3`,
-        [userId, threshold, limit]
+        [userId, threshold, limit],
       );
 
       return result.rows.map((row) => ({
@@ -477,7 +518,10 @@ export class LearningAnalyticsService {
         recommendation: this._getStruggleRecommendation(row.struggle_type),
       }));
     } catch (err) {
-      console.error("[LearningAnalyticsService] getStrugglingCards error:", err);
+      console.error(
+        "[LearningAnalyticsService] getStrugglingCards error:",
+        err,
+      );
       throw err;
     }
   }
@@ -500,7 +544,7 @@ export class LearningAnalyticsService {
          WHERE user_id = $1
          GROUP BY deck_id
          ORDER BY avg_struggle_score DESC`,
-        [userId]
+        [userId],
       );
 
       return result.rows.map((row) => ({
@@ -510,7 +554,10 @@ export class LearningAnalyticsService {
         cardIds: row.card_ids || [],
       }));
     } catch (err) {
-      console.error("[LearningAnalyticsService] getStrugglingCardsByDeck error:", err);
+      console.error(
+        "[LearningAnalyticsService] getStrugglingCardsByDeck error:",
+        err,
+      );
       throw err;
     }
   }
@@ -521,10 +568,14 @@ export class LearningAnalyticsService {
    */
   _getStruggleRecommendation(struggleType) {
     const recommendations = {
-      high_fail_rate: "Review the card content and consider breaking it into simpler concepts",
-      repeated_lapses: "This card keeps slipping. Try creating a mnemonic or visual association",
-      getting_worse: "Performance is declining. Consider revising the card or seeking additional context",
-      slow_recall: "Recall is slow. Practice active recall techniques or add retrieval cues",
+      high_fail_rate:
+        "Review the card content and consider breaking it into simpler concepts",
+      repeated_lapses:
+        "This card keeps slipping. Try creating a mnemonic or visual association",
+      getting_worse:
+        "Performance is declining. Consider revising the card or seeking additional context",
+      slow_recall:
+        "Recall is slow. Practice active recall techniques or add retrieval cues",
       moderate_struggle: "Keep practicing. Consider reviewing related concepts",
     };
     return recommendations[struggleType] || recommendations.moderate_struggle;
@@ -617,7 +668,10 @@ export class LearningAnalyticsService {
         recommendation: this._getInterferenceRecommendation(row),
       }));
     } catch (err) {
-      console.error("[LearningAnalyticsService] detectInterferencePatterns error:", err);
+      console.error(
+        "[LearningAnalyticsService] detectInterferencePatterns error:",
+        err,
+      );
       throw err;
     }
   }
@@ -707,7 +761,10 @@ export class LearningAnalyticsService {
         recommendation: `Review ${row.basic_level} concepts in ${row.detected_domain} before tackling ${row.advanced_level} material`,
       }));
     } catch (err) {
-      console.error("[LearningAnalyticsService] detectPrerequisiteGaps error:", err);
+      console.error(
+        "[LearningAnalyticsService] detectPrerequisiteGaps error:",
+        err,
+      );
       throw err;
     }
   }
@@ -767,7 +824,7 @@ export class LearningAnalyticsService {
            PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY sf.fatigue_score) AS p75_fatigue_score
          FROM session_fatigue sf
          LEFT JOIN fatigue_onset fo ON sf.session_id = fo.session_id`,
-        [userId]
+        [userId],
       );
 
       const row = result.rows[0];
@@ -779,7 +836,8 @@ export class LearningAnalyticsService {
       }
 
       const avgSessionLength = parseFloat(row.avg_session_length) || 0;
-      const avgFatigueOnset = parseFloat(row.avg_fatigue_onset_cards) || avgSessionLength;
+      const avgFatigueOnset =
+        parseFloat(row.avg_fatigue_onset_cards) || avgSessionLength;
 
       return {
         sessionsAnalyzed: parseInt(row.sessions_analyzed, 10),
@@ -793,7 +851,10 @@ export class LearningAnalyticsService {
         recommendation: this._getFatigueRecommendation(row),
       };
     } catch (err) {
-      console.error("[LearningAnalyticsService] analyzeFatigueDecay error:", err);
+      console.error(
+        "[LearningAnalyticsService] analyzeFatigueDecay error:",
+        err,
+      );
       throw err;
     }
   }
@@ -804,7 +865,9 @@ export class LearningAnalyticsService {
    */
   _getFatigueRecommendation(row) {
     const avgFatigue = parseFloat(row.avg_fatigue_score) || 0;
-    const healthyRatio = parseInt(row.healthy_sessions, 10) / (parseInt(row.sessions_analyzed, 10) || 1);
+    const healthyRatio =
+      parseInt(row.healthy_sessions, 10) /
+      (parseInt(row.sessions_analyzed, 10) || 1);
 
     if (healthyRatio > 0.7) {
       return "Your session lengths are working well. Keep it up!";
@@ -852,13 +915,14 @@ export class LearningAnalyticsService {
          FROM hourly_stats hs
          CROSS JOIN baseline b
          ORDER BY hs.local_hour`,
-        [userId]
+        [userId],
       );
 
       if (result.rows.length < 3) {
         return {
           status: "insufficient_data",
-          message: "Need data from at least 3 different hours for circadian analysis",
+          message:
+            "Need data from at least 3 different hours for circadian analysis",
         };
       }
 
@@ -897,10 +961,16 @@ export class LearningAnalyticsService {
         peakHours,
         troughHours,
         optimalWindow,
-        recommendation: this._getCircadianRecommendation(peakHours, troughHours),
+        recommendation: this._getCircadianRecommendation(
+          peakHours,
+          troughHours,
+        ),
       };
     } catch (err) {
-      console.error("[LearningAnalyticsService] analyzeTimeOfDayEffects error:", err);
+      console.error(
+        "[LearningAnalyticsService] analyzeTimeOfDayEffects error:",
+        err,
+      );
       throw err;
     }
   }
@@ -916,16 +986,18 @@ export class LearningAnalyticsService {
 
     const parts = [];
     if (peakHours.length > 0) {
-      const peakRange = peakHours.length > 1
-        ? `${peakHours[0]}:00-${peakHours[peakHours.length - 1] + 1}:00`
-        : `around ${peakHours[0]}:00`;
+      const peakRange =
+        peakHours.length > 1
+          ? `${peakHours[0]}:00-${peakHours[peakHours.length - 1] + 1}:00`
+          : `around ${peakHours[0]}:00`;
       parts.push(`Your best performance is ${peakRange}`);
     }
 
     if (troughHours.length > 0) {
-      const troughRange = troughHours.length > 1
-        ? `${troughHours[0]}:00-${troughHours[troughHours.length - 1] + 1}:00`
-        : `around ${troughHours[0]}:00`;
+      const troughRange =
+        troughHours.length > 1
+          ? `${troughHours[0]}:00-${troughHours[troughHours.length - 1] + 1}:00`
+          : `around ${troughHours[0]}:00`;
       parts.push(`Avoid studying ${troughRange} if possible`);
     }
 
@@ -951,7 +1023,7 @@ export class LearningAnalyticsService {
          WHERE user_id = $1
            AND study_date >= CURRENT_DATE - INTERVAL '${days} days'
          ORDER BY study_date DESC`,
-        [userId]
+        [userId],
       );
 
       return result.rows.map((row) => ({
@@ -962,9 +1034,11 @@ export class LearningAnalyticsService {
         totalStudyTimeMs: parseInt(row.total_study_time_ms, 10),
         sessions: parseInt(row.sessions, 10),
         peakStudyHour: row.peak_study_hour,
-        accuracy: parseInt(row.reviews_completed, 10) > 0
-          ? parseInt(row.correct_count, 10) / parseInt(row.reviews_completed, 10)
-          : 0,
+        accuracy:
+          parseInt(row.reviews_completed, 10) > 0
+            ? parseInt(row.correct_count, 10) /
+              parseInt(row.reviews_completed, 10)
+            : 0,
       }));
     } catch (err) {
       console.error("[LearningAnalyticsService] getDailySummary error:", err);
