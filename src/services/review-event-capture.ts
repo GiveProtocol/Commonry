@@ -262,7 +262,10 @@ export class ReviewEventCaptureService {
     }
   }
 
-  private queueForRetry(eventId: string, payload: CompleteReviewEventPayload): void {
+  private queueForRetry(
+    eventId: string,
+    payload: CompleteReviewEventPayload,
+  ): void {
     this.retryQueue.push({
       eventId,
       payload,
@@ -280,7 +283,9 @@ export class ReviewEventCaptureService {
 
     for (const item of queue) {
       if (item.retryCount >= MAX_RETRY_ATTEMPTS) {
-        console.warn(`[ReviewEventCapture] Dropping event ${item.eventId} after ${MAX_RETRY_ATTEMPTS} retries`);
+        console.warn(
+          `[ReviewEventCapture] Dropping event ${item.eventId} after ${MAX_RETRY_ATTEMPTS} retries`,
+        );
         continue;
       }
 
@@ -693,7 +698,10 @@ export class ReviewEventCaptureService {
         : undefined;
 
     // Determine card state after review
-    const cardStateAfter = ReviewEventCaptureService.determineStateAfter(card, rating);
+    const cardStateAfter = ReviewEventCaptureService.determineStateAfter(
+      card,
+      rating,
+    );
 
     // Build completion payload
     const payload: CompleteReviewEventPayload = {
@@ -714,8 +722,14 @@ export class ReviewEventCaptureService {
       wasBackgrounded: totalBackgroundMs > 0,
       timeBackgroundedMs: Math.round(totalBackgroundMs) || undefined,
       cardStateAfter,
-      easeFactorAfter: ReviewEventCaptureService.calculateNewEaseFactor(card.easeFactor, rating),
-      intervalAfterDays: ReviewEventCaptureService.calculateNewInterval(card, rating),
+      easeFactorAfter: ReviewEventCaptureService.calculateNewEaseFactor(
+        card.easeFactor,
+        rating,
+      ),
+      intervalAfterDays: ReviewEventCaptureService.calculateNewInterval(
+        card,
+        rating,
+      ),
     };
 
     // Record in session manager
@@ -762,7 +776,10 @@ export class ReviewEventCaptureService {
    * @param rating - User rating (1-4)
    * @returns Adjusted ease factor (minimum 1.3)
    */
-  private static calculateNewEaseFactor(currentEase: number, rating: number): number {
+  private static calculateNewEaseFactor(
+    currentEase: number,
+    rating: number,
+  ): number {
     const MIN_EASE = 1.3;
     const adjustments = [0, -0.2, -0.15, 0, 0.15];
     return Math.max(MIN_EASE, currentEase + (adjustments[rating] || 0));
