@@ -1379,7 +1379,10 @@ app.use("/api/user", createResearchConsentRoutes(pool, authenticateToken));
 // GET    /api/analytics/decks/:deckId/hardest              - Hardest cards in deck
 // GET    /api/analytics/sessions/:sessionId/health         - Session health analysis
 // GET    /api/analytics/sessions/:sessionId/health/live    - Live session health
-app.use("/api/analytics", createLearningAnalyticsRoutes(pool, authenticateToken));
+app.use(
+  "/api/analytics",
+  createLearningAnalyticsRoutes(pool, authenticateToken),
+);
 
 // ==================== STUDY SESSION ENDPOINTS (LEGACY) ====================
 
