@@ -23,7 +23,6 @@ import { IdService } from "../services/id-service";
 import { reviewEventCapture } from "../services/review-event-capture";
 import { useAuth } from "./AuthContext";
 import type {
-  SessionType,
   SessionBreak,
   ClientSessionState,
   StartSessionPayload,
@@ -32,7 +31,7 @@ import type {
   SessionConfig,
   SessionStats,
 } from "../types/study-sessions";
-import type { StudySessionId, DeckId } from "../types/ids";
+import type { StudySessionId } from "../types/ids";
 
 // ============================================================
 // CONSTANTS
@@ -267,7 +266,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       // Use sendBeacon for reliable delivery
       const beaconUrl = `${API_BASE_URL}/api/sessions/${sessionRef.current.sessionId}/beacon`;
 
-      const token = api.getToken();
+      // Note: sendBeacon doesn't support custom headers for auth tokens
       const data = JSON.stringify({
         finalState: "interrupted",
         totalActiveTimeMs:

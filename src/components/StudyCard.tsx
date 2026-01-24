@@ -138,42 +138,44 @@ export default function StudyCard({
     [],
   );
 
+  // Rating buttons using terminal color palette
+  // Semantic colors: Again=warning, Hard=caution, Good=primary, Easy=success
   const ratingButtons = [
     {
       value: 1,
       label: "Again",
       interval: "1 day",
-      bgColor: "bg-red-100",
-      hoverColor: "hover:bg-red-200",
-      textColor: "text-red-700",
-      borderColor: "border-red-300",
+      bgColor: "bg-red-500/10 dark:bg-red-500/20",
+      hoverColor: "hover:bg-red-500/20 dark:hover:bg-red-500/30",
+      textColor: "text-red-600 dark:text-red-400",
+      borderColor: "border-red-500/40 dark:border-red-500/50",
     },
     {
       value: 2,
       label: "Hard",
       interval: "3 days",
-      bgColor: "bg-amber-100",
-      hoverColor: "hover:bg-amber-200",
-      textColor: "text-amber-700",
-      borderColor: "border-amber-300",
+      bgColor: "bg-amber/10 dark:bg-amber/20",
+      hoverColor: "hover:bg-amber/20 dark:hover:bg-amber/30",
+      textColor: "text-amber-dark dark:text-amber",
+      borderColor: "border-amber/40 dark:border-amber/50",
     },
     {
       value: 3,
       label: "Good",
       interval: "10 days",
-      bgColor: "bg-cyan-100",
-      hoverColor: "hover:bg-cyan-200",
-      textColor: "text-cyan-700",
-      borderColor: "border-cyan-300",
+      bgColor: "bg-cyan/10 dark:bg-cyan/20",
+      hoverColor: "hover:bg-cyan/20 dark:hover:bg-cyan/30",
+      textColor: "text-cyan-dark dark:text-cyan",
+      borderColor: "border-cyan/40 dark:border-cyan/50",
     },
     {
       value: 4,
       label: "Easy",
       interval: "20 days",
-      bgColor: "bg-green-100",
-      hoverColor: "hover:bg-green-200",
-      textColor: "text-green-700",
-      borderColor: "border-green-300",
+      bgColor: "bg-green/10 dark:bg-emerald-500/20",
+      hoverColor: "hover:bg-green/20 dark:hover:bg-emerald-500/30",
+      textColor: "text-green dark:text-emerald-400",
+      borderColor: "border-green/40 dark:border-emerald-500/50",
     },
   ];
 
@@ -188,21 +190,21 @@ export default function StudyCard({
           tabIndex={!isFlipped ? 0 : -1}
           role={!isFlipped ? "button" : undefined}
           aria-label={!isFlipped ? "Click to reveal answer" : undefined}
-          className={`${!isFlipped ? "cursor-pointer hover:border-cyan-300 dark:hover:border-cyan-600" : ""} bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center border-2 border-gray-200 dark:border-gray-700 transition-colors min-h-[200px]`}
+          className={`${!isFlipped ? "cursor-pointer hover:border-cyan dark:hover:border-cyan hover:shadow-[0_0_20px_rgba(0,217,255,0.2)]" : ""} bg-paper dark:bg-dark-surface rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center border-2 border-ink/10 dark:border-cyan/30 transition-all min-h-[200px]`}
         >
           {frontAudioUrl && (
             <button
               onClick={handleFrontAudioClick}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+              className="absolute top-4 right-4 p-2 hover:bg-ink/5 dark:hover:bg-cyan/10 rounded transition-colors"
               title="Play audio"
             >
-              <Volume2 className="w-5 h-5 text-cyan-600" />
+              <Volume2 className="w-5 h-5 text-cyan-dark dark:text-cyan" />
             </button>
           )}
 
           <div className="text-center w-full">
-            <span className="inline-block px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 text-xs font-semibold rounded-full mb-4">
-              Question
+            <span className="inline-block px-3 py-1 bg-cyan/10 dark:bg-cyan/20 text-cyan-dark dark:text-cyan text-xs font-semibold font-mono rounded-full mb-4">
+              [QUESTION]
             </span>
             {frontImageUrl && (
               <div className="mb-4">
@@ -216,16 +218,16 @@ export default function StudyCard({
             {card.frontHtml ? (
               <SafeHtml
                 html={card.frontHtml}
-                className="text-lg text-gray-900 dark:text-white mb-4 anki-card-content"
+                className="text-lg text-ink dark:text-text-primary mb-4 anki-card-content"
               />
             ) : (
-              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 whitespace-pre-line">
+              <h3 className="text-3xl md:text-4xl font-bold text-ink dark:text-text-primary mb-4 whitespace-pre-line">
                 {card.front}
               </h3>
             )}
             {!isFlipped && (
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Click to reveal answer
+              <p className="text-ink-light dark:text-text-muted text-lg font-mono">
+                &gt; Click to reveal answer
               </p>
             )}
           </div>
@@ -239,21 +241,21 @@ export default function StudyCard({
               animate={{ opacity: 1, y: 0, height: "auto" }}
               exit={{ opacity: 0, y: -20, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center border-2 border-green-300 dark:border-green-700 min-h-[200px] relative"
+              className="bg-gradient-to-br from-amber/5 to-amber/10 dark:from-amber/10 dark:to-amber/20 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center border-2 border-amber/40 dark:border-amber/50 min-h-[200px] relative shadow-[0_0_30px_rgba(251,191,36,0.1)] dark:shadow-[0_0_30px_rgba(251,191,36,0.2)]"
             >
               {backAudioUrl && (
                 <button
                   onClick={handleBackAudioClick}
-                  className="absolute top-4 right-4 p-2 hover:bg-green-100 dark:hover:bg-green-900/40 rounded transition-colors"
+                  className="absolute top-4 right-4 p-2 hover:bg-amber/10 dark:hover:bg-amber/20 rounded transition-colors"
                   title="Play audio"
                 >
-                  <Volume2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <Volume2 className="w-5 h-5 text-amber-dark dark:text-amber" />
                 </button>
               )}
 
               <div className="text-center w-full">
-                <span className="inline-block px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-semibold rounded-full mb-4">
-                  Answer
+                <span className="inline-block px-3 py-1 bg-amber/10 dark:bg-amber/20 text-amber-dark dark:text-amber text-xs font-semibold font-mono rounded-full mb-4">
+                  [ANSWER]
                 </span>
                 {backImageUrl && (
                   <div className="mb-4">
@@ -267,10 +269,10 @@ export default function StudyCard({
                 {card.backHtml ? (
                   <SafeHtml
                     html={card.backHtml}
-                    className="text-lg text-green-900 dark:text-green-100 mb-4 anki-card-content"
+                    className="text-lg text-ink dark:text-text-primary mb-4 anki-card-content"
                   />
                 ) : (
-                  <h3 className="text-3xl md:text-4xl font-bold text-green-900 dark:text-green-100 mb-4 whitespace-pre-line">
+                  <h3 className="text-3xl md:text-4xl font-bold text-ink dark:text-text-primary mb-4 whitespace-pre-line">
                     {card.back}
                   </h3>
                 )}
@@ -314,31 +316,31 @@ export default function StudyCard({
 
       {/* Study Stats */}
       <div className="w-full max-w-2xl mt-12 grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-          <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2 flex items-center gap-2">
-            <Clock size={16} className="text-amber-500" />
-            Time
+        <div className="bg-paper dark:bg-dark-surface rounded-xl p-4 border border-ink/10 dark:border-amber/30 shadow-sm hover:border-amber/40 dark:hover:border-amber/50 transition-colors">
+          <div className="text-xs text-ink-light dark:text-text-muted font-semibold font-mono mb-2 flex items-center gap-2">
+            <Clock size={16} className="text-amber-dark dark:text-amber" />
+            TIME
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="text-2xl font-bold text-ink dark:text-text-primary font-mono">
             {Math.floor((Date.now() - startTime) / 1000 / 60)}m{" "}
             {Math.floor(((Date.now() - startTime) / 1000) % 60)}s
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-          <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2 flex items-center gap-2">
-            <BarChart3 size={16} className="text-cyan-500" />
-            Streak
+        <div className="bg-paper dark:bg-dark-surface rounded-xl p-4 border border-ink/10 dark:border-cyan/30 shadow-sm hover:border-cyan/40 dark:hover:border-cyan/50 transition-colors">
+          <div className="text-xs text-ink-light dark:text-text-muted font-semibold font-mono mb-2 flex items-center gap-2">
+            <BarChart3 size={16} className="text-cyan-dark dark:text-cyan" />
+            STREAK
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="text-2xl font-bold text-ink dark:text-text-primary font-mono">
             {currentStreak} days
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-          <div className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2 flex items-center gap-2">
-            <BarChart3 size={16} className="text-cyan-500" />
-            Reviewed
+        <div className="bg-paper dark:bg-dark-surface rounded-xl p-4 border border-ink/10 dark:border-cyan/30 shadow-sm hover:border-cyan/40 dark:hover:border-cyan/50 transition-colors">
+          <div className="text-xs text-ink-light dark:text-text-muted font-semibold font-mono mb-2 flex items-center gap-2">
+            <BarChart3 size={16} className="text-cyan-dark dark:text-cyan" />
+            REVIEWED
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="text-2xl font-bold text-ink dark:text-text-primary font-mono">
             {totalReviewed}
           </div>
         </div>

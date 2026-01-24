@@ -29,6 +29,12 @@
     /* Shadows */
     --shadow: rgba(0, 168, 107, 0.15);   /* Green tinted shadow */
 
+    /* Glow effects - for consistent terminal aesthetic */
+    --glow-primary: rgba(0, 168, 107, 0.3);        /* Green glow - subtle */
+    --glow-primary-strong: rgba(0, 168, 107, 0.6); /* Green glow - strong */
+    --glow-accent: rgba(255, 107, 53, 0.3);        /* Orange glow - subtle */
+    --glow-accent-strong: rgba(255, 107, 53, 0.6); /* Orange glow - strong */
+
     /* HSL-based tokens for compatibility */
     --background: 30 20% 98%; /* #fafaf9 */
     --foreground: 20 6% 10%; /* #1c1917 */
@@ -65,6 +71,12 @@
     --border: 210 19% 19%; /* Dark border #30363d */
     --accent: 190 100% 50%; /* Cyan accent */
     --accent-foreground: 210 24% 7%;
+
+    /* Glow effects - dark mode uses cyan/amber */
+    --glow-primary: rgba(0, 217, 255, 0.3);        /* Cyan glow - subtle */
+    --glow-primary-strong: rgba(0, 217, 255, 0.6); /* Cyan glow - strong */
+    --glow-accent: rgba(251, 191, 36, 0.3);        /* Amber glow - subtle */
+    --glow-accent-strong: rgba(251, 191, 36, 0.6); /* Amber glow - strong */
 
     /* Typography (same for dark mode) */
     --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -365,15 +377,15 @@ a:focus-visible {
 
 /* Move the study card down slightly */
 .study-card {
-  margin-top: 20px; /* Adjust this value to control spacing */
-  margin-bottom: 30px; /* Creates space for the instructions */
+  margin-top: 1.25rem; /* 20px equivalent - Tailwind mt-5 */
+  margin-bottom: 2rem; /* 32px equivalent - Tailwind mb-8 */
 }
 
 /* Reduce the height of the top section */
 .top-section {
-  height: 60px; /* Try lowering this from its default */
-  padding: 5px 10px; /* Reduce padding if needed */
-  font-size: 0.9rem; /* Optional: shrink text slightly */
+  height: 3.75rem; /* 60px equivalent - Tailwind h-15 */
+  padding: 0.25rem 0.625rem; /* 4px 10px equivalent */
+  font-size: 0.875rem; /* 14px equivalent - Tailwind text-sm */
 }
 
 .rating-instructions {
@@ -541,38 +553,55 @@ a:focus-visible {
   background-color: #fbbf24;
 }
 
-/* Terminal glow effects */
+/* Terminal glow effects - using CSS variables for consistency */
 .shadow-terminal-glow {
-  box-shadow: 0 0 20px var(--terminal-green-glow);
+  box-shadow: 0 0 20px var(--glow-primary);
 }
 
-.dark .shadow-terminal-glow {
-  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+.shadow-terminal-glow-strong {
+  box-shadow: 0 0 30px var(--glow-primary-strong);
 }
 
 .shadow-terminal-accent-glow {
-  box-shadow: 0 0 20px var(--terminal-orange-glow);
+  box-shadow: 0 0 20px var(--glow-accent);
 }
 
-.dark .shadow-terminal-accent-glow {
+.shadow-terminal-accent-glow-strong {
+  box-shadow: 0 0 30px var(--glow-accent-strong);
+}
+
+/* Cyan/Amber explicit glow classes (for Tailwind dark: prefix usage) */
+.shadow-cyan-glow {
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+}
+
+.shadow-cyan-glow-strong {
+  box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+}
+
+.shadow-amber-glow {
   box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
 }
 
-/* Text shadow glow */
-.text-shadow-terminal {
-  text-shadow: 0 0 15px var(--terminal-green-glow);
+.shadow-amber-glow-strong {
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.6);
 }
 
-.dark .text-shadow-terminal {
-  text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+/* Text shadow glow - using CSS variables */
+.text-shadow-terminal {
+  text-shadow: 0 0 15px var(--glow-primary);
+}
+
+.text-shadow-terminal-strong {
+  text-shadow: 0 0 20px var(--glow-primary-strong);
 }
 
 .text-shadow-terminal-accent {
-  text-shadow: 0 0 15px var(--terminal-orange-glow);
+  text-shadow: 0 0 15px var(--glow-accent);
 }
 
-.dark .text-shadow-terminal-accent {
-  text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+.text-shadow-terminal-accent-strong {
+  text-shadow: 0 0 20px var(--glow-accent-strong);
 }
 
 /* Background colors with theme support */

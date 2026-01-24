@@ -338,11 +338,11 @@ export function StatsView({ onBack }: StatsViewProps) {
 
                 {/* User Rank Badge */}
                 {userRank?.rank && (
-                  <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2">
-                    <div className="text-xs text-muted-foreground mb-1">
-                      Your Rank
+                  <div className="bg-amber/10 dark:bg-amber/20 border border-amber/40 dark:border-amber/50 rounded-lg px-4 py-2">
+                    <div className="text-xs text-text-muted font-mono mb-1">
+                      YOUR_RANK
                     </div>
-                    <div className="text-xl font-bold text-yellow-700 dark:text-yellow-400">
+                    <div className="text-xl font-bold text-amber-dark dark:text-amber font-mono">
                       #{userRank.rank}
                     </div>
                   </div>
@@ -376,9 +376,9 @@ export function StatsView({ onBack }: StatsViewProps) {
               {/* Leaderboard List */}
               <div className="space-y-2">
                 {leaderboard.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div className="text-center py-12 text-text-muted font-mono">
                     <p>
-                      No data yet. Start studying to appear on the leaderboard!
+                      &gt; No data yet. Start studying to appear on the leaderboard!
                     </p>
                   </div>
                 ) : (
@@ -390,20 +390,20 @@ export function StatsView({ onBack }: StatsViewProps) {
                       transition={{ delay: index * 0.05 }}
                       className={`flex items-center justify-between p-4 rounded-lg transition-all ${
                         entry.user_id === user?.id
-                          ? "bg-cyan-50 dark:bg-cyan-900/20 border-2 border-cyan-300 dark:border-cyan-700"
-                          : "bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          ? "bg-cyan/10 dark:bg-cyan/20 border-2 border-cyan/50 dark:border-cyan/60"
+                          : "bg-dark-lighter/50 dark:bg-dark-lighter hover:bg-dark-lighter dark:hover:bg-dark-surface border border-transparent hover:border-cyan/20"
                       }`}
                     >
                       <div className="flex items-center gap-4">
                         <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-mono ${
                             entry.rank === 1
-                              ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white"
+                              ? "bg-gradient-to-br from-amber to-amber-dark text-dark"
                               : entry.rank === 2
-                                ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white"
+                                ? "bg-gradient-to-br from-text-muted to-dark-border text-dark"
                                 : entry.rank === 3
-                                  ? "bg-gradient-to-br from-amber-600 to-amber-800 text-white"
-                                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                                  ? "bg-gradient-to-br from-amber-dark to-orange text-dark"
+                                  : "bg-dark-surface dark:bg-dark-border text-text-muted"
                           }`}
                         >
                           {entry.rank}
@@ -411,26 +411,26 @@ export function StatsView({ onBack }: StatsViewProps) {
 
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-foreground">
+                            <span className="font-semibold text-text-primary">
                               {entry.display_name || entry.username}
                             </span>
                             {entry.user_id === user?.id && (
-                              <span className="text-xs bg-cyan-600 text-white px-2 py-0.5 rounded-full">
-                                You
+                              <span className="text-xs bg-cyan text-dark px-2 py-0.5 rounded-full font-mono">
+                                YOU
                               </span>
                             )}
                           </div>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-text-muted font-mono">
                             @{entry.username}
                           </span>
                         </div>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-foreground">
+                        <div className="text-2xl font-bold text-text-primary font-mono">
                           {formatValue(selectedMetric, entry.value)}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-text-muted font-mono">
                           {getMetricLabel(selectedMetric)}
                         </div>
                       </div>
@@ -441,7 +441,7 @@ export function StatsView({ onBack }: StatsViewProps) {
 
               {/* View More Button */}
               {leaderboard.length > 10 && (
-                <button className="w-full mt-4 py-3 text-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 rounded-lg font-medium transition-all">
+                <button className="w-full mt-4 py-3 text-center text-cyan dark:text-cyan hover:bg-cyan/10 dark:hover:bg-cyan/20 rounded-lg font-medium font-mono transition-all border border-transparent hover:border-cyan/30">
                   View Full Leaderboard ({leaderboard.length} users)
                 </button>
               )}
@@ -455,25 +455,25 @@ export function StatsView({ onBack }: StatsViewProps) {
                 transition={{ delay: 0.5 }}
                 className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-800/20 border border-cyan-200 dark:border-cyan-800 rounded-xl p-6">
+                <div className="bg-cyan/5 dark:bg-cyan/10 border border-cyan/30 dark:border-cyan/40 rounded-xl p-6 hover:border-cyan/50 transition-colors">
                   <div className="text-center mb-3">
-                    <span className="text-cyan-900 dark:text-cyan-300 text-lg font-medium">
-                      Longest Streak
+                    <span className="text-cyan-dark dark:text-cyan text-lg font-medium font-mono">
+                      LONGEST_STREAK
                     </span>
                   </div>
-                  <div className="text-5xl font-bold text-cyan-900 dark:text-cyan-100 text-center">
+                  <div className="text-5xl font-bold text-cyan-dark dark:text-cyan text-center font-mono">
                     {stats.longest_streak}
                     <span className="text-2xl ml-2">days</span>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 border border-pink-200 dark:border-pink-800 rounded-xl p-6">
+                <div className="bg-amber/5 dark:bg-amber/10 border border-amber/30 dark:border-amber/40 rounded-xl p-6 hover:border-amber/50 transition-colors">
                   <div className="text-center mb-3">
-                    <span className="text-pink-900 dark:text-pink-300 text-lg font-medium">
-                      Last Study Date
+                    <span className="text-amber-dark dark:text-amber text-lg font-medium font-mono">
+                      LAST_STUDY
                     </span>
                   </div>
-                  <div className="text-3xl font-bold text-pink-900 dark:text-pink-100 text-center">
+                  <div className="text-3xl font-bold text-amber-dark dark:text-amber text-center font-mono">
                     {stats.last_study_date
                       ? new Date(stats.last_study_date).toLocaleDateString(
                           "en-US",

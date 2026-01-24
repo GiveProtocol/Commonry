@@ -250,7 +250,7 @@ export function SquareView({ onBack }: SquareViewProps) {
                 >
                   <div className="flex items-start gap-3 mb-2">
                     <div
-                      className="w-4 h-4 rounded-full flex-shrink-0 mt-1"
+                      className="w-4 h-4 rounded-full flex-shrink-0 mt-1 ring-2 ring-ink/10 dark:ring-cyan/20 group-hover:ring-cyan/40 transition-all"
                       style={{ backgroundColor: `#${category.color}` }}
                     />
                     <div className="flex-1">

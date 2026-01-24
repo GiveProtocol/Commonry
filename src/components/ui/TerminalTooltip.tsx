@@ -27,7 +27,7 @@ export function TerminalTooltip({
           <Tooltip.Content
             side={side}
             align={align}
-            className="bg-dark-surface border-2 border-cyan rounded px-3 py-2 font-mono text-sm text-cyan shadow-[0_0_20px_rgba(0,217,255,0.4)] z-50 animate-[fadeIn_0.2s_ease-in]"
+            className="bg-dark-surface border-2 border-cyan rounded px-3 py-2 font-mono text-sm text-cyan shadow-cyan-glow z-50 animate-[fadeIn_0.2s_ease-in]"
             sideOffset={5}
           >
             <div className="flex items-center gap-2">
@@ -61,8 +61,8 @@ export function TerminalTooltipCustom({
   delayDuration = 200,
 }: TerminalTooltipCustomProps) {
   const variantStyles = {
-    info: "border-cyan text-cyan shadow-[0_0_20px_rgba(0,217,255,0.4)]",
-    warning: "border-amber text-amber shadow-[0_0_20px_rgba(251,191,36,0.4)]",
+    info: "border-cyan text-cyan shadow-cyan-glow",
+    warning: "border-amber text-amber shadow-amber-glow",
     error: "border-red-500 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]",
     success: "border-green-500 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.4)]",
   };

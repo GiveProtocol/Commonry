@@ -23,16 +23,16 @@ export function TerminalModal({
   maxWidth = "md",
 }: TerminalModalProps) {
   const borderColors = {
-    cyan: "border-terminal-primary shadow-terminal-glow dark:border-cyan dark:shadow-[0_0_40px_rgba(0,217,255,0.3)]",
+    cyan: "border-terminal-primary shadow-terminal-glow dark:border-cyan dark:shadow-cyan-glow-strong",
     amber:
-      "border-terminal-accent shadow-terminal-accent-glow dark:border-amber dark:shadow-[0_0_40px_rgba(251,191,36,0.3)]",
+      "border-terminal-accent shadow-terminal-accent-glow dark:border-amber dark:shadow-amber-glow-strong",
     red: "border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.3)]",
   };
 
   const titleColors = {
-    cyan: "terminal-primary text-shadow-terminal dark:text-cyan dark:[text-shadow:0_0_15px_rgba(0,217,255,0.5)]",
+    cyan: "terminal-primary text-shadow-terminal dark:text-cyan dark:text-shadow-terminal",
     amber:
-      "terminal-accent text-shadow-terminal-accent dark:text-amber dark:[text-shadow:0_0_15px_rgba(251,191,36,0.5)]",
+      "terminal-accent text-shadow-terminal-accent dark:text-amber dark:text-shadow-terminal-accent",
     red: "text-red-400 [text-shadow:0_0_15px_rgba(239,68,68,0.5)]",
   };
 

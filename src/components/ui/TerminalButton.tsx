@@ -11,12 +11,12 @@ export const TerminalButton = forwardRef<HTMLButtonElement, TerminalButtonProps>
       cyan: cn(
         'border-terminal-primary terminal-primary',
         'hover:shadow-terminal-glow',
-        'dark:border-cyan dark:text-cyan dark:hover:shadow-[0_0_20px_rgba(0,217,255,0.6)]'
+        'dark:border-cyan dark:text-cyan dark:hover:shadow-cyan-glow-strong'
       ),
       amber: cn(
         'border-terminal-accent terminal-accent',
         'hover:shadow-terminal-accent-glow',
-        'dark:border-amber dark:text-amber dark:hover:shadow-[0_0_20px_rgba(251,191,36,0.6)]'
+        'dark:border-amber dark:text-amber dark:hover:shadow-amber-glow-strong'
       ),
     };
 

@@ -447,33 +447,43 @@ export class SyncService {
   async resolveConflict(conflict: SyncConflict): Promise<void> {
     const { entityType, entityId, localData, serverData } = conflict;
 
+    // Type assertion for sync entity data - these are dynamic objects from conflict resolution
+    const local = localData as Record<string, unknown>;
+    const server = serverData as Record<string, unknown>;
+
     // Field-level LWW: Compare timestamps for each field
-    const merged = { ...serverData };
+    const merged: Record<string, unknown> = { ...server };
 
     for (const field of conflict.conflictedFields) {
-      const localTime = localData.lastModifiedAt;
-      const serverTime = serverData.lastModifiedAt;
+      const localTime =
+        local.lastModifiedAt instanceof Date
+          ? local.lastModifiedAt.getTime()
+          : 0;
+      const serverTime =
+        server.lastModifiedAt instanceof Date
+          ? server.lastModifiedAt.getTime()
+          : 0;
 
       if (localTime > serverTime) {
-        merged[field] = localData[field];
+        merged[field] = local[field];
       }
     }
 
-    // Apply merged data locally
+    // Apply merged data locally - cast to any for Dexie's dynamic update
     switch (entityType) {
       case "deck":
-        await db.decks.update(entityId, merged);
+        await db.decks.update(entityId, merged as Parameters<typeof db.decks.update>[1]);
         break;
       case "card":
-        await db.cards.update(entityId, merged);
+        await db.cards.update(entityId, merged as Parameters<typeof db.cards.update>[1]);
         break;
       case "session":
-        await db.sessions.update(entityId, merged);
+        await db.sessions.update(entityId, merged as Parameters<typeof db.sessions.update>[1]);
         break;
     }
 
     // Mark as synced
-    await db.markAsSynced(entityType, entityId, serverData.serverId);
+    await db.markAsSynced(entityType, entityId, server.serverId as string | undefined);
   }
 
   /**
