@@ -557,6 +557,11 @@ export class ReviewEventCaptureService {
     );
   }
 
+  /**
+   * Record hover time on a multiple choice option
+   * @param optionIndex - Index of the option being hovered
+   * @param durationMs - Duration of the hover in milliseconds
+   */
   recordOptionHover(optionIndex: number, durationMs: number): void {
     if (!this.currentBuilder) return;
 
@@ -573,6 +578,10 @@ export class ReviewEventCaptureService {
     });
   }
 
+  /**
+   * Flush buffered interactions to the server
+   * Called periodically or when buffer is full
+   */
   private async flushInteractionBuffer(): Promise<void> {
     if (this.flushTimer) {
       clearTimeout(this.flushTimer);
@@ -684,7 +693,7 @@ export class ReviewEventCaptureService {
         : undefined;
 
     // Determine card state after review
-    const cardStateAfter = this.determineStateAfter(card, rating);
+    const cardStateAfter = ReviewEventCaptureService.determineStateAfter(card, rating);
 
     // Build completion payload
     const payload: CompleteReviewEventPayload = {
@@ -705,8 +714,8 @@ export class ReviewEventCaptureService {
       wasBackgrounded: totalBackgroundMs > 0,
       timeBackgroundedMs: Math.round(totalBackgroundMs) || undefined,
       cardStateAfter,
-      easeFactorAfter: this.calculateNewEaseFactor(card.easeFactor, rating),
-      intervalAfterDays: this.calculateNewInterval(card, rating),
+      easeFactorAfter: ReviewEventCaptureService.calculateNewEaseFactor(card.easeFactor, rating),
+      intervalAfterDays: ReviewEventCaptureService.calculateNewInterval(card, rating),
     };
 
     // Record in session manager
@@ -733,7 +742,13 @@ export class ReviewEventCaptureService {
     }
   }
 
-  private determineStateAfter(card: Card, rating: number): CardState {
+  /**
+   * Determine the card state after a review based on rating
+   * @param card - The card being reviewed
+   * @param rating - User rating (1-4)
+   * @returns New card state
+   */
+  private static determineStateAfter(card: Card, rating: number): CardState {
     if (rating === 1) return "relearning";
     if (card.status === "new" || card.status === "learning") {
       return rating >= 3 ? "review" : "learning";
@@ -741,13 +756,25 @@ export class ReviewEventCaptureService {
     return "review";
   }
 
-  private calculateNewEaseFactor(currentEase: number, rating: number): number {
+  /**
+   * Calculate new ease factor after a review using SM-2 adjustments
+   * @param currentEase - Current ease factor
+   * @param rating - User rating (1-4)
+   * @returns Adjusted ease factor (minimum 1.3)
+   */
+  private static calculateNewEaseFactor(currentEase: number, rating: number): number {
     const MIN_EASE = 1.3;
     const adjustments = [0, -0.2, -0.15, 0, 0.15];
     return Math.max(MIN_EASE, currentEase + (adjustments[rating] || 0));
   }
 
-  private calculateNewInterval(card: Card, rating: number): number {
+  /**
+   * Calculate new interval after a review using SM-2 algorithm
+   * @param card - The card being reviewed
+   * @param rating - User rating (1-4)
+   * @returns New interval in days
+   */
+  private static calculateNewInterval(card: Card, rating: number): number {
     if (rating === 1) return 1;
     if (card.status === "new" || card.status === "learning") {
       return rating === 4 ? 4 : 1;
