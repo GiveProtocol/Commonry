@@ -378,7 +378,8 @@ export function StatsView({ onBack }: StatsViewProps) {
                 {leaderboard.length === 0 ? (
                   <div className="text-center py-12 text-text-muted font-mono">
                     <p>
-                      &gt; No data yet. Start studying to appear on the leaderboard!
+                      &gt; No data yet. Start studying to appear on the
+                      leaderboard!
                     </p>
                   </div>
                 ) : (
