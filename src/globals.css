@@ -6,33 +6,33 @@
   :root {
     /* Light Mode - Terminal Green & Orange */
     /* Primary colors */
-    --terminal-green: #00a86b;           /* Jade/emerald green */
-    --terminal-green-dark: #008055;      /* Darker for hover states */
+    --terminal-green: #00a86b; /* Jade/emerald green */
+    --terminal-green-dark: #008055; /* Darker for hover states */
     --terminal-green-glow: rgba(0, 168, 107, 0.15);
 
     /* Accent color */
-    --terminal-orange: #ff6b35;          /* Vibrant coral-orange */
+    --terminal-orange: #ff6b35; /* Vibrant coral-orange */
     --terminal-orange-dark: #e5572e;
     --terminal-orange-glow: rgba(255, 107, 53, 0.15);
 
     /* Backgrounds */
-    --paper: #fafaf9;                    /* Warm off-white */
-    --paper-darker: #f5f5f4;             /* Slightly darker for cards */
+    --paper: #fafaf9; /* Warm off-white */
+    --paper-darker: #f5f5f4; /* Slightly darker for cards */
 
     /* Text */
-    --ink: #1c1917;                      /* Near black */
-    --ink-light: #44403c;                /* Medium gray for secondary text */
+    --ink: #1c1917; /* Near black */
+    --ink-light: #44403c; /* Medium gray for secondary text */
 
     /* Borders & dividers */
-    --border-light: #d6d3d1;             /* Soft neutral gray */
+    --border-light: #d6d3d1; /* Soft neutral gray */
 
     /* Shadows */
-    --shadow: rgba(0, 168, 107, 0.15);   /* Green tinted shadow */
+    --shadow: rgba(0, 168, 107, 0.15); /* Green tinted shadow */
 
     /* Glow effects - for consistent terminal aesthetic */
-    --glow-primary: rgba(0, 168, 107, 0.3);        /* Green glow - subtle */
+    --glow-primary: rgba(0, 168, 107, 0.3); /* Green glow - subtle */
     --glow-primary-strong: rgba(0, 168, 107, 0.6); /* Green glow - strong */
-    --glow-accent: rgba(255, 107, 53, 0.3);        /* Orange glow - subtle */
+    --glow-accent: rgba(255, 107, 53, 0.3); /* Orange glow - subtle */
     --glow-accent-strong: rgba(255, 107, 53, 0.6); /* Orange glow - strong */
 
     /* HSL-based tokens for compatibility */
@@ -53,8 +53,10 @@
     --radius: 0.5rem;
 
     /* Typography */
-    --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    --font-mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    --font-sans:
+      "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      sans-serif;
+    --font-mono: "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
   }
 
   .dark {
@@ -73,14 +75,16 @@
     --accent-foreground: 210 24% 7%;
 
     /* Glow effects - dark mode uses cyan/amber */
-    --glow-primary: rgba(0, 217, 255, 0.3);        /* Cyan glow - subtle */
+    --glow-primary: rgba(0, 217, 255, 0.3); /* Cyan glow - subtle */
     --glow-primary-strong: rgba(0, 217, 255, 0.6); /* Cyan glow - strong */
-    --glow-accent: rgba(251, 191, 36, 0.3);        /* Amber glow - subtle */
+    --glow-accent: rgba(251, 191, 36, 0.3); /* Amber glow - subtle */
     --glow-accent-strong: rgba(251, 191, 36, 0.6); /* Amber glow - strong */
 
     /* Typography (same for dark mode) */
-    --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    --font-mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    --font-sans:
+      "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      sans-serif;
+    --font-mono: "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
   }
 }
 
@@ -91,11 +95,18 @@
 
   body {
     @apply bg-background text-foreground font-sans;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
     letter-spacing: -0.01em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -127,7 +138,10 @@
     margin-bottom: 1rem;
   }
 
-  code, pre, kbd, samp {
+  code,
+  pre,
+  kbd,
+  samp {
     @apply font-mono;
   }
 
@@ -159,7 +173,8 @@
 }
 
 @keyframes celebrate {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) rotate(0);
   }
   25% {
@@ -180,7 +195,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -235,18 +251,22 @@
 
 /* Light mode subtle gradient background */
 .bg-subtle-gradient {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     hsl(210, 40%, 98%) 0%,
     hsl(220, 40%, 97%) 50%,
-    hsl(230, 40%, 96%) 100%);
+    hsl(230, 40%, 96%) 100%
+  );
 }
 
 /* Dark mode gradient background */
 .dark .bg-subtle-gradient {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     hsl(210, 24%, 7%) 0%,
     hsl(213, 20%, 9%) 50%,
-    hsl(213, 18%, 11%) 100%);
+    hsl(213, 18%, 11%) 100%
+  );
 }
 
 /* Secondary button - transparent with border */
@@ -275,13 +295,15 @@
 
 /* Enhanced card shadow for light mode */
 .card-shadow {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .card-shadow-deep {
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15),
-              0 4px 6px -2px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 10px 25px -3px rgba(0, 0, 0, 0.15),
+    0 4px 6px -2px rgba(0, 0, 0, 0.08);
 }
 
 /* Dark mode card with subtle border */
@@ -398,20 +420,22 @@ a:focus-visible {
 
 /* Ancient Greece parchment gradient - cream to white */
 .bg-parchment-gradient {
-  background: linear-gradient(to top,
-    #F5F3E8 0%,      /* Cream at bottom */
-    #F5F3E8 60%,     /* Cream continues */
-    #FDFCF7 75%,     /* Light cream transition */
-    #FFFFFF 85%      /* White at top 1/5 */
+  background: linear-gradient(
+    to top,
+    #f5f3e8 0%,
+    /* Cream at bottom */ #f5f3e8 60%,
+    /* Cream continues */ #fdfcf7 75%,
+    /* Light cream transition */ #ffffff 85% /* White at top 1/5 */
   );
 }
 
 .dark .bg-parchment-gradient {
-  background: linear-gradient(to top,
-    #2C2416 0%,      /* Dark brown at bottom */
-    #2C2416 60%,     /* Dark brown continues */
-    #1A1612 75%,     /* Darker transition */
-    #000000 85%      /* Black at top 1/5 */
+  background: linear-gradient(
+    to top,
+    #2c2416 0%,
+    /* Dark brown at bottom */ #2c2416 60%,
+    /* Dark brown continues */ #1a1612 75%,
+    /* Darker transition */ #000000 85% /* Black at top 1/5 */
   );
 }
 
@@ -487,7 +511,7 @@ a:focus-visible {
 }
 
 .scanline::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
