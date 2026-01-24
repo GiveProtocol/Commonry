@@ -472,20 +472,33 @@ export class SyncService {
     // Apply merged data locally - cast to any for Dexie's dynamic update
     switch (entityType) {
       case "deck":
-        await db.decks.update(entityId, merged as Parameters<typeof db.decks.update>[1]);
+        await db.decks.update(
+          entityId,
+          merged as Parameters<typeof db.decks.update>[1],
+        );
         break;
       case "card":
-        await db.cards.update(entityId, merged as Parameters<typeof db.cards.update>[1]);
+        await db.cards.update(
+          entityId,
+          merged as Parameters<typeof db.cards.update>[1],
+        );
         break;
       case "session":
-        await db.sessions.update(entityId, merged as Parameters<typeof db.sessions.update>[1]);
+        await db.sessions.update(
+          entityId,
+          merged as Parameters<typeof db.sessions.update>[1],
+        );
         break;
       default:
         throw new Error(`Unknown entity type: ${entityType}`);
     }
 
     // Mark as synced
-    await db.markAsSynced(entityType, entityId, server.serverId as string | undefined);
+    await db.markAsSynced(
+      entityType,
+      entityId,
+      server.serverId as string | undefined,
+    );
   }
 
   /**
