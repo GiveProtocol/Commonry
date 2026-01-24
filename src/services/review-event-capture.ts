@@ -262,7 +262,10 @@ export class ReviewEventCaptureService {
     }
   }
 
-  private queueForRetry(eventId: string, payload: CompleteReviewEventPayload): void {
+  private queueForRetry(
+    eventId: string,
+    payload: CompleteReviewEventPayload,
+  ): void {
     this.retryQueue.push({
       eventId,
       payload,
@@ -280,7 +283,9 @@ export class ReviewEventCaptureService {
 
     for (const item of queue) {
       if (item.retryCount >= MAX_RETRY_ATTEMPTS) {
-        console.warn(`[ReviewEventCapture] Dropping event ${item.eventId} after ${MAX_RETRY_ATTEMPTS} retries`);
+        console.warn(
+          `[ReviewEventCapture] Dropping event ${item.eventId} after ${MAX_RETRY_ATTEMPTS} retries`,
+        );
         continue;
       }
 
