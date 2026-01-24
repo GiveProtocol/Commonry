@@ -282,10 +282,10 @@ RETURNS TABLE(
 BEGIN
     RETURN QUERY
     WITH claimed AS (
-        UPDATE research_exports
+        UPDATE research_exports re_update
         SET status = 'processing',
             started_at = CURRENT_TIMESTAMP
-        WHERE export_id = (
+        WHERE re_update.export_id = (
             SELECT re.export_id
             FROM research_exports re
             WHERE re.status = 'pending'
@@ -293,7 +293,7 @@ BEGIN
             FOR UPDATE SKIP LOCKED
             LIMIT 1
         )
-        RETURNING research_exports.*
+        RETURNING re_update.*
     )
     SELECT c.export_id, c.export_type, c.schema_version,
            c.watermark_from, c.watermark_to, c.filters, c.output_format
