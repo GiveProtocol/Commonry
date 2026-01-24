@@ -10,6 +10,7 @@ import { Volume2, Clock, BarChart3 } from "lucide-react";
 interface StudyCardProps {
   card: Card;
   onRate: (rating: number) => void;
+  onFlip?: () => void;
   currentStreak: number;
   totalReviewed: number;
 }
@@ -17,6 +18,7 @@ interface StudyCardProps {
 export default function StudyCard({
   card,
   onRate,
+  onFlip,
   currentStreak,
   totalReviewed,
 }: StudyCardProps) {
@@ -105,6 +107,8 @@ export default function StudyCard({
     if (!isFlipped) {
       setIsFlipped(true);
       setTimeout(() => setShowRating(true), 300);
+      // Notify parent that card was flipped (for review event tracking)
+      onFlip?.();
     }
   };
 

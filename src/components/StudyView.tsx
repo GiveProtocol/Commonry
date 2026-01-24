@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, Deck } from "../lib/srs-engine";
 import { db } from "../storage/database";
 import StudyCard from "./StudyCard";
-import { api } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { useSession } from "../contexts/SessionContext";
+import { reviewEventCapture } from "../services/review-event-capture";
 import { DeckId } from "../types/ids";
 
 interface StudyViewProps {
@@ -13,7 +14,14 @@ interface StudyViewProps {
 }
 
 export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const {
+    startSession,
+    endSession,
+    recordCardCompleted,
+    isSessionActive,
+    getSessionStats,
+  } = useSession();
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [dueCards, setDueCards] = useState<Card[]>([]);
   const [allCards, setAllCards] = useState<Card[]>([]);
@@ -28,6 +36,8 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
     streak: 0,
   });
   const [cardStartTime, setCardStartTime] = useState<number>(Date.now());
+  const sessionStartedRef = useRef(false);
+  const currentEventIdRef = useRef<string | null>(null);
 
   const loadStats = () => {
     // Load saved stats from localStorage
@@ -71,8 +81,27 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
 
       setAllCards(allCardsArray);
       setDueCards(cardsForReview);
-      setCurrentCard(cardsForReview[0] || null);
-      setCardStartTime(Date.now()); // Start timer for first card
+
+      // Start session if authenticated and we have cards
+      if (isAuthenticated && cardsForReview.length > 0 && !sessionStartedRef.current) {
+        sessionStartedRef.current = true;
+        await startSession({
+          sessionType: "regular",
+          deckId: selectedDeck,
+          cardsPlanned: cardsForReview.length,
+        });
+      }
+
+      // Set current card and start review event
+      const firstCard = cardsForReview[0] || null;
+      setCurrentCard(firstCard);
+      setCardStartTime(Date.now());
+
+      // Start review event capture for the first card
+      if (firstCard && isAuthenticated) {
+        const eventId = await reviewEventCapture.startCardReview(firstCard);
+        currentEventIdRef.current = eventId;
+      }
     } catch (error) {
       console.error("Failed to load cards:", error);
     } finally {
@@ -114,12 +143,37 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [currentCard]);
 
+  // Cleanup: end session on unmount
+  useEffect(() => {
+    return () => {
+      // Cancel any pending review
+      if (reviewEventCapture.hasActiveReview()) {
+        reviewEventCapture.cancelReview();
+      }
+
+      // End session if active (will use beacon for reliability)
+      if (sessionStartedRef.current) {
+        endSession(true).catch(console.error);
+        sessionStartedRef.current = false;
+      }
+    };
+  }, [endSession]);
+
+  // Handle card flip tracking
+  const handleCardFlip = useCallback(() => {
+    if (isAuthenticated && reviewEventCapture.hasActiveReview()) {
+      reviewEventCapture.recordAnswerShown();
+    }
+  }, [isAuthenticated]);
+
   const handleRating = useCallback(
     async (rating: number) => {
       if (!currentCard) return;
 
       try {
         const duration = Date.now() - cardStartTime;
+        const isNewCard = currentCard.status === "new";
+        const typedRating = rating as 1 | 2 | 3 | 4;
 
         // Record review in local database
         const result = await db.recordReview(currentCard.id, rating, duration);
@@ -127,24 +181,21 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
           `Card reviewed: ${rating}, next review in ${result.interval} days`,
         );
 
-        // Sync with backend (non-blocking - app continues even if this fails)
-        if (user) {
-          api
-            .recordStudySession({
-              cardId: currentCard.id,
-              timeSpentMs: duration,
-              rating,
-            })
-            .then((response) => {
-              if (response.error) {
-                console.warn("Failed to sync with backend:", response.error);
-              } else {
-                console.log("Study session synced with backend");
+        // Complete the review event capture (non-blocking)
+        if (isAuthenticated) {
+          reviewEventCapture
+            .completeReview(currentCard, typedRating)
+            .then((success) => {
+              if (success) {
+                console.log("[StudyView] Review event captured successfully");
               }
             })
             .catch((error) => {
-              console.warn("Backend sync error:", error);
+              console.warn("[StudyView] Failed to capture review event:", error);
             });
+
+          // Record in session context
+          recordCardCompleted(typedRating, duration, isNewCard);
         }
 
         // Update session stats
@@ -167,21 +218,32 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
         setDueCards(remainingDue);
 
         if (remainingDue.length > 0) {
-          setTimeout(() => {
-            setCurrentCard(remainingDue[0]);
-            setCardStartTime(Date.now()); // Reset timer for next card
+          const nextCard = remainingDue[0];
+          setTimeout(async () => {
+            setCurrentCard(nextCard);
+            setCardStartTime(Date.now());
+
+            // Start review event for the next card
+            if (isAuthenticated && nextCard) {
+              const eventId = await reviewEventCapture.startCardReview(nextCard);
+              currentEventIdRef.current = eventId;
+            }
           }, 500);
         } else {
-          // Session complete!
-          setTimeout(() => {
+          // Session complete - end the session
+          setTimeout(async () => {
             setCurrentCard(null);
+            if (isAuthenticated && sessionStartedRef.current) {
+              await endSession(false);
+              sessionStartedRef.current = false;
+            }
           }, 500);
         }
       } catch (error) {
         console.error("Failed to record review:", error);
       }
     },
-    [currentCard, dueCards, sessionStats, cardStartTime, user],
+    [currentCard, dueCards, sessionStats, cardStartTime, isAuthenticated, recordCardCompleted, endSession],
   );
 
   const handleFileImport = useCallback(
@@ -218,9 +280,20 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
     setShowImport(false);
   }, []);
 
-  const handleBackClick = useCallback(() => {
+  const handleBackClick = useCallback(async () => {
+    // Cancel any pending review event
+    if (reviewEventCapture.hasActiveReview()) {
+      reviewEventCapture.cancelReview();
+    }
+
+    // End the session (mark as interrupted since user left early)
+    if (isAuthenticated && sessionStartedRef.current) {
+      await endSession(true);
+      sessionStartedRef.current = false;
+    }
+
     onBack();
-  }, [onBack]);
+  }, [onBack, isAuthenticated, endSession]);
 
   const handleStopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -545,6 +618,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               key={currentCard.id}
               card={currentCard}
               onRate={handleRating}
+              onFlip={handleCardFlip}
               currentStreak={sessionStats.streak}
               totalReviewed={sessionStats.reviewed}
             />
