@@ -19,6 +19,7 @@ interface AuthContextType {
     error?: string;
     emailNotVerified?: boolean;
     email?: string;
+    token?: string;
   }>;
   signup: (
     username: string,
