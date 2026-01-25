@@ -7,6 +7,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useSession } from "../contexts/SessionContext";
 import { reviewEventCapture } from "../services/review-event-capture";
 import { DeckId } from "../types/ids";
+import { useStudySettings } from "../hooks/useStudySettings";
+import { FontSizeControl } from "./study/FontSizeControl";
 
 interface StudyViewProps {
   onBack: () => void;
@@ -16,6 +18,7 @@ interface StudyViewProps {
 export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
   const { isAuthenticated } = useAuth();
   const { startSession, endSession, recordCardCompleted } = useSession();
+  const { fontSize, increaseFontSize, decreaseFontSize } = useStudySettings();
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [dueCards, setDueCards] = useState<Card[]>([]);
   const [allCards, setAllCards] = useState<Card[]>([]);
@@ -122,6 +125,14 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      // Skip if user is typing in an input field
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
       if (e.code === "Space" && currentCard) {
         e.preventDefault();
         const flipButton = document.querySelector("[data-flip-button]");
@@ -135,11 +146,21 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
         );
         if (ratingButton) (ratingButton as HTMLElement).click();
       }
+
+      // Font size shortcuts: + or = to increase, - to decrease
+      if (e.key === "+" || e.key === "=") {
+        e.preventDefault();
+        increaseFontSize();
+      }
+      if (e.key === "-") {
+        e.preventDefault();
+        decreaseFontSize();
+      }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [currentCard]);
+  }, [currentCard, increaseFontSize, decreaseFontSize]);
 
   // Cleanup: end session on unmount
   useEffect(() => {
@@ -587,7 +608,8 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
+                  <FontSizeControl />
                   <div className="text-right">
                     <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
                       {sessionStats.reviewed}/
@@ -633,6 +655,7 @@ export function StudyView({ onBack, initialDeckId }: StudyViewProps) {
               onFlip={handleCardFlip}
               currentStreak={sessionStats.streak}
               totalReviewed={sessionStats.reviewed}
+              fontSize={fontSize}
             />
           </div>
         )}

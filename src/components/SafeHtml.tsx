@@ -16,6 +16,7 @@ import { useMemo } from "react";
 interface SafeHtmlProps {
   html: string;
   className?: string;
+  style?: React.CSSProperties;
   allowedTags?: string[];
   allowedAttributes?: string[];
 }
@@ -23,6 +24,7 @@ interface SafeHtmlProps {
 export function SafeHtml({
   html,
   className,
+  style,
   allowedTags = [
     "h1",
     "h2",
@@ -61,6 +63,7 @@ export function SafeHtml({
   return (
     <div
       className={className}
+      style={style}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }} // skipcq: JS-0440
     />
   );

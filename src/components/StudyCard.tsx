@@ -13,6 +13,7 @@ interface StudyCardProps {
   onFlip?: () => void;
   currentStreak: number;
   totalReviewed: number;
+  fontSize?: number;
 }
 
 export default function StudyCard({
@@ -21,6 +22,7 @@ export default function StudyCard({
   onFlip,
   currentStreak,
   totalReviewed,
+  fontSize = 16,
 }: StudyCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showRating, setShowRating] = useState(false);
@@ -218,10 +220,14 @@ export default function StudyCard({
             {card.frontHtml ? (
               <SafeHtml
                 html={card.frontHtml}
-                className="text-lg text-ink dark:text-text-primary mb-4 anki-card-content"
+                className="text-ink dark:text-text-primary mb-4 anki-card-content"
+                style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
               />
             ) : (
-              <h3 className="text-3xl md:text-4xl font-bold text-ink dark:text-text-primary mb-4 whitespace-pre-line">
+              <h3
+                className="font-bold text-ink dark:text-text-primary mb-4 whitespace-pre-line"
+                style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
+              >
                 {card.front}
               </h3>
             )}
@@ -269,10 +275,14 @@ export default function StudyCard({
                 {card.backHtml ? (
                   <SafeHtml
                     html={card.backHtml}
-                    className="text-lg text-ink dark:text-text-primary mb-4 anki-card-content"
+                    className="text-ink dark:text-text-primary mb-4 anki-card-content"
+                    style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
                   />
                 ) : (
-                  <h3 className="text-3xl md:text-4xl font-bold text-ink dark:text-text-primary mb-4 whitespace-pre-line">
+                  <h3
+                    className="font-bold text-ink dark:text-text-primary mb-4 whitespace-pre-line"
+                    style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
+                  >
                     {card.back}
                   </h3>
                 )}
