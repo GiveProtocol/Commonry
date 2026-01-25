@@ -28,7 +28,7 @@ function EmptyState({ onBrowseDecks, onCreateCard }: { onBrowseDecks: () => void
           Welcome to Your Plot
         </h2>
         <p className="text-text-muted font-mono text-sm max-w-md mx-auto">
-          This is where you'll watch your knowledge grow.
+          This is where you&apos;ll watch your knowledge grow.
           Start by adding your first deck!
         </p>
       </div>

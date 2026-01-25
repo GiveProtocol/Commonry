@@ -91,7 +91,7 @@ export function TodaysFocus({
     >
       <div className="flex flex-col items-center text-center space-y-4">
         <span className="text-cyan text-sm font-medium font-mono uppercase tracking-wider">
-          Today's Focus
+          Today&apos;s Focus
         </span>
 
         {hasCards && dueCount > 0 ? (
