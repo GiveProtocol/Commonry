@@ -49,10 +49,15 @@ export function usePlotData(): PlotData & { refetch: () => void } {
   const [isLoading, setIsLoading] = useState(true);
   const [isLocalDataLoaded, setIsLocalDataLoaded] = useState(false);
   const [totalDueCards, setTotalDueCards] = useState(0);
-  const [deckWithMostDue, setDeckWithMostDue] = useState<DeckDueInfo | null>(null);
+  const [deckWithMostDue, setDeckWithMostDue] = useState<DeckDueInfo | null>(
+    null,
+  );
   const [statistics, setStatistics] = useState<PlotData["statistics"]>(null);
-  const [analyticsProfile, setAnalyticsProfile] = useState<AnalyticsProfile | null>(null);
-  const [achievements, setAchievements] = useState<UserAchievement[] | null>(null);
+  const [analyticsProfile, setAnalyticsProfile] =
+    useState<AnalyticsProfile | null>(null);
+  const [achievements, setAchievements] = useState<UserAchievement[] | null>(
+    null,
+  );
 
   // Load local data from IndexedDB
   const loadLocalData = useCallback(async () => {
@@ -90,75 +95,82 @@ export function usePlotData(): PlotData & { refetch: () => void } {
   }, []);
 
   // Load API data with caching
-  const loadApiData = useCallback(async (useCache = true) => {
-    if (!user) {
-      setIsLoading(false);
-      return;
-    }
-
-    // Check cache first
-    const cached = getCachedData();
-    if (useCache && isCacheValid(cached) && cached) {
-      setStatistics(cached.statistics);
-      setAnalyticsProfile(cached.analyticsProfile);
-      setAchievements(cached.achievements);
-      setIsLoading(false);
-      return;
-    }
-
-    // Show cached data immediately while fetching fresh data
-    if (cached) {
-      setStatistics(cached.statistics);
-      setAnalyticsProfile(cached.analyticsProfile);
-      setAchievements(cached.achievements);
-    }
-
-    try {
-      // Fetch all data in parallel with graceful failure handling
-      const [statsResult, profileResult, achievementsResult] = await Promise.allSettled([
-        api.getUserStatistics(user.id, "week"),
-        api.getAnalyticsProfile(user.id),
-        api.getUserAchievements(user.username),
-      ]);
-
-      // Process statistics
-      let newStats: PlotData["statistics"] = null;
-      if (statsResult.status === "fulfilled" && statsResult.value.data) {
-        const stats = statsResult.value.data.stats;
-        newStats = {
-          currentStreak: stats.current_streak || 0,
-          lastStudyDate: stats.last_study_date || null,
-          cardsStudiedThisWeek: stats.cards_studied || 0,
-        };
-        setStatistics(newStats);
+  const loadApiData = useCallback(
+    async (useCache = true) => {
+      if (!user) {
+        setIsLoading(false);
+        return;
       }
 
-      // Process analytics profile
-      let newProfile: AnalyticsProfile | null = null;
-      if (profileResult.status === "fulfilled" && profileResult.value.data) {
-        newProfile = profileResult.value.data;
-        setAnalyticsProfile(newProfile);
+      // Check cache first
+      const cached = getCachedData();
+      if (useCache && isCacheValid(cached) && cached) {
+        setStatistics(cached.statistics);
+        setAnalyticsProfile(cached.analyticsProfile);
+        setAchievements(cached.achievements);
+        setIsLoading(false);
+        return;
       }
 
-      // Process achievements
-      let newAchievements: UserAchievement[] | null = null;
-      if (achievementsResult.status === "fulfilled" && achievementsResult.value.data) {
-        newAchievements = achievementsResult.value.data.achievements;
-        setAchievements(newAchievements);
+      // Show cached data immediately while fetching fresh data
+      if (cached) {
+        setStatistics(cached.statistics);
+        setAnalyticsProfile(cached.analyticsProfile);
+        setAchievements(cached.achievements);
       }
 
-      // Update cache
-      setCachedData({
-        statistics: newStats,
-        analyticsProfile: newProfile,
-        achievements: newAchievements,
-      });
-    } catch (error) {
-      console.error("[usePlotData] Error loading API data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
+      try {
+        // Fetch all data in parallel with graceful failure handling
+        const [statsResult, profileResult, achievementsResult] =
+          await Promise.allSettled([
+            api.getUserStatistics(user.id, "week"),
+            api.getAnalyticsProfile(user.id),
+            api.getUserAchievements(user.username),
+          ]);
+
+        // Process statistics
+        let newStats: PlotData["statistics"] = null;
+        if (statsResult.status === "fulfilled" && statsResult.value.data) {
+          const stats = statsResult.value.data.stats;
+          newStats = {
+            currentStreak: stats.current_streak || 0,
+            lastStudyDate: stats.last_study_date || null,
+            cardsStudiedThisWeek: stats.cards_studied || 0,
+          };
+          setStatistics(newStats);
+        }
+
+        // Process analytics profile
+        let newProfile: AnalyticsProfile | null = null;
+        if (profileResult.status === "fulfilled" && profileResult.value.data) {
+          newProfile = profileResult.value.data;
+          setAnalyticsProfile(newProfile);
+        }
+
+        // Process achievements
+        let newAchievements: UserAchievement[] | null = null;
+        if (
+          achievementsResult.status === "fulfilled" &&
+          achievementsResult.value.data
+        ) {
+          newAchievements = achievementsResult.value.data.achievements;
+          setAchievements(newAchievements);
+        }
+
+        // Update cache
+        setCachedData({
+          statistics: newStats,
+          analyticsProfile: newProfile,
+          achievements: newAchievements,
+        });
+      } catch (error) {
+        console.error("[usePlotData] Error loading API data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [user],
+  );
 
   // Refetch function for manual refresh
   const refetch = useCallback(() => {

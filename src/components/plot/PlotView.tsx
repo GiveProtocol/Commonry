@@ -9,14 +9,29 @@ import { PersonalInsight } from "./components/PersonalInsight";
 import { MilestoneProgress } from "./components/MilestoneProgress";
 import { PlotSkeleton } from "./components/PlotSkeleton";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "plot"
+  | "stats"
+  | "square"
+  | "profile";
 
 interface PlotViewProps {
   onBack: () => void;
   onNavigate: (view: View, slug?: string) => void;
 }
 
-function EmptyState({ onBrowseDecks, onCreateCard }: { onBrowseDecks: () => void; onCreateCard: () => void }) {
+function EmptyState({
+  onBrowseDecks,
+  onCreateCard,
+}: {
+  onBrowseDecks: () => void;
+  onCreateCard: () => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -28,8 +43,8 @@ function EmptyState({ onBrowseDecks, onCreateCard }: { onBrowseDecks: () => void
           Welcome to Your Plot
         </h2>
         <p className="text-text-muted font-mono text-sm max-w-md mx-auto">
-          This is where you'll watch your knowledge grow.
-          Start by adding your first deck!
+          This is where you'll watch your knowledge grow. Start by adding your
+          first deck!
         </p>
       </div>
 
@@ -92,7 +107,8 @@ export function PlotView({ onBack, onNavigate }: PlotViewProps) {
   }
 
   // Check if user is new (no cards, no study history)
-  const hasCards = plotData.totalDueCards > 0 || plotData.deckWithMostDue !== null;
+  const hasCards =
+    plotData.totalDueCards > 0 || plotData.deckWithMostDue !== null;
   const hasStudyHistory = plotData.statistics?.lastStudyDate !== null;
   const isNewUser = !hasCards && !hasStudyHistory;
 
@@ -126,7 +142,10 @@ export function PlotView({ onBack, onNavigate }: PlotViewProps) {
 
       <div className="p-8 max-w-4xl mx-auto space-y-8">
         {isNewUser ? (
-          <EmptyState onBrowseDecks={handleNavigateCommons} onCreateCard={handleBrowseDecks} />
+          <EmptyState
+            onBrowseDecks={handleNavigateCommons}
+            onCreateCard={handleBrowseDecks}
+          />
         ) : (
           <>
             {/* Greeting */}

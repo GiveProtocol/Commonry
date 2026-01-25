@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import { getTimeOfDay, getGreeting, getSubMessage, isNewUser } from "../utils/greetingCopy";
+import {
+  getTimeOfDay,
+  getGreeting,
+  getSubMessage,
+  isNewUser,
+} from "../utils/greetingCopy";
 import { GreetingContext } from "../types";
 import { PlotGreetingSkeleton } from "./PlotSkeleton";
 

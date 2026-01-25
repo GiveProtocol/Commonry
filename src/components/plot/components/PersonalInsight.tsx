@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { InsightData } from "../types";
-import { generateInsights, getDailyInsight, getDayOfYear } from "../utils/insightGenerators";
+import {
+  generateInsights,
+  getDailyInsight,
+  getDayOfYear,
+} from "../utils/insightGenerators";
 
 interface PersonalInsightProps {
   weeklyMastered: number;
