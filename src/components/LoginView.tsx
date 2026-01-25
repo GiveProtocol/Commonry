@@ -1,9 +1,15 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
 import { TerminalBorder } from "./ui/TerminalBorder";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+// Check if we're returning from Discourse SSO
+function getSsoReturnParam(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("sso_return") === "true";
+}
 
 interface LoginViewProps {
   onSwitchToSignup: () => void;
@@ -19,6 +25,12 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
+  const [ssoReturn, setSsoReturn] = useState(false);
+
+  // Check for SSO return on mount
+  useEffect(() => {
+    setSsoReturn(getSsoReturnParam());
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -36,11 +48,43 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
           setEmailNotVerified(true);
           setUnverifiedEmail(result.email);
         }
+        setIsLoading(false);
+        return;
+      }
+
+      // If we're returning from Discourse SSO, complete the flow
+      if (ssoReturn && result.token) {
+        try {
+          const ssoResponse = await fetch(
+            `${API_BASE_URL}/api/discourse/complete-sso`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${result.token}`,
+              },
+              credentials: "include",
+            },
+          );
+
+          const ssoData = await ssoResponse.json();
+
+          if (ssoResponse.ok && ssoData.redirectUrl) {
+            // Redirect to Discourse with SSO payload
+            window.location.href = ssoData.redirectUrl;
+            return;
+          } else {
+            console.error("SSO completion failed:", ssoData.error);
+            // Login succeeded, but SSO failed - still logged in to Commonry
+          }
+        } catch (ssoError) {
+          console.error("SSO completion error:", ssoError);
+        }
       }
 
       setIsLoading(false);
     },
-    [login, username, password],
+    [login, username, password, ssoReturn],
   );
 
   const handleResendVerification = useCallback(async () => {

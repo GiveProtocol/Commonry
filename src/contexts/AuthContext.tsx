@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.data.user);
       setToken(response.data.token);
       api.setToken(response.data.token);
-      return {};
+      return { token: response.data.token };
     }
 
     return { error: "Login failed" };

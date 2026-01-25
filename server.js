@@ -680,6 +680,63 @@ app.post("/api/discourse/prepare-sso", authenticateToken, (req, res) => {
 });
 
 /**
+ * Complete pending SSO after login
+ * Called by frontend after user logs in with sso_return=true
+ */
+app.post("/api/discourse/complete-sso", authenticateToken, async (req, res) => {
+  try {
+    // Store user ID in session
+    req.session.userId = req.userId;
+
+    // Check if there's a pending SSO request
+    const pendingSso = req.session.pendingSso;
+    if (!pendingSso || !pendingSso.sso || !pendingSso.sig) {
+      return res.status(400).json({ error: "No pending SSO request" });
+    }
+
+    // Get user profile
+    const userResult = await pool.query(
+      `SELECT user_id, username, email, display_name, avatar_url, bio, email_verified
+       FROM users
+       WHERE user_id = $1 AND is_active = true`,
+      [req.userId],
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+
+    if (!user.email_verified) {
+      return res.status(403).json({ error: "Email not verified" });
+    }
+
+    // Process SSO
+    const ssoResult = handleDiscourseSSORequest(
+      pendingSso.sso,
+      pendingSso.sig,
+      user,
+      DISCOURSE_SSO_SECRET,
+    );
+
+    if (!ssoResult) {
+      return res.status(400).json({ error: "Invalid SSO request" });
+    }
+
+    // Clear pending SSO
+    delete req.session.pendingSso;
+    req.session.save();
+
+    console.log(`[SSO] Completed pending SSO for user: ${sanitizeForLog(user.username)}`);
+    return res.json({ redirectUrl: ssoResult.redirectUrl });
+  } catch (error) {
+    console.error("Complete SSO error:", error);
+    res.status(500).json({ error: "Failed to complete SSO" });
+  }
+});
+
+/**
  * Discourse SSO (DiscourseConnect) Endpoint
  *
  * This endpoint handles Single Sign-On requests from Discourse forum.
@@ -708,10 +765,18 @@ app.get("/api/discourse/sso", async (req, res) => {
   const userId = req.session.userId;
 
   if (!userId) {
-    console.log("[SSO] No userId in session - authentication failed");
-    return res.status(401).json({
-      error: "Not authenticated. Please log in to Commonry first.",
+    console.log("[SSO] No userId in session - redirecting to login");
+    // Store SSO params in session so we can complete the flow after login
+    req.session.pendingSso = { sso, sig };
+    req.session.save((err) => {
+      if (err) {
+        console.error("[SSO] Failed to save session:", err);
+      }
+      // Redirect to frontend login page with SSO return flag
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      return res.redirect(`${frontendUrl}/login?sso_return=true`);
     });
+    return;
   }
 
   // Validate required parameters
