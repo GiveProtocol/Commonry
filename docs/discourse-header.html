@@ -1,25 +1,37 @@
-<script type="text/discourse-plugin" version="0.12.1">
-  api.onPageChange(() => {
-    // Detect dark mode and apply class to html element
-    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  });
+<!--
+  DARK MODE DETECTION
 
-  // Listen for dark mode changes
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (e.matches) {
+  The JavaScript for dark mode detection must be added to the theme's JS tab
+  (not inline here) due to Discourse deprecating <script type="text/discourse-plugin">.
+
+  In Discourse admin, go to: Customize → Themes → [Your Theme] → Edit CSS/HTML → JS tab
+  Then paste:
+
+  import { apiInitializer } from "discourse/lib/api";
+
+  export default apiInitializer("0.12.1", (api) => {
+    api.onPageChange(() => {
+      const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDarkMode) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
     });
-  }
-</script>
+
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      });
+    }
+  });
+
+  See: https://meta.discourse.org/t/modernizing-inline-script-tags-for-templates-js-api/366482
+-->
 
 <!-- Commonry Shared Navigation -->
 <nav class="commonry-nav" role="navigation" aria-label="Main navigation">
