@@ -154,6 +154,19 @@ class ApiService {
     });
   }
 
+  // ==================== ANALYTICS ENDPOINTS ====================
+
+  /**
+   * Fetches the analytics learning profile for a user.
+   * @param userId - The ID of the user.
+   * @returns A promise resolving to the user's learning profile.
+   */
+  async getAnalyticsProfile(userId: string) {
+    return this.request<AnalyticsProfile>(
+      `/api/analytics/users/${userId}/profile`,
+    );
+  }
+
   // ==================== STUDY SESSION ENDPOINTS ====================
 
   async recordStudySession(session: {
@@ -845,6 +858,44 @@ export interface FollowUser {
   displayName: string;
   avatarUrl?: string;
   followedAt: string;
+}
+
+// ==================== ANALYTICS TYPES ====================
+
+export interface AnalyticsProfile {
+  velocity: {
+    currentWeekMastered: number;
+    newCardsLearned: number;
+    totalReviews: number;
+    trend: 'accelerating' | 'stable' | 'decelerating' | null;
+    rolling4WeekAvg: number;
+    monthOverMonthChangePct: number | null;
+  } | null;
+  patterns: {
+    preferredHour: number | null;
+    preferredDay: string | null;
+    activeHours: number[];
+    avgSessionMinutes: number;
+    avgCardsPerSession: number;
+    consistencyRatio: number;
+    totalStudyDays: number;
+    totalSessions: number;
+    sessionStyle: string | null;
+    learnerType: string | null;
+    deviceBreakdown: {
+      mobile: number;
+      desktop: number;
+      tablet: number;
+    };
+  } | null;
+  struggleMetrics: {
+    totalStrugglingCards: number;
+    highFailRateCards: number;
+    repeatedLapseCards: number;
+    gettingWorseCards: number;
+    slowRecallCards: number;
+    avgStruggleScore: number | null;
+  };
 }
 
 // ==================== BROWSE TYPES ====================

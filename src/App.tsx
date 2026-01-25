@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { StudyView } from "./components/StudyView";
 import { DeckBrowser } from "./components/DeckBrowser";
 import { StatsView } from "./components/StatsView";
+import { PlotView } from "./components/plot";
 import { ProfileView } from "./components/ProfileView";
 import { SquareView } from "./components/SquareView";
 import { Footer } from "./components/Footer";
@@ -18,7 +19,7 @@ import { DeckId } from "./types/ids";
 import ProtectedView from "./components/ProtectedView";
 import { syncService } from "./services/sync-service";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "stats" | "square" | "profile";
+type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
 
 /**
  * Get the initial view from the URL path
@@ -30,6 +31,7 @@ const getInitialView = (): { view: View; categorySlug?: string } => {
     "study",
     "browse",
     "commons",
+    "plot",
     "stats",
     "square",
     "profile",
@@ -194,6 +196,12 @@ function App() {
             onBack={navigateToHome}
             onCategorySelect={navigateToCategory}
           />
+        );
+      case "plot":
+        return (
+          <ProtectedView>
+            <PlotView onBack={navigateToHome} onNavigate={navigate} />
+          </ProtectedView>
         );
       case "stats":
         return (

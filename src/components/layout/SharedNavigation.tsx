@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import { SyncStatusIndicator } from "../SyncStatusIndicator";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "stats" | "square" | "profile";
+type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
 
 interface NavigationProps {
   currentView?: View;
@@ -55,14 +55,14 @@ export function SharedNavigation({
   const navItems = useMemo(
     () => [
       {
-        view: "study",
+        view: "plot",
         label: "Your Plot",
-        url: "https://commonry.app/study",
-        ariaLabel: "Navigate to Your Plot - Personal study area",
+        url: "https://commonry.app/plot",
+        ariaLabel: "Navigate to Your Plot - Personal dashboard",
         onClick: () =>
           handleNavigate(
-            "study",
-            isExternal ? "https://commonry.app/study" : undefined,
+            "plot",
+            isExternal ? "https://commonry.app/plot" : undefined,
           ),
       },
       {
@@ -90,12 +90,12 @@ export function SharedNavigation({
       {
         view: "square",
         label: "The Square",
-        url: "https://forum.commonry.app",
+        url: "https://forum.commonry.app/session/sso",
         ariaLabel: "Navigate to The Square - Community forum",
         onClick: () =>
           handleNavigate(
             "square",
-            isExternal ? "https://forum.commonry.app" : undefined,
+            isExternal ? "https://forum.commonry.app/session/sso" : undefined,
           ),
       },
       {
@@ -223,13 +223,13 @@ export function MobileNavigation({
   const navItems = useMemo(
     () => [
       {
-        view: "study",
+        view: "plot",
         label: "Your Plot",
-        url: "https://commonry.app/study",
+        url: "https://commonry.app/plot",
         onClick: () =>
           handleNavigate(
-            "study",
-            isExternal ? "https://commonry.app/study" : undefined,
+            "plot",
+            isExternal ? "https://commonry.app/plot" : undefined,
           ),
       },
       {
@@ -255,11 +255,11 @@ export function MobileNavigation({
       {
         view: "square",
         label: "The Square",
-        url: "https://forum.commonry.app",
+        url: "https://forum.commonry.app/session/sso",
         onClick: () =>
           handleNavigate(
             "square",
-            isExternal ? "https://forum.commonry.app" : undefined,
+            isExternal ? "https://forum.commonry.app/session/sso" : undefined,
           ),
       },
       {
