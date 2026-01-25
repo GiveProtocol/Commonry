@@ -11,7 +11,10 @@ interface TodaysFocusProps {
   onBrowseDecks: () => void;
 }
 
-function getMessageForDueCount(dueCount: number, hasCards: boolean): { message: string; cta: string; ctaType: "study" | "browse" } {
+function getMessageForDueCount(
+  dueCount: number,
+  hasCards: boolean,
+): { message: string; cta: string; ctaType: "study" | "browse" } {
   if (!hasCards) {
     return {
       message: "Ready to plant your first seeds?",
