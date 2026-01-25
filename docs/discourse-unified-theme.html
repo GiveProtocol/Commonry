@@ -20,386 +20,392 @@
 
 <!-- ========== CSS - Paste into "CSS" tab (Common) ========== -->
 <style>
-/* ===== COMMONRY UNIFIED NAVIGATION STYLES ===== */
+  /* ===== COMMONRY UNIFIED NAVIGATION STYLES ===== */
 
-/* Import IBM Plex fonts */
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
+  /* Import IBM Plex fonts */
+  @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
 
-/* CSS Variables for theme colors */
-:root {
-  /* Light mode */
-  --commonry-bg: #fafaf9;
-  --commonry-surface: #f5f5f4;
-  --commonry-primary: #00a86b;
-  --commonry-primary-dark: #008055;
-  --commonry-text: #1c1917;
-  --commonry-text-muted: #44403c;
-  --commonry-border: #d6d3d1;
-  --commonry-glow: rgba(0, 168, 107, 0.3);
-  --commonry-glow-strong: rgba(0, 168, 107, 0.5);
-}
-
-html.dark-scheme,
-html[data-theme="dark"],
-.dark {
-  --commonry-bg: #0d1117;
-  --commonry-surface: #161b22;
-  --commonry-primary: #00d9ff;
-  --commonry-primary-dark: #0891b2;
-  --commonry-text: #c9d1d9;
-  --commonry-text-muted: #8b949e;
-  --commonry-border: #30363d;
-  --commonry-glow: rgba(0, 217, 255, 0.3);
-  --commonry-glow-strong: rgba(0, 217, 255, 0.6);
-}
-
-/* Hide Discourse's native header but keep functionality accessible */
-.d-header {
-  position: fixed !important;
-  top: 0 !important;
-  right: 0 !important;
-  left: auto !important;
-  width: auto !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  z-index: 1001 !important;
-  height: auto !important;
-  min-height: 0 !important;
-}
-
-/* Hide header background/logo but keep user menu */
-.d-header .wrap {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.5rem 1rem;
-}
-
-.d-header .title,
-.d-header .header-sidebar-toggle,
-.d-header .before-header-panel-outlet,
-.d-header .auth-buttons {
-  display: none !important;
-}
-
-/* Style the user menu to match Commonry */
-.d-header .panel {
-  display: flex !important;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.d-header .icons {
-  display: flex !important;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.d-header .icon {
-  background: var(--commonry-surface) !important;
-  border: 1px solid var(--commonry-border) !important;
-  border-radius: 0.375rem !important;
-  padding: 0.5rem !important;
-  color: var(--commonry-text-muted) !important;
-  transition: all 0.2s !important;
-}
-
-.d-header .icon:hover {
-  color: var(--commonry-primary) !important;
-  border-color: var(--commonry-primary) !important;
-  box-shadow: 0 0 10px var(--commonry-glow) !important;
-}
-
-.d-header .icon .d-icon {
-  color: inherit !important;
-}
-
-/* Search button styling */
-.d-header #search-button {
-  background: var(--commonry-surface) !important;
-  border: 1px solid var(--commonry-border) !important;
-  color: var(--commonry-text-muted) !important;
-}
-
-.d-header #search-button:hover {
-  color: var(--commonry-primary) !important;
-  border-color: var(--commonry-primary) !important;
-}
-
-/* User avatar */
-.d-header .current-user .avatar {
-  border: 2px solid var(--commonry-border) !important;
-  transition: border-color 0.2s !important;
-}
-
-.d-header .current-user:hover .avatar {
-  border-color: var(--commonry-primary) !important;
-}
-
-/* Notification badges */
-.d-header .ring,
-.d-header .badge-notification {
-  background: var(--commonry-primary) !important;
-}
-
-/* ===== COMMONRY NAVIGATION BAR ===== */
-#commonry-nav {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background-color: var(--commonry-bg);
-  border-bottom: 2px solid var(--commonry-primary);
-  box-shadow: 0 0 20px var(--commonry-glow);
-  font-family: "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
-}
-
-#commonry-nav-inner {
-  padding: 1rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Logo */
-#commonry-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-#commonry-logo:hover {
-  opacity: 0.8;
-}
-
-#commonry-logo-icon {
-  font-size: 2.5rem;
-  line-height: 1;
-}
-
-#commonry-logo-text {
-  font-family: "IBM Plex Mono", monospace;
-}
-
-#commonry-logo-prompt {
-  font-size: 0.75rem;
-  color: var(--commonry-text-muted);
-  line-height: 1;
-}
-
-#commonry-logo-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--commonry-primary);
-  transition: text-shadow 0.2s;
-}
-
-#commonry-logo:hover #commonry-logo-name {
-  text-shadow: 0 0 15px var(--commonry-glow-strong);
-}
-
-/* Navigation links container */
-#commonry-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  font-size: 0.875rem;
-}
-
-/* Navigation link base styles */
-.commonry-nav-link {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: none;
-  color: var(--commonry-text-muted);
-  transition: all 0.2s;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.875rem;
-}
-
-.commonry-nav-link:hover {
-  color: var(--commonry-primary);
-  text-shadow: 0 0 8px currentColor;
-}
-
-/* Active link */
-.commonry-nav-link.active {
-  color: var(--commonry-primary);
-  font-weight: 700;
-  text-shadow: 0 0 15px var(--commonry-glow-strong);
-}
-
-/* Separator */
-.commonry-nav-separator {
-  color: var(--commonry-text-muted);
-}
-
-/* Focus styles */
-.commonry-nav-link:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--commonry-primary);
-}
-
-/* ===== MOBILE NAVIGATION ===== */
-#commonry-mobile-nav {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  #commonry-nav-links {
-    display: none;
+  /* CSS Variables for theme colors */
+  :root {
+    /* Light mode */
+    --commonry-bg: #fafaf9;
+    --commonry-surface: #f5f5f4;
+    --commonry-primary: #00a86b;
+    --commonry-primary-dark: #008055;
+    --commonry-text: #1c1917;
+    --commonry-text-muted: #44403c;
+    --commonry-border: #d6d3d1;
+    --commonry-glow: rgba(0, 168, 107, 0.3);
+    --commonry-glow-strong: rgba(0, 168, 107, 0.5);
   }
 
-  #commonry-mobile-nav {
-    display: block;
+  html.dark-scheme,
+  html[data-theme="dark"],
+  .dark {
+    --commonry-bg: #0d1117;
+    --commonry-surface: #161b22;
+    --commonry-primary: #00d9ff;
+    --commonry-primary-dark: #0891b2;
+    --commonry-text: #c9d1d9;
+    --commonry-text-muted: #8b949e;
+    --commonry-border: #30363d;
+    --commonry-glow: rgba(0, 217, 255, 0.3);
+    --commonry-glow-strong: rgba(0, 217, 255, 0.6);
   }
 
-  #commonry-nav-inner {
-    position: relative;
-    padding: 0.75rem 1rem;
+  /* Hide Discourse's native header but keep functionality accessible */
+  .d-header {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: auto !important;
+    width: auto !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 1001 !important;
+    height: auto !important;
+    min-height: 0 !important;
   }
 
-  #commonry-logo {
-    margin-bottom: 0;
-  }
-
-  #commonry-logo-icon {
-    font-size: 1.75rem;
-  }
-
-  #commonry-logo-prompt {
-    display: none;
-  }
-
-  #commonry-logo-name {
-    font-size: 1.25rem;
-  }
-
-  #commonry-mobile-toggle {
-    position: absolute;
-    top: 0.75rem;
-    right: 1rem;
-    background: transparent;
-    border: none;
-    color: var(--commonry-primary);
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s;
-  }
-
-  #commonry-mobile-toggle:hover {
-    background-color: var(--commonry-surface);
-  }
-
-  #commonry-mobile-toggle svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-
-  #commonry-mobile-menu {
-    margin-top: 1rem;
-    display: none;
-  }
-
-  #commonry-mobile-menu.open {
+  /* Hide header background/logo but keep user menu */
+  .d-header .wrap {
     display: flex;
-    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0.5rem 1rem;
+  }
+
+  .d-header .title,
+  .d-header .header-sidebar-toggle,
+  .d-header .before-header-panel-outlet,
+  .d-header .auth-buttons {
+    display: none !important;
+  }
+
+  /* Style the user menu to match Commonry */
+  .d-header .panel {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .d-header .icons {
+    display: flex !important;
+    align-items: center;
     gap: 0.25rem;
   }
 
-  #commonry-mobile-menu .commonry-nav-link {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-  }
-
-  #commonry-mobile-menu .commonry-nav-link:hover,
-  #commonry-mobile-menu .commonry-nav-link.active {
-    background-color: var(--commonry-surface);
-  }
-
-  /* Adjust Discourse user menu on mobile */
-  .d-header {
-    top: auto !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
+  .d-header .icon {
     background: var(--commonry-surface) !important;
-    border-top: 1px solid var(--commonry-border) !important;
+    border: 1px solid var(--commonry-border) !important;
+    border-radius: 0.375rem !important;
     padding: 0.5rem !important;
+    color: var(--commonry-text-muted) !important;
+    transition: all 0.2s !important;
   }
 
-  .d-header .wrap {
-    justify-content: center;
+  .d-header .icon:hover {
+    color: var(--commonry-primary) !important;
+    border-color: var(--commonry-primary) !important;
+    box-shadow: 0 0 10px var(--commonry-glow) !important;
   }
-}
 
-/* ===== DISCOURSE CONTENT ADJUSTMENTS ===== */
+  .d-header .icon .d-icon {
+    color: inherit !important;
+  }
 
-/* Remove top padding since we have our own header */
-#main-outlet {
-  padding-top: 1rem !important;
-}
+  /* Search button styling */
+  .d-header #search-button {
+    background: var(--commonry-surface) !important;
+    border: 1px solid var(--commonry-border) !important;
+    color: var(--commonry-text-muted) !important;
+  }
 
-/* Ensure body has correct background */
-body {
-  background-color: var(--commonry-bg) !important;
-}
+  .d-header #search-button:hover {
+    color: var(--commonry-primary) !important;
+    border-color: var(--commonry-primary) !important;
+  }
 
-/* Style Discourse elements to match Commonry theme */
-.topic-list-item,
-.topic-body,
-.post-stream .topic-post {
-  border-color: var(--commonry-border) !important;
-}
+  /* User avatar */
+  .d-header .current-user .avatar {
+    border: 2px solid var(--commonry-border) !important;
+    transition: border-color 0.2s !important;
+  }
 
-/* Category badges */
-.badge-category {
-  font-family: "IBM Plex Mono", monospace !important;
-}
+  .d-header .current-user:hover .avatar {
+    border-color: var(--commonry-primary) !important;
+  }
 
-/* Buttons */
-.btn-primary {
-  background-color: var(--commonry-primary) !important;
-  border-color: var(--commonry-primary) !important;
-}
+  /* Notification badges */
+  .d-header .ring,
+  .d-header .badge-notification {
+    background: var(--commonry-primary) !important;
+  }
 
-.btn-primary:hover {
-  background-color: var(--commonry-primary-dark) !important;
-  box-shadow: 0 0 15px var(--commonry-glow) !important;
-}
+  /* ===== COMMONRY NAVIGATION BAR ===== */
+  #commonry-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--commonry-bg);
+    border-bottom: 2px solid var(--commonry-primary);
+    box-shadow: 0 0 20px var(--commonry-glow);
+    font-family: "IBM Plex Mono", "Menlo", "Monaco", "Courier New", monospace;
+  }
 
-/* Links */
-a {
-  color: var(--commonry-primary);
-}
+  #commonry-nav-inner {
+    padding: 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 
-a:hover {
-  color: var(--commonry-primary-dark);
-}
+  /* Logo */
+  #commonry-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
 
-/* Topic titles */
-.topic-list .topic-title,
-.fancy-title {
-  font-family: "IBM Plex Sans", sans-serif !important;
-}
+  #commonry-logo:hover {
+    opacity: 0.8;
+  }
+
+  #commonry-logo-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  #commonry-logo-text {
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  #commonry-logo-prompt {
+    font-size: 0.75rem;
+    color: var(--commonry-text-muted);
+    line-height: 1;
+  }
+
+  #commonry-logo-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--commonry-primary);
+    transition: text-shadow 0.2s;
+  }
+
+  #commonry-logo:hover #commonry-logo-name {
+    text-shadow: 0 0 15px var(--commonry-glow-strong);
+  }
+
+  /* Navigation links container */
+  #commonry-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Navigation link base styles */
+  .commonry-nav-link {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    color: var(--commonry-text-muted);
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.875rem;
+  }
+
+  .commonry-nav-link:hover {
+    color: var(--commonry-primary);
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  /* Active link */
+  .commonry-nav-link.active {
+    color: var(--commonry-primary);
+    font-weight: 700;
+    text-shadow: 0 0 15px var(--commonry-glow-strong);
+  }
+
+  /* Separator */
+  .commonry-nav-separator {
+    color: var(--commonry-text-muted);
+  }
+
+  /* Focus styles */
+  .commonry-nav-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--commonry-primary);
+  }
+
+  /* ===== MOBILE NAVIGATION ===== */
+  #commonry-mobile-nav {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    #commonry-nav-links {
+      display: none;
+    }
+
+    #commonry-mobile-nav {
+      display: block;
+    }
+
+    #commonry-nav-inner {
+      position: relative;
+      padding: 0.75rem 1rem;
+    }
+
+    #commonry-logo {
+      margin-bottom: 0;
+    }
+
+    #commonry-logo-icon {
+      font-size: 1.75rem;
+    }
+
+    #commonry-logo-prompt {
+      display: none;
+    }
+
+    #commonry-logo-name {
+      font-size: 1.25rem;
+    }
+
+    #commonry-mobile-toggle {
+      position: absolute;
+      top: 0.75rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--commonry-primary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+
+    #commonry-mobile-toggle:hover {
+      background-color: var(--commonry-surface);
+    }
+
+    #commonry-mobile-toggle svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    #commonry-mobile-menu {
+      margin-top: 1rem;
+      display: none;
+    }
+
+    #commonry-mobile-menu.open {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    #commonry-mobile-menu .commonry-nav-link {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+    }
+
+    #commonry-mobile-menu .commonry-nav-link:hover,
+    #commonry-mobile-menu .commonry-nav-link.active {
+      background-color: var(--commonry-surface);
+    }
+
+    /* Adjust Discourse user menu on mobile */
+    .d-header {
+      top: auto !important;
+      bottom: 0 !important;
+      right: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      background: var(--commonry-surface) !important;
+      border-top: 1px solid var(--commonry-border) !important;
+      padding: 0.5rem !important;
+    }
+
+    .d-header .wrap {
+      justify-content: center;
+    }
+  }
+
+  /* ===== DISCOURSE CONTENT ADJUSTMENTS ===== */
+
+  /* Remove top padding since we have our own header */
+  #main-outlet {
+    padding-top: 1rem !important;
+  }
+
+  /* Ensure body has correct background */
+  body {
+    background-color: var(--commonry-bg) !important;
+  }
+
+  /* Style Discourse elements to match Commonry theme */
+  .topic-list-item,
+  .topic-body,
+  .post-stream .topic-post {
+    border-color: var(--commonry-border) !important;
+  }
+
+  /* Category badges */
+  .badge-category {
+    font-family: "IBM Plex Mono", monospace !important;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    background-color: var(--commonry-primary) !important;
+    border-color: var(--commonry-primary) !important;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--commonry-primary-dark) !important;
+    box-shadow: 0 0 15px var(--commonry-glow) !important;
+  }
+
+  /* Links */
+  a {
+    color: var(--commonry-primary);
+  }
+
+  a:hover {
+    color: var(--commonry-primary-dark);
+  }
+
+  /* Topic titles */
+  .topic-list .topic-title,
+  .fancy-title {
+    font-family: "IBM Plex Sans", sans-serif !important;
+  }
 </style>
 
 <!-- ========== HEADER HTML - Paste into "Header" tab ========== -->
 <nav id="commonry-nav" role="navigation" aria-label="Main navigation">
   <div id="commonry-nav-inner">
     <!-- Logo -->
-    <a href="https://commonry.app" id="commonry-logo" aria-label="COMMONRY - Go to home">
-      <div id="commonry-logo-icon" role="img" aria-label="Commonry logo">🏛️</div>
+    <a
+      href="https://commonry.app"
+      id="commonry-logo"
+      aria-label="COMMONRY - Go to home"
+    >
+      <div id="commonry-logo-icon" role="img" aria-label="Commonry logo">
+        🏛️
+      </div>
       <div id="commonry-logo-text">
         <div id="commonry-logo-prompt" aria-hidden="true">$ cd ~</div>
         <div id="commonry-logo-name">COMMONRY</div>
@@ -408,44 +414,105 @@ a:hover {
 
     <!-- Desktop Navigation -->
     <div id="commonry-nav-links" role="menubar">
-      <a href="https://commonry.app/plot" class="commonry-nav-link" role="menuitem" aria-label="[Your Plot] - Personal dashboard">
+      <a
+        href="https://commonry.app/plot"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="[Your Plot] - Personal dashboard"
+      >
         [Your Plot]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="https://commonry.app/browse" class="commonry-nav-link" role="menuitem" aria-label="[My Decks] - Manage your decks">
+      <a
+        href="https://commonry.app/browse"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="[My Decks] - Manage your decks"
+      >
         [My Decks]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="https://commonry.app/commons" class="commonry-nav-link" role="menuitem" aria-label="[The Commons] - Browse public decks">
+      <a
+        href="https://commonry.app/commons"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="[The Commons] - Browse public decks"
+      >
         [The Commons]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="/" class="commonry-nav-link active" role="menuitem" aria-current="page" aria-label="[The Square] - Community forum">
+      <a
+        href="/"
+        class="commonry-nav-link active"
+        role="menuitem"
+        aria-current="page"
+        aria-label="[The Square] - Community forum"
+      >
         [The Square]
       </a>
       <span class="commonry-nav-separator" aria-hidden="true">|</span>
-      <a href="https://commonry.app/profile" class="commonry-nav-link" role="menuitem" aria-label="[Profile] - Your account">
+      <a
+        href="https://commonry.app/profile"
+        class="commonry-nav-link"
+        role="menuitem"
+        aria-label="[Profile] - Your account"
+      >
         [Profile]
       </a>
     </div>
 
     <!-- Mobile Navigation -->
     <div id="commonry-mobile-nav">
-      <button id="commonry-mobile-toggle" aria-label="Open menu" aria-expanded="false">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" id="commonry-hamburger-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      <button
+        id="commonry-mobile-toggle"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          id="commonry-hamburger-icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
         </svg>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" id="commonry-close-icon" style="display: none;">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          id="commonry-close-icon"
+          style="display: none"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
         </svg>
       </button>
 
       <div id="commonry-mobile-menu">
-        <a href="https://commonry.app/plot" class="commonry-nav-link">[Your Plot]</a>
-        <a href="https://commonry.app/browse" class="commonry-nav-link">[My Decks]</a>
-        <a href="https://commonry.app/commons" class="commonry-nav-link">[The Commons]</a>
-        <a href="/" class="commonry-nav-link active" aria-current="page">[The Square]</a>
-        <a href="https://commonry.app/profile" class="commonry-nav-link">[Profile]</a>
+        <a href="https://commonry.app/plot" class="commonry-nav-link"
+          >[Your Plot]</a
+        >
+        <a href="https://commonry.app/browse" class="commonry-nav-link"
+          >[My Decks]</a
+        >
+        <a href="https://commonry.app/commons" class="commonry-nav-link"
+          >[The Commons]</a
+        >
+        <a href="/" class="commonry-nav-link active" aria-current="page"
+          >[The Square]</a
+        >
+        <a href="https://commonry.app/profile" class="commonry-nav-link"
+          >[Profile]</a
+        >
       </div>
     </div>
   </div>
