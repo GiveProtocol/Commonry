@@ -728,7 +728,9 @@ app.post("/api/discourse/complete-sso", authenticateToken, async (req, res) => {
     delete req.session.pendingSso;
     req.session.save();
 
-    console.log(`[SSO] Completed pending SSO for user: ${sanitizeForLog(user.username)}`);
+    console.log(
+      `[SSO] Completed pending SSO for user: ${sanitizeForLog(user.username)}`,
+    );
     return res.json({ redirectUrl: ssoResult.redirectUrl });
   } catch (error) {
     console.error("Complete SSO error:", error);
