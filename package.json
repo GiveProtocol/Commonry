@@ -49,7 +49,7 @@
     "pg": "^8.17.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "recharts": "^3.5.1",
+    "recharts": "^3.7.0",
     "sql.js": "^1.13.0",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^3.4.0",
