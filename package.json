@@ -36,7 +36,7 @@
     "dompurify": "^3.3.1",
     "dotenv": "^17.2.3",
     "express-rate-limit": "^8.2.1",
-    "express-session": "1.18.2",
+    "express-session": "1.19.0",
     "framer-motion": "^12.29.0",
     "fuse.js": "^7.1.0",
     "fzstd": "^0.1.1",
