@@ -11,6 +11,53 @@ interface NavigationProps {
   isExternal?: boolean;
 }
 
+const NAV_ITEMS_CONFIG = [
+  { view: "plot" as View, label: "Your Plot", url: "https://commonry.app/plot", ariaLabel: "Navigate to Your Plot - Personal dashboard" },
+  { view: "browse" as View, label: "My Decks", url: "https://commonry.app/browse", ariaLabel: "Navigate to My Decks - Manage your personal decks" },
+  { view: "commons" as View, label: "The Commons", url: "https://commonry.app/commons", ariaLabel: "Navigate to The Commons - Browse public decks" },
+  { view: "square" as View, label: "The Square", url: "https://forum.commonry.app/session/sso", ariaLabel: "Navigate to The Square - Community forum" },
+  { view: "profile" as View, label: "Profile", url: "https://commonry.app/profile", ariaLabel: "Navigate to your profile" },
+];
+
+function useNavigation(
+  isExternal: boolean,
+  onNavigate?: (view: View) => void,
+  afterNavigate?: () => void,
+) {
+  const handleNavigate = useCallback(
+    (view: View, externalUrl?: string) => {
+      afterNavigate?.();
+      if (isExternal && externalUrl) {
+        window.location.href = externalUrl;
+      } else if (onNavigate) {
+        onNavigate(view);
+      }
+    },
+    [isExternal, onNavigate, afterNavigate],
+  );
+
+  const handleHomeClick = useCallback(
+    () =>
+      handleNavigate("home", isExternal ? "https://commonry.app" : undefined),
+    [handleNavigate, isExternal],
+  );
+
+  const navItems = useMemo(
+    () =>
+      NAV_ITEMS_CONFIG.map((item) => ({
+        ...item,
+        onClick: () =>
+          handleNavigate(
+            item.view,
+            isExternal ? item.url : undefined,
+          ),
+      })),
+    [handleNavigate, isExternal],
+  );
+
+  return { handleHomeClick, navItems };
+}
+
 /**
  * SharedNavigation component
  *
@@ -33,85 +80,7 @@ export function SharedNavigation({
   onNavigate,
   isExternal = false,
 }: NavigationProps) {
-  const handleNavigate = useCallback(
-    (view: View, externalUrl?: string) => {
-      if (isExternal && externalUrl) {
-        // For Discourse, navigate to Commonry app
-        window.location.href = externalUrl;
-      } else if (onNavigate) {
-        // For Commonry app, use state-based routing
-        onNavigate(view);
-      }
-    },
-    [isExternal, onNavigate],
-  );
-
-  const handleHomeClick = useCallback(
-    () =>
-      handleNavigate("home", isExternal ? "https://commonry.app" : undefined),
-    [handleNavigate, isExternal],
-  );
-
-  const navItems = useMemo(
-    () => [
-      {
-        view: "plot",
-        label: "Your Plot",
-        url: "https://commonry.app/plot",
-        ariaLabel: "Navigate to Your Plot - Personal dashboard",
-        onClick: () =>
-          handleNavigate(
-            "plot",
-            isExternal ? "https://commonry.app/plot" : undefined,
-          ),
-      },
-      {
-        view: "browse",
-        label: "My Decks",
-        url: "https://commonry.app/browse",
-        ariaLabel: "Navigate to My Decks - Manage your personal decks",
-        onClick: () =>
-          handleNavigate(
-            "browse",
-            isExternal ? "https://commonry.app/browse" : undefined,
-          ),
-      },
-      {
-        view: "commons",
-        label: "The Commons",
-        url: "https://commonry.app/commons",
-        ariaLabel: "Navigate to The Commons - Browse public decks",
-        onClick: () =>
-          handleNavigate(
-            "commons",
-            isExternal ? "https://commonry.app/commons" : undefined,
-          ),
-      },
-      {
-        view: "square",
-        label: "The Square",
-        url: "https://forum.commonry.app/session/sso",
-        ariaLabel: "Navigate to The Square - Community forum",
-        onClick: () =>
-          handleNavigate(
-            "square",
-            isExternal ? "https://forum.commonry.app/session/sso" : undefined,
-          ),
-      },
-      {
-        view: "profile",
-        label: "Profile",
-        url: "https://commonry.app/profile",
-        ariaLabel: "Navigate to your profile",
-        onClick: () =>
-          handleNavigate(
-            "profile",
-            isExternal ? "https://commonry.app/profile" : undefined,
-          ),
-      },
-    ],
-    [handleNavigate, isExternal],
-  );
+  const { handleHomeClick, navItems } = useNavigation(isExternal, onNavigate);
 
   return (
     <nav
@@ -202,79 +171,7 @@ export function MobileNavigation({
   isOpen,
   onToggle,
 }: MobileNavigationProps) {
-  const handleNavigate = useCallback(
-    (view: View, externalUrl?: string) => {
-      onToggle(); // Close menu
-      if (isExternal && externalUrl) {
-        window.location.href = externalUrl;
-      } else if (onNavigate) {
-        onNavigate(view);
-      }
-    },
-    [isExternal, onNavigate, onToggle],
-  );
-
-  const handleHomeClick = useCallback(
-    () =>
-      handleNavigate("home", isExternal ? "https://commonry.app" : undefined),
-    [handleNavigate, isExternal],
-  );
-
-  const navItems = useMemo(
-    () => [
-      {
-        view: "plot",
-        label: "Your Plot",
-        url: "https://commonry.app/plot",
-        onClick: () =>
-          handleNavigate(
-            "plot",
-            isExternal ? "https://commonry.app/plot" : undefined,
-          ),
-      },
-      {
-        view: "browse",
-        label: "My Decks",
-        url: "https://commonry.app/browse",
-        onClick: () =>
-          handleNavigate(
-            "browse",
-            isExternal ? "https://commonry.app/browse" : undefined,
-          ),
-      },
-      {
-        view: "commons",
-        label: "The Commons",
-        url: "https://commonry.app/commons",
-        onClick: () =>
-          handleNavigate(
-            "commons",
-            isExternal ? "https://commonry.app/commons" : undefined,
-          ),
-      },
-      {
-        view: "square",
-        label: "The Square",
-        url: "https://forum.commonry.app/session/sso",
-        onClick: () =>
-          handleNavigate(
-            "square",
-            isExternal ? "https://forum.commonry.app/session/sso" : undefined,
-          ),
-      },
-      {
-        view: "profile",
-        label: "Profile",
-        url: "https://commonry.app/profile",
-        onClick: () =>
-          handleNavigate(
-            "profile",
-            isExternal ? "https://commonry.app/profile" : undefined,
-          ),
-      },
-    ],
-    [handleNavigate, isExternal],
-  );
+  const { handleHomeClick, navItems } = useNavigation(isExternal, onNavigate, onToggle);
 
   return (
     <nav

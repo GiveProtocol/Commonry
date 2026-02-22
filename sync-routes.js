@@ -23,6 +23,60 @@ function generateULID(prefix) {
 }
 
 /**
+ * Insert a new deck record
+ */
+async function insertDeck(client, userId, data) {
+  const serverId = generateULID("deck");
+  await client.query(
+    `INSERT INTO decks (deck_id, user_id, client_id, name, description,
+                       card_count, version, last_modified_at, is_deleted)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    [
+      serverId,
+      userId,
+      data.id,
+      data.name,
+      data.description,
+      data.cardCount || 0,
+      data.version || 1,
+      data.lastModifiedAt || new Date(),
+      data.isDeleted || false,
+    ],
+  );
+  return serverId;
+}
+
+/**
+ * Insert a new card record
+ */
+async function insertCard(client, userId, data) {
+  const serverId = generateULID("card");
+  await client.query(
+    `INSERT INTO cards (card_id, user_id, client_id, deck_client_id, front, back,
+                       due, interval, repetitions, ease_factor, status,
+                       version, last_modified_at, is_deleted)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+    [
+      serverId,
+      userId,
+      data.id,
+      data.deckId,
+      data.front,
+      data.back,
+      data.due || new Date(),
+      data.interval || 0,
+      data.repetitions || 0,
+      data.easeFactor || 2.5,
+      data.status || "new",
+      data.version || 1,
+      data.lastModifiedAt || new Date(),
+      data.isDeleted || false,
+    ],
+  );
+  return serverId;
+}
+
+/**
  * POST /api/sync
  *
  * Main sync endpoint that receives local changes and returns conflicts.
@@ -67,24 +121,7 @@ router.post("/", async (req, res) => {
       for (const { operation, data } of decks) {
         try {
           if (operation === "create") {
-            // Create new deck on server
-            const serverId = generateULID("deck");
-            await client.query(
-              `INSERT INTO decks (deck_id, user_id, client_id, name, description,
-                                 card_count, version, last_modified_at, is_deleted)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-              [
-                serverId,
-                userId,
-                data.id,
-                data.name,
-                data.description,
-                data.cardCount || 0,
-                data.version || 1,
-                data.lastModifiedAt || new Date(),
-                data.isDeleted || false,
-              ],
-            );
+            await insertDeck(client, userId, data);
             response.decks.created.push(data.id);
           } else if (operation === "update") {
             // Check for conflicts
@@ -129,23 +166,7 @@ router.post("/", async (req, res) => {
               response.decks.updated.push(data.id);
             } else {
               // Deck doesn't exist, treat as create
-              const serverId = generateULID("deck");
-              await client.query(
-                `INSERT INTO decks (deck_id, user_id, client_id, name, description,
-                                   card_count, version, last_modified_at, is_deleted)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-                [
-                  serverId,
-                  userId,
-                  data.id,
-                  data.name,
-                  data.description,
-                  data.cardCount || 0,
-                  data.version || 1,
-                  data.lastModifiedAt || new Date(),
-                  data.isDeleted || false,
-                ],
-              );
+              await insertDeck(client, userId, data);
               response.decks.created.push(data.id);
             }
           } else if (operation === "delete") {
@@ -176,30 +197,7 @@ router.post("/", async (req, res) => {
       for (const { operation, data } of cards) {
         try {
           if (operation === "create") {
-            // Create new card on server
-            const serverId = generateULID("card");
-            await client.query(
-              `INSERT INTO cards (card_id, user_id, client_id, deck_client_id, front, back,
-                                 due, interval, repetitions, ease_factor, status,
-                                 version, last_modified_at, is_deleted)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-              [
-                serverId,
-                userId,
-                data.id,
-                data.deckId,
-                data.front,
-                data.back,
-                data.due || new Date(),
-                data.interval || 0,
-                data.repetitions || 0,
-                data.easeFactor || 2.5,
-                data.status || "new",
-                data.version || 1,
-                data.lastModifiedAt || new Date(),
-                data.isDeleted || false,
-              ],
-            );
+            const serverId = await insertCard(client, userId, data);
             response.cards.created.push(data.id);
             createdCardServerIds.push(serverId); // Track for analysis
           } else if (operation === "update") {
@@ -251,29 +249,7 @@ router.post("/", async (req, res) => {
               response.cards.updated.push(data.id);
             } else {
               // Card doesn't exist, treat as create
-              const serverId = generateULID("card");
-              await client.query(
-                `INSERT INTO cards (card_id, user_id, client_id, deck_client_id, front, back,
-                                   due, interval, repetitions, ease_factor, status,
-                                   version, last_modified_at, is_deleted)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-                [
-                  serverId,
-                  userId,
-                  data.id,
-                  data.deckId,
-                  data.front,
-                  data.back,
-                  data.due || new Date(),
-                  data.interval || 0,
-                  data.repetitions || 0,
-                  data.easeFactor || 2.5,
-                  data.status || "new",
-                  data.version || 1,
-                  data.lastModifiedAt || new Date(),
-                  data.isDeleted || false,
-                ],
-              );
+              const serverId = await insertCard(client, userId, data);
               response.cards.created.push(data.id);
               createdCardServerIds.push(serverId); // Track for analysis
             }

@@ -354,14 +354,10 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
   // ============================================================
 
   /**
-   * GET /api/analytics/sessions/:sessionId/health
-   * Get session health analysis
+   * Middleware to verify session belongs to the authenticated user
    */
-  router.get(
-    "/sessions/:sessionId/health",
-    authenticateToken,
-    asyncHandler(async (req, res) => {
-      // Verify the session belongs to the authenticated user
+  const authorizeSessionAccess = async (req, res, next) => {
+    try {
       const sessionCheck = await pool.query(
         `SELECT user_id FROM session_tracking WHERE session_id = $1`,
         [req.params.sessionId],
@@ -383,6 +379,26 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
         });
       }
 
+      next();
+    } catch (error) {
+      console.error("[LearningAnalyticsRoutes] Session auth error:", error);
+      res.status(500).json({
+        success: false,
+        error: "An unexpected error occurred",
+        code: "INTERNAL_ERROR",
+      });
+    }
+  };
+
+  /**
+   * GET /api/analytics/sessions/:sessionId/health
+   * Get session health analysis
+   */
+  router.get(
+    "/sessions/:sessionId/health",
+    authenticateToken,
+    authorizeSessionAccess,
+    asyncHandler(async (req, res) => {
       const health = await service.getSessionHealthIndicators(
         req.params.sessionId,
       );
@@ -409,29 +425,8 @@ export function createLearningAnalyticsRoutes(pool, authenticateToken) {
   router.get(
     "/sessions/:sessionId/health/live",
     authenticateToken,
+    authorizeSessionAccess,
     asyncHandler(async (req, res) => {
-      // Verify the session belongs to the authenticated user
-      const sessionCheck = await pool.query(
-        `SELECT user_id FROM session_tracking WHERE session_id = $1`,
-        [req.params.sessionId],
-      );
-
-      if (sessionCheck.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          error: "Session not found",
-          code: "NOT_FOUND",
-        });
-      }
-
-      if (sessionCheck.rows[0].user_id !== req.userId) {
-        return res.status(403).json({
-          success: false,
-          error: "You can only access your own sessions",
-          code: "FORBIDDEN",
-        });
-      }
-
       const liveHealth = await service.getLiveSessionHealth(
         req.params.sessionId,
       );

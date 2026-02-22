@@ -474,6 +474,17 @@ const DATA_DICTIONARY = [
 ];
 
 /**
+ * Batch upsert helper for seed data
+ */
+async function batchUpsert(client, { table, sql, rows, mapRow, label }) {
+  console.log(`Seeding ${label}...`);
+  for (const row of rows) {
+    await client.query(sql, mapRow(row));
+  }
+  console.log(`  Seeded ${rows.length} ${label}`);
+}
+
+/**
  * Seed the database with schema versions and data dictionary
  */
 async function seed() {
@@ -484,35 +495,33 @@ async function seed() {
   try {
     await client.query("BEGIN");
 
-    // Seed schema versions
-    console.log("Seeding schema versions...");
-    for (const schema of SCHEMA_VERSIONS) {
-      await client.query(
-        `INSERT INTO export_schema_versions
+    await batchUpsert(client, {
+      table: "export_schema_versions",
+      label: "schema versions",
+      rows: SCHEMA_VERSIONS,
+      sql: `INSERT INTO export_schema_versions
          (version_id, version, export_type, schema_json, field_mappings, anonymization_rules, release_notes, is_current)
          VALUES ($1, $2, $3, $4, $5, $6, $7, true)
          ON CONFLICT (version, export_type) DO UPDATE SET
            schema_json = EXCLUDED.schema_json,
            release_notes = EXCLUDED.release_notes,
            is_current = true`,
-        [
-          `ver_${ulid()}`,
-          schema.version,
-          schema.exportType,
-          JSON.stringify(schema.schemaJson),
-          JSON.stringify({}),
-          JSON.stringify({}),
-          schema.releaseNotes,
-        ],
-      );
-    }
-    console.log(`  Seeded ${SCHEMA_VERSIONS.length} schema versions`);
+      mapRow: (schema) => [
+        `ver_${ulid()}`,
+        schema.version,
+        schema.exportType,
+        JSON.stringify(schema.schemaJson),
+        JSON.stringify({}),
+        JSON.stringify({}),
+        schema.releaseNotes,
+      ],
+    });
 
-    // Seed data dictionary
-    console.log("Seeding data dictionary...");
-    for (const field of DATA_DICTIONARY) {
-      await client.query(
-        `INSERT INTO export_data_dictionary
+    await batchUpsert(client, {
+      table: "export_data_dictionary",
+      label: "data dictionary entries",
+      rows: DATA_DICTIONARY,
+      sql: `INSERT INTO export_data_dictionary
          (field_id, export_type, field_name, source_table, source_column,
           data_type, classification, description, example_values)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -524,20 +533,18 @@ async function seed() {
            description = EXCLUDED.description,
            example_values = EXCLUDED.example_values,
            updated_at = CURRENT_TIMESTAMP`,
-        [
-          `fld_${ulid()}`,
-          field.exportType,
-          field.fieldName,
-          field.sourceTable,
-          field.sourceColumn,
-          field.dataType,
-          field.classification,
-          field.description,
-          field.exampleValues,
-        ],
-      );
-    }
-    console.log(`  Seeded ${DATA_DICTIONARY.length} data dictionary entries`);
+      mapRow: (field) => [
+        `fld_${ulid()}`,
+        field.exportType,
+        field.fieldName,
+        field.sourceTable,
+        field.sourceColumn,
+        field.dataType,
+        field.classification,
+        field.description,
+        field.exampleValues,
+      ],
+    });
 
     await client.query("COMMIT");
     console.log("Seeding completed successfully!");
