@@ -12,6 +12,7 @@ interface PublishDeckDialogProps {
   cardCount: number;
 }
 
+/** Dialog for publishing a deck to the Commons community library. */
 export function PublishDeckDialog({
   isOpen,
   onClose,
@@ -34,6 +35,7 @@ export function PublishDeckDialog({
     }
   }, [isOpen]);
 
+  /** Fetch available browse categories from the API. */
   const loadCategories = async () => {
     setIsLoading(true);
     setError(null);
@@ -44,13 +46,14 @@ export function PublishDeckDialog({
       } else if (result.data) {
         setCategories(result.data);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load categories");
     } finally {
       setIsLoading(false);
     }
   };
 
+  /** Add the current tag input value to the tags list. */
   const handleAddTag = () => {
     const newTag = tagInput.trim().toLowerCase();
     if (newTag && !tags.includes(newTag) && tags.length < 5) {
@@ -59,10 +62,12 @@ export function PublishDeckDialog({
     }
   };
 
+  /** Remove a tag from the tags list. */
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((t) => t !== tagToRemove));
   };
 
+  /** Add tag on Enter key press. */
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -70,6 +75,7 @@ export function PublishDeckDialog({
     }
   };
 
+  /** Validate selection and publish the deck. */
   const handleSubmit = async () => {
     if (!selectedCategory) return;
 
@@ -78,7 +84,7 @@ export function PublishDeckDialog({
     try {
       await onPublish(selectedCategory, tags);
       handleClose();
-    } catch (err) {
+    } catch {
       setError("Failed to publish deck");
     } finally {
       setIsSubmitting(false);

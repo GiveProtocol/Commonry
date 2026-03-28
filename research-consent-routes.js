@@ -229,7 +229,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
       }
 
       console.log(
-        `[ResearchConsentRoutes] User ${req.userId} ${consent ? "opted in" : "opted out"} of research`,
+        `[ResearchConsentRoutes] User ${String(req.userId).replace(/[\n\r]/g, "")} ${consent ? "opted in" : "opted out"} of research`,
       );
 
       return res.json({

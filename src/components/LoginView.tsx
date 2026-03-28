@@ -74,11 +74,11 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
             window.location.href = ssoData.redirectUrl;
             return;
           } else {
-            console.error("SSO completion failed:", ssoData.error);
+            console.error("SSO completion failed:", String(ssoData.error).replace(/[\n\r]/g, ""));
             // Login succeeded, but SSO failed - still logged in to Commonry
           }
         } catch (ssoError) {
-          console.error("SSO completion error:", ssoError);
+          console.error("SSO completion error:", String(ssoError).replace(/[\n\r]/g, ""));
         }
       }
 
