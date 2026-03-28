@@ -83,7 +83,7 @@ export function MilestoneProgress({
         </div>
 
         <p className="text-text-primary font-mono text-sm">
-          {milestone.remaining} cards to "{milestone.name}"
+          {milestone.remaining} cards to &ldquo;{milestone.name}&rdquo;
         </p>
 
         {/* Progress bar */}

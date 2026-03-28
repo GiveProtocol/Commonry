@@ -58,7 +58,7 @@ export function PersonalInsight({
           &#128161;
         </span>
         <p className="text-text-primary font-mono text-sm md:text-base text-center">
-          "{insight.message}"
+          &ldquo;{insight.message}&rdquo;
         </p>
       </div>
     </motion.div>
