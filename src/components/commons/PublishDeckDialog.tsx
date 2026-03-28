@@ -85,6 +85,7 @@ export function PublishDeckDialog({
     }
   };
 
+  /** Reset form state and close the dialog. */
   const handleClose = () => {
     setSelectedCategory("");
     setTags([]);

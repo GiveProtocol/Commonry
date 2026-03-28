@@ -10,6 +10,7 @@ interface MomentumCardProps {
   isLoading?: boolean;
 }
 
+/** Returns a motivational message based on the current study streak length. */
 function getStreakMessage(streak: number): string {
   if (streak === 0) return "Start your streak today!";
   if (streak === 1) return "1-day streak!";
@@ -19,6 +20,7 @@ function getStreakMessage(streak: number): string {
   return `${streak}-day streak! Incredible!`;
 }
 
+/** Returns a positive trend message, or null to avoid guilt-inducing feedback. */
 function getTrendMessage(
   trend: "accelerating" | "stable" | "decelerating" | null,
 ): string | null {
@@ -35,6 +37,7 @@ function getTrendMessage(
   }
 }
 
+/** Builds an array of the last 7 days with study activity markers. */
 function getWeekDays(lastStudyDate: string | null): WeekDay[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -64,6 +67,7 @@ function getWeekDays(lastStudyDate: string | null): WeekDay[] {
   return days;
 }
 
+/** Renders a single day indicator dot — pulsing, filled, or empty. */
 function ConsistencyDot({ day }: { day: WeekDay }) {
   const baseClasses = "w-4 h-4 rounded-full transition-all";
 
@@ -98,6 +102,7 @@ function ConsistencyDot({ day }: { day: WeekDay }) {
   );
 }
 
+/** Displays the user's study streak and weekly consistency visualization. */
 export function MomentumCard({
   currentStreak,
   lastStudyDate,

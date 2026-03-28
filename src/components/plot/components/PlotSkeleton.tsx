@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+/** Full-page loading skeleton for the Plot dashboard. */
 export function PlotSkeleton() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -38,6 +39,7 @@ export function PlotSkeleton() {
   );
 }
 
+/** Loading skeleton for the greeting section. */
 export function PlotGreetingSkeleton() {
   return (
     <motion.div
@@ -51,6 +53,7 @@ export function PlotGreetingSkeleton() {
   );
 }
 
+/** Loading skeleton for a single Plot dashboard card. */
 export function PlotCardSkeleton() {
   return (
     <div className="border-2 border-cyan/20 rounded-lg p-6 space-y-4">
