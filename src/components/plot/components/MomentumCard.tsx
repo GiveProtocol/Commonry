@@ -138,8 +138,8 @@ export function MomentumCard({
 
         {/* Weekly consistency dots */}
         <div className="flex gap-2 items-center justify-center pt-2">
-          {weekDays.map((day, i) => (
-            <ConsistencyDot key={i} day={day} />
+          {weekDays.map((day) => (
+            <ConsistencyDot key={day.date.toISOString()} day={day} />
           ))}
         </div>
 

@@ -23,8 +23,8 @@ export function PlotSkeleton() {
           <div className="skeleton h-5 w-24 rounded" />
           <div className="skeleton h-12 w-20 rounded" />
           <div className="flex gap-2 justify-center">
-            {[...Array(7)].map((_, i) => (
-              <div key={i} className="skeleton w-4 h-4 rounded-full" />
+            {["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((day) => (
+              <div key={day} className="skeleton w-4 h-4 rounded-full" />
             ))}
           </div>
         </div>

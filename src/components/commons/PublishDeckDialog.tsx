@@ -145,9 +145,9 @@ export function PublishDeckDialog({
             <>
               {/* Category selection */}
               <div className="mt-6">
-                <label className="block font-mono text-sm text-gray-700 dark:text-gray-300 mb-2">
+                <span className="block font-mono text-sm text-gray-700 dark:text-gray-300 mb-2">
                   Category <span className="text-red-500">*</span>
-                </label>
+                </span>
                 <p className="font-mono text-xs text-terminal-muted dark:text-text-muted mb-3">
                   Choose the field of study that best fits your deck
                 </p>
@@ -173,7 +173,7 @@ export function PublishDeckDialog({
 
               {/* Tags input */}
               <div className="mt-6">
-                <label className="block font-mono text-sm text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="tag-input" className="block font-mono text-sm text-gray-700 dark:text-gray-300 mb-2">
                   Tags (optional)
                 </label>
                 <p className="font-mono text-xs text-terminal-muted dark:text-text-muted mb-3">
@@ -182,6 +182,7 @@ export function PublishDeckDialog({
 
                 <div className="flex gap-2">
                   <input
+                    id="tag-input"
                     type="text"
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
