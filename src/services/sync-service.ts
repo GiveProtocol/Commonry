@@ -76,13 +76,7 @@ export class SyncService {
     if (this.isSyncing) return false;
     if (!navigator.onLine) return false;
 
-    // Check WiFi-only setting (currently just checks online status)
-    // In a real app, you'd check the connection type
-    if (this.config.wifiOnly && !this.isOnWiFi()) {
-      return false;
-    }
-
-    return true;
+    return !(this.config.wifiOnly && !this.isOnWiFi());
   }
 
   /**

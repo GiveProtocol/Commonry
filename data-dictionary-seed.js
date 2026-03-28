@@ -476,7 +476,7 @@ const DATA_DICTIONARY = [
 /**
  * Batch upsert helper for seed data
  */
-async function batchUpsert(client, { table, sql, rows, mapRow, label }) {
+async function batchUpsert(client, { sql, rows, mapRow, label }) {
   console.log(`Seeding ${label}...`);
   for (const row of rows) {
     await client.query(sql, mapRow(row));

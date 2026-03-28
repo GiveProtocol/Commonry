@@ -38,8 +38,6 @@ const VALID_RESPONSE_TYPES = [
   "multiple_choice",
   "cloze_fill",
 ];
-const VALID_STATUSES = ["started", "interacting", "completed", "abandoned"];
-
 /**
  * Validates and sanitizes a value against allowed options
  */
@@ -72,19 +70,6 @@ function safeFloat(value) {
  */
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
-}
-
-/**
- * Ensures a value is a valid JSONB-compatible object
- */
-function safeJsonb(value, defaultValue = null) {
-  if (value === null || value === undefined) return defaultValue;
-  if (typeof value === "object") return value;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return defaultValue;
-  }
 }
 
 // ============================================================

@@ -30,12 +30,6 @@ const VALID_SESSION_TYPES = [
   "speed_review",
   "learn_new",
 ];
-const VALID_SESSION_STATES = [
-  "in_progress",
-  "completed",
-  "abandoned",
-  "interrupted",
-];
 const VALID_DEVICE_TYPES = ["mobile", "tablet", "desktop", "unknown"];
 const VALID_BREAK_REASONS = ["background", "pause", "idle", "manual"];
 
@@ -49,10 +43,6 @@ function safeInt(value) {
   if (value === null || value === undefined) return null;
   const parsed = parseInt(value, 10);
   return Number.isNaN(parsed) ? null : parsed;
-}
-
-function safeArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 // ============================================================
