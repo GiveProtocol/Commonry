@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { InsightData } from "../types";
-import { generateInsights, getDailyInsight, getDayOfYear } from "../utils/insightGenerators";
+import {
+  generateInsights,
+  getDailyInsight,
+  getDayOfYear,
+} from "../utils/insightGenerators";
 
 interface PersonalInsightProps {
   weeklyMastered: number;
@@ -12,6 +16,7 @@ interface PersonalInsightProps {
   isLoading?: boolean;
 }
 
+/** Displays a rotating daily insight based on the user's study patterns. */
 export function PersonalInsight({
   weeklyMastered,
   preferredHour,
@@ -58,7 +63,7 @@ export function PersonalInsight({
           &#128161;
         </span>
         <p className="text-text-primary font-mono text-sm md:text-base text-center">
-          "{insight.message}"
+          &ldquo;{insight.message}&rdquo;
         </p>
       </div>
     </motion.div>

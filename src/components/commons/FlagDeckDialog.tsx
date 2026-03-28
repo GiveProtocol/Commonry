@@ -17,6 +17,7 @@ const FLAG_REASONS = [
   { id: "other", label: "Other" },
 ];
 
+/** Modal dialog for reporting inappropriate deck content. */
 export function FlagDeckDialog({
   isOpen,
   onClose,
@@ -28,6 +29,7 @@ export function FlagDeckDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  /** Submit the selected flag reason to the server. */
   const handleSubmit = async () => {
     const reason =
       selectedReason === "other"
@@ -45,6 +47,7 @@ export function FlagDeckDialog({
     }
   };
 
+  /** Reset form state and close the dialog. */
   const handleClose = () => {
     setSelectedReason("");
     setCustomReason("");
@@ -94,7 +97,7 @@ export function FlagDeckDialog({
                 Thank you for your report.
               </p>
               <p className="font-mono text-sm text-terminal-muted dark:text-text-muted mt-2">
-                We'll review this deck and take appropriate action.
+                We&apos;ll review this deck and take appropriate action.
               </p>
               <button
                 onClick={handleClose}
@@ -109,7 +112,7 @@ export function FlagDeckDialog({
           ) : (
             <>
               <Dialog.Description className="mt-2 font-mono text-sm text-terminal-muted dark:text-text-muted">
-                Report inappropriate content in "{deckName}"
+                Report inappropriate content in &ldquo;{deckName}&rdquo;
               </Dialog.Description>
 
               <div className="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700">

@@ -15,10 +15,12 @@ interface ClosestMilestone {
   percentComplete: number;
 }
 
-function findClosestMilestone(achievements: UserAchievement[]): ClosestMilestone | null {
+function findClosestMilestone(
+  achievements: UserAchievement[],
+): ClosestMilestone | null {
   // Filter for achievements that are not yet unlocked and have progress
   const inProgress = achievements.filter(
-    (a) => !a.unlocked && a.progress > 0 && a.target > 0
+    (a) => !a.unlocked && a.progress > 0 && a.target > 0,
   );
 
   if (inProgress.length === 0) return null;
@@ -49,6 +51,7 @@ function findClosestMilestone(achievements: UserAchievement[]): ClosestMilestone
   };
 }
 
+/** Displays progress toward the nearest achievement milestone. */
 export function MilestoneProgress({
   achievements,
   isLoading = false,
@@ -83,7 +86,7 @@ export function MilestoneProgress({
         </div>
 
         <p className="text-text-primary font-mono text-sm">
-          {milestone.remaining} cards to "{milestone.name}"
+          {milestone.remaining} cards to &ldquo;{milestone.name}&rdquo;
         </p>
 
         {/* Progress bar */}

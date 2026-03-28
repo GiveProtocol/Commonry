@@ -38,8 +38,6 @@ const VALID_RESPONSE_TYPES = [
   "multiple_choice",
   "cloze_fill",
 ];
-const VALID_STATUSES = ["started", "interacting", "completed", "abandoned"];
-
 /**
  * Validates and sanitizes a value against allowed options
  */
@@ -72,19 +70,6 @@ function safeFloat(value) {
  */
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
-}
-
-/**
- * Ensures a value is a valid JSONB-compatible object
- */
-function safeJsonb(value, defaultValue = null) {
-  if (value === null || value === undefined) return defaultValue;
-  if (typeof value === "object") return value;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return defaultValue;
-  }
 }
 
 // ============================================================
@@ -149,7 +134,7 @@ export class ReviewEventService {
         } catch (err) {
           console.error(
             `[ReviewEventService] Write operation failed for ${op.eventId}:`,
-            err.message
+            err.message,
           );
           // Continue with other operations - don't fail the batch
         }
@@ -200,7 +185,7 @@ export class ReviewEventService {
         device_type: validateEnum(
           payload.deviceType,
           VALID_DEVICE_TYPES,
-          "unknown"
+          "unknown",
         ),
         viewport_width: safeInt(payload.viewportWidth),
         viewport_height: safeInt(payload.viewportHeight),
@@ -217,25 +202,23 @@ export class ReviewEventService {
         // Session context
         position_in_session: safeInt(payload.positionInSession),
         time_since_session_start_ms: safeInt(payload.timeSinceSessionStartMs),
-        preceding_reviews: JSON.stringify(
-          safeArray(payload.precedingReviews)
-        ),
+        preceding_reviews: JSON.stringify(safeArray(payload.precedingReviews)),
 
         // Card state
         card_state_before: validateEnum(
           payload.cardStateBefore,
           VALID_CARD_STATES,
-          null
+          null,
         ),
         response_type: validateEnum(
           payload.responseType,
           VALID_RESPONSE_TYPES,
-          "self_rating"
+          "self_rating",
         ),
 
         // FSRS predictions
         predicted_recall_probability: safeFloat(
-          payload.predictedRecallProbability
+          payload.predictedRecallProbability,
         ),
         actual_interval_days: safeFloat(payload.actualIntervalDays),
         scheduled_interval_days: safeFloat(payload.scheduledIntervalDays),
@@ -326,7 +309,7 @@ export class ReviewEventService {
           sanitized.card_tags,
           sanitized.client_created_at,
           sanitized.client_request_id,
-        ]
+        ],
       );
 
       return {
@@ -391,7 +374,7 @@ export class ReviewEventService {
           safeInt(payload.timeBackgroundedMs),
           eventId,
           userId,
-        ]
+        ],
       );
 
       if (result.rowCount === 0) {
@@ -433,7 +416,7 @@ export class ReviewEventService {
            SET interaction_log = COALESCE(interaction_log, '[]'::jsonb) || $1::jsonb,
                status = CASE WHEN status = 'started' THEN 'interacting'::review_event_status ELSE status END
            WHERE event_id = $2 AND user_id = $3 AND status != 'completed'`,
-          [JSON.stringify(interactions), eventId, userId]
+          [JSON.stringify(interactions), eventId, userId],
         );
       },
     });
@@ -520,7 +503,7 @@ export class ReviewEventService {
         card_state_after: validateEnum(
           payload.cardStateAfter,
           VALID_CARD_STATES,
-          null
+          null,
         ),
         ease_factor_after: safeFloat(payload.easeFactorAfter),
         interval_after_days: safeFloat(payload.intervalAfterDays),
@@ -586,7 +569,7 @@ export class ReviewEventService {
           completionData.legacy_session_id,
           eventId,
           userId,
-        ]
+        ],
       );
 
       if (result.rowCount === 0) {
@@ -631,7 +614,7 @@ export class ReviewEventService {
          SET status = 'abandoned'::review_event_status
          WHERE status IN ('started', 'interacting')
            AND server_received_at < NOW() - INTERVAL '${maxAgeMinutes} minutes'
-         RETURNING event_id`
+         RETURNING event_id`,
       );
 
       return result.rowCount;
@@ -728,7 +711,11 @@ export class ReviewEventService {
           safeInt(payload.localDayOfWeek),
           safeInt(payload.timezoneOffsetMinutes),
           JSON.stringify(safeArray(payload.precedingReviews)),
-          validateEnum(payload.responseType, VALID_RESPONSE_TYPES, "self_rating"),
+          validateEnum(
+            payload.responseType,
+            VALID_RESPONSE_TYPES,
+            "self_rating",
+          ),
           payload.userResponseText || null,
           payload.expectedResponseText || null,
           safeFloat(payload.responseSimilarityScore),
@@ -736,8 +723,12 @@ export class ReviewEventService {
           safeInt(payload.backspaceCount),
           safeInt(payload.pasteCount),
           safeInt(payload.editCount),
-          payload.optionInteractions ? JSON.stringify(payload.optionInteractions) : null,
-          payload.interactionLog ? JSON.stringify(payload.interactionLog) : "[]",
+          payload.optionInteractions
+            ? JSON.stringify(payload.optionInteractions)
+            : null,
+          payload.interactionLog
+            ? JSON.stringify(payload.interactionLog)
+            : "[]",
           validateEnum(payload.deviceType, VALID_DEVICE_TYPES, "unknown"),
           safeInt(payload.viewportWidth),
           safeInt(payload.viewportHeight),
@@ -767,7 +758,7 @@ export class ReviewEventService {
           payload.clientCreatedAt || null,
           payload.legacySessionId || null,
           payload.clientRequestId || null,
-        ]
+        ],
       );
 
       return {

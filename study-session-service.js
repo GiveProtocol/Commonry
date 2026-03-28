@@ -30,29 +30,21 @@ const VALID_SESSION_TYPES = [
   "speed_review",
   "learn_new",
 ];
-const VALID_SESSION_STATES = [
-  "in_progress",
-  "completed",
-  "abandoned",
-  "interrupted",
-];
 const VALID_DEVICE_TYPES = ["mobile", "tablet", "desktop", "unknown"];
 const VALID_BREAK_REASONS = ["background", "pause", "idle", "manual"];
 
+/** Validates a value against an allowed list, returning the default if invalid. */
 function validateEnum(value, allowed, defaultValue) {
   if (!value) return defaultValue;
   const normalized = String(value).toLowerCase();
   return allowed.includes(normalized) ? normalized : defaultValue;
 }
 
+/** Safely parses an integer, returning null if invalid. */
 function safeInt(value) {
   if (value === null || value === undefined) return null;
   const parsed = parseInt(value, 10);
   return Number.isNaN(parsed) ? null : parsed;
-}
-
-function safeArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 // ============================================================
@@ -74,7 +66,7 @@ export class StudySessionService {
     if (this.abandonmentCheckInterval) return;
 
     console.log(
-      `[StudySessionService] Starting abandonment detector (${intervalMs}ms interval, ${this.abandonmentTimeoutMinutes}min timeout)`
+      `[StudySessionService] Starting abandonment detector (${intervalMs}ms interval, ${this.abandonmentTimeoutMinutes}min timeout)`,
     );
 
     this.abandonmentCheckInterval = setInterval(async () => {
@@ -82,7 +74,7 @@ export class StudySessionService {
         const count = await this.markAbandonedSessions();
         if (count > 0) {
           console.log(
-            `[StudySessionService] Marked ${count} session(s) as abandoned`
+            `[StudySessionService] Marked ${count} session(s) as abandoned`,
           );
         }
       } catch (err) {
@@ -152,7 +144,7 @@ export class StudySessionService {
           safeInt(payload.localHour),
           safeInt(payload.localDayOfWeek),
           safeInt(payload.timezoneOffsetMinutes),
-        ]
+        ],
       );
 
       return {
@@ -209,7 +201,7 @@ export class StudySessionService {
           safeInt(payload.cardsCorrectSinceLastBeat),
           sessionId,
           userId,
-        ]
+        ],
       );
 
       if (result.rowCount === 0) {
@@ -250,11 +242,7 @@ export class StudySessionService {
     try {
       const breakEvent = {
         action: payload.action,
-        reason: validateEnum(
-          payload.reason,
-          VALID_BREAK_REASONS,
-          "manual"
-        ),
+        reason: validateEnum(payload.reason, VALID_BREAK_REASONS, "manual"),
         timestampMs: payload.timestampMs || null,
         serverTimestamp: new Date().toISOString(),
       };
@@ -268,7 +256,7 @@ export class StudySessionService {
            AND user_id = $3
            AND final_state = 'in_progress'
          RETURNING session_id`,
-        [JSON.stringify([breakEvent]), sessionId, userId]
+        [JSON.stringify([breakEvent]), sessionId, userId],
       );
 
       if (result.rowCount === 0) {
@@ -343,7 +331,7 @@ export class StudySessionService {
           validateEnum(
             payload.finalState,
             ["completed", "interrupted"],
-            "completed"
+            "completed",
           ),
           safeInt(payload.cardsCompleted),
           safeInt(payload.cardsCorrect),
@@ -359,7 +347,7 @@ export class StudySessionService {
           responseTimeTrend ? JSON.stringify(responseTimeTrend) : null,
           sessionId,
           userId,
-        ]
+        ],
       );
 
       if (result.rowCount === 0) {
@@ -469,7 +457,7 @@ export class StudySessionService {
     try {
       const result = await this.pool.query(
         "SELECT mark_abandoned_sessions($1)",
-        [this.abandonmentTimeoutMinutes]
+        [this.abandonmentTimeoutMinutes],
       );
       return result.rows[0].mark_abandoned_sessions;
     } catch (err) {
@@ -495,7 +483,7 @@ export class StudySessionService {
            AND final_state = 'in_progress'
          ORDER BY started_at DESC
          LIMIT 1`,
-        [userId]
+        [userId],
       );
 
       if (result.rowCount === 0) {
@@ -524,7 +512,7 @@ export class StudySessionService {
       const result = await this.pool.query(
         `SELECT * FROM session_tracking
          WHERE session_id = $1 AND user_id = $2`,
-        [sessionId, userId]
+        [sessionId, userId],
       );
 
       if (result.rowCount === 0) {
@@ -559,7 +547,7 @@ export class StudySessionService {
          WHERE user_id = $1
          ORDER BY started_at DESC
          LIMIT $2`,
-        [userId, limit]
+        [userId, limit],
       );
 
       return {

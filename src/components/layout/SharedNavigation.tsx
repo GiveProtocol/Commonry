@@ -2,7 +2,16 @@ import { motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import { SyncStatusIndicator } from "../SyncStatusIndicator";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "plot"
+  | "stats"
+  | "square"
+  | "profile";
 
 interface NavigationProps {
   currentView?: View;
@@ -12,13 +21,39 @@ interface NavigationProps {
 }
 
 const NAV_ITEMS_CONFIG = [
-  { view: "plot" as View, label: "Your Plot", url: "https://commonry.app/plot", ariaLabel: "Navigate to Your Plot - Personal dashboard" },
-  { view: "browse" as View, label: "My Decks", url: "https://commonry.app/browse", ariaLabel: "Navigate to My Decks - Manage your personal decks" },
-  { view: "commons" as View, label: "The Commons", url: "https://commonry.app/commons", ariaLabel: "Navigate to The Commons - Browse public decks" },
-  { view: "square" as View, label: "The Square", url: "https://forum.commonry.app/session/sso", ariaLabel: "Navigate to The Square - Community forum" },
-  { view: "profile" as View, label: "Profile", url: "https://commonry.app/profile", ariaLabel: "Navigate to your profile" },
+  {
+    view: "plot" as View,
+    label: "Your Plot",
+    url: "https://commonry.app/plot",
+    ariaLabel: "Navigate to Your Plot - Personal dashboard",
+  },
+  {
+    view: "browse" as View,
+    label: "My Decks",
+    url: "https://commonry.app/browse",
+    ariaLabel: "Navigate to My Decks - Manage your personal decks",
+  },
+  {
+    view: "commons" as View,
+    label: "The Commons",
+    url: "https://commonry.app/commons",
+    ariaLabel: "Navigate to The Commons - Browse public decks",
+  },
+  {
+    view: "square" as View,
+    label: "The Square",
+    url: "https://forum.commonry.app/session/sso",
+    ariaLabel: "Navigate to The Square - Community forum",
+  },
+  {
+    view: "profile" as View,
+    label: "Profile",
+    url: "https://commonry.app/profile",
+    ariaLabel: "Navigate to your profile",
+  },
 ];
 
+/** Shared navigation logic for both desktop and mobile nav components. */
 function useNavigation(
   isExternal: boolean,
   onNavigate?: (view: View) => void,
@@ -47,10 +82,7 @@ function useNavigation(
       NAV_ITEMS_CONFIG.map((item) => ({
         ...item,
         onClick: () =>
-          handleNavigate(
-            item.view,
-            isExternal ? item.url : undefined,
-          ),
+          handleNavigate(item.view, isExternal ? item.url : undefined),
       })),
     [handleNavigate, isExternal],
   );
@@ -95,9 +127,16 @@ export function SharedNavigation({
           className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
           aria-label="Go to Commonry home"
         >
-          <div className="text-4xl" role="img" aria-label="Commonry logo">
-            🏛️
-          </div>
+          <img
+            src="/mono-light-transparent.svg"
+            alt="Commonry logo"
+            className="w-10 h-10 block dark:hidden"
+          />
+          <img
+            src="/mono-dark-transparent.svg"
+            alt="Commonry logo"
+            className="w-10 h-10 hidden dark:block"
+          />
           <div className="font-mono">
             <div
               className="text-terminal-muted dark:text-text-muted text-xs"
@@ -164,6 +203,7 @@ interface MobileNavigationProps extends NavigationProps {
   onToggle: () => void;
 }
 
+/** Responsive hamburger menu navigation for mobile devices. */
 export function MobileNavigation({
   currentView = "home",
   onNavigate,
@@ -171,7 +211,11 @@ export function MobileNavigation({
   isOpen,
   onToggle,
 }: MobileNavigationProps) {
-  const { handleHomeClick, navItems } = useNavigation(isExternal, onNavigate, onToggle);
+  const { handleHomeClick, navItems } = useNavigation(
+    isExternal,
+    onNavigate,
+    onToggle,
+  );
 
   return (
     <nav
@@ -187,7 +231,16 @@ export function MobileNavigation({
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             aria-label="Go to Commonry home"
           >
-            <div className="text-2xl">🏛️</div>
+            <img
+              src="/mono-light-transparent.svg"
+              alt="Commonry logo"
+              className="w-8 h-8 block dark:hidden"
+            />
+            <img
+              src="/mono-dark-transparent.svg"
+              alt="Commonry logo"
+              className="w-8 h-8 hidden dark:block"
+            />
             <div className="font-mono terminal-primary dark:text-cyan text-xl font-bold">
               COMMONRY
             </div>

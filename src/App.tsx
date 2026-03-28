@@ -1,25 +1,55 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { StudyView } from "./components/StudyView";
-import { DeckBrowser } from "./components/DeckBrowser";
-import { StatsView } from "./components/StatsView";
-import { PlotView } from "./components/plot";
-import { ProfileView } from "./components/ProfileView";
-import { SquareView } from "./components/SquareView";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
 import { FeaturesSection } from "./components/sections/FeaturesSection";
 import { SharedNavigation } from "./components/layout/SharedNavigation";
 import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
 import { SkipToMain } from "./components/ui/SkipToMain";
-import { CommonsView, CategoryDecksView } from "./components/commons";
+
+// Lazy-loaded view components — each becomes its own chunk
+const StudyView = lazy(() =>
+  import("./components/StudyView").then((m) => ({ default: m.StudyView })),
+);
+const DeckBrowser = lazy(() =>
+  import("./components/DeckBrowser").then((m) => ({ default: m.DeckBrowser })),
+);
+const StatsView = lazy(() =>
+  import("./components/StatsView").then((m) => ({ default: m.StatsView })),
+);
+const PlotView = lazy(() =>
+  import("./components/plot").then((m) => ({ default: m.PlotView })),
+);
+const ProfileView = lazy(() =>
+  import("./components/ProfileView").then((m) => ({ default: m.ProfileView })),
+);
+const SquareView = lazy(() =>
+  import("./components/SquareView").then((m) => ({ default: m.SquareView })),
+);
+const CommonsView = lazy(() =>
+  import("./components/commons").then((m) => ({ default: m.CommonsView })),
+);
+const CategoryDecksView = lazy(() =>
+  import("./components/commons").then((m) => ({
+    default: m.CategoryDecksView,
+  })),
+);
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { DeckId } from "./types/ids";
 import ProtectedView from "./components/ProtectedView";
 import { syncService } from "./services/sync-service";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "plot"
+  | "stats"
+  | "square"
+  | "profile";
 
 /**
  * Get the initial view from the URL path
@@ -53,15 +83,14 @@ const getInitialView = (): { view: View; categorySlug?: string } => {
   return { view: "home" };
 };
 
+/** Root application component with view routing, auth, and theme toggle. */
 function App() {
   const initialState = getInitialView();
   const [currentView, setCurrentView] = useState<View>(initialState.view);
-  const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
-    undefined,
-  );
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | undefined>(
-    initialState.categorySlug,
-  );
+  const [selectedDeckId, setSelectedDeckId] = useState<DeckId>();
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<
+    string | undefined
+  >(initialState.categorySlug);
   const [isInitialized, setIsInitialized] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
@@ -81,9 +110,13 @@ function App() {
   const navigateToHome = useCallback(() => navigate("home"), [navigate]);
   const navigateToBrowse = useCallback(() => navigate("browse"), [navigate]);
   const navigateToCommons = useCallback(() => navigate("commons"), [navigate]);
-  const navigateToCategory = useCallback((slug: string) => navigate("commons-category", slug), [navigate]);
+  const navigateToCategory = useCallback(
+    (slug: string) => navigate("commons-category", slug),
+    [navigate],
+  );
 
   useEffect(() => {
+    /** Open the database and start the sync service. */
     const initializeApp = async () => {
       try {
         await db.open();
@@ -105,6 +138,7 @@ function App() {
 
   // Handle browser back/forward buttons
   useEffect(() => {
+    /** Sync view state when the user navigates with browser back/forward. */
     const handlePopState = () => {
       const state = getInitialView();
       setCurrentView(state.view);
@@ -150,6 +184,7 @@ function App() {
     );
   }
 
+  /** Return the component for the current view. */
   const renderView = () => {
     switch (currentView) {
       case "study":
@@ -248,7 +283,24 @@ function App() {
       </button>
 
       <main id="main-content" className="flex-1 flex flex-col">
-        {renderView()}
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center min-h-screen bg-terminal-base">
+              <div className="font-mono terminal-primary text-lg">
+                <span className="text-terminal-muted">$ loading</span>
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  className="ml-1"
+                >
+                  _
+                </motion.span>
+              </div>
+            </div>
+          }
+        >
+          {renderView()}
+        </Suspense>
       </main>
 
       <Footer onNavigate={navigate} />
@@ -260,6 +312,7 @@ interface HomeViewProps {
   onNavigate: (view: View) => void;
 }
 
+/** Landing page combining the hero section and features overview. */
 function HomeView({ onNavigate }: HomeViewProps) {
   return (
     <>
