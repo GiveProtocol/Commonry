@@ -33,12 +33,14 @@ const VALID_SESSION_TYPES = [
 const VALID_DEVICE_TYPES = ["mobile", "tablet", "desktop", "unknown"];
 const VALID_BREAK_REASONS = ["background", "pause", "idle", "manual"];
 
+/** Validates a value against an allowed list, returning the default if invalid. */
 function validateEnum(value, allowed, defaultValue) {
   if (!value) return defaultValue;
   const normalized = String(value).toLowerCase();
   return allowed.includes(normalized) ? normalized : defaultValue;
 }
 
+/** Safely parses an integer, returning null if invalid. */
 function safeInt(value) {
   if (value === null || value === undefined) return null;
   const parsed = parseInt(value, 10);

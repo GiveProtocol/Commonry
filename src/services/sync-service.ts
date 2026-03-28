@@ -40,7 +40,7 @@ export class SyncService {
   /**
    * Initializes the sync service and starts auto-sync if enabled.
    */
-  async initialize(): Promise<void> {
+  initialize(): void {
     if (this.config.autoSync) {
       this.startAutoSync();
     }

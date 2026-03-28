@@ -23,7 +23,7 @@ export function NetworkGlobe() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) return undefined;
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -97,13 +97,13 @@ export function NetworkGlobe() {
       const radiusAtY = Math.sqrt(1 - y * y);
       const theta = goldenAngle * i;
 
-      const x = Math.cos(theta) * radiusAtY;
-      const z = Math.sin(theta) * radiusAtY;
+      const cosTheta = Math.cos(theta) * radiusAtY;
+      const sinTheta = Math.sin(theta) * radiusAtY;
 
       const nodePosition = new Vector3(
-        x * nodeRadius,
+        cosTheta * nodeRadius,
         y * nodeRadius,
-        z * nodeRadius,
+        sinTheta * nodeRadius,
       );
       nodePositions.push(nodePosition);
 
@@ -162,6 +162,7 @@ export function NetworkGlobe() {
 
     // Animation loop
     let frameId: number;
+    /** Render loop — updates controls and redraws every frame. */
     function animate() {
       frameId = requestAnimationFrame(animate);
       controls.update();
@@ -172,11 +173,11 @@ export function NetworkGlobe() {
     // Resize handler
     function handleResize() {
       if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      renderer.setSize(width, height);
     }
     window.addEventListener("resize", handleResize);
 
@@ -189,8 +190,8 @@ export function NetworkGlobe() {
       // Dispose geometries and materials
       sphereGeometry.dispose();
       sphereMaterial.dispose();
-      for (const g of nodeGeometries) g.dispose();
-      for (const m of nodeMaterials) m.dispose();
+      for (const geo of nodeGeometries) geo.dispose();
+      for (const mat of nodeMaterials) mat.dispose();
       lineGeometry.dispose();
       lineMaterial.dispose();
 
