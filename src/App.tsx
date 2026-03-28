@@ -83,12 +83,11 @@ const getInitialView = (): { view: View; categorySlug?: string } => {
   return { view: "home" };
 };
 
+/** Root application component with view routing, auth, and theme toggle. */
 function App() {
   const initialState = getInitialView();
   const [currentView, setCurrentView] = useState<View>(initialState.view);
-  const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
-    undefined,
-  );
+  const [selectedDeckId, setSelectedDeckId] = useState<DeckId>();
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<
     string | undefined
   >(initialState.categorySlug);
@@ -117,6 +116,7 @@ function App() {
   );
 
   useEffect(() => {
+    /** Open the database and start the sync service. */
     const initializeApp = async () => {
       try {
         await db.open();
@@ -138,6 +138,7 @@ function App() {
 
   // Handle browser back/forward buttons
   useEffect(() => {
+    /** Sync view state when the user navigates with browser back/forward. */
     const handlePopState = () => {
       const state = getInitialView();
       setCurrentView(state.view);
@@ -183,6 +184,7 @@ function App() {
     );
   }
 
+  /** Return the component for the current view. */
   const renderView = () => {
     switch (currentView) {
       case "study":
@@ -310,6 +312,7 @@ interface HomeViewProps {
   onNavigate: (view: View) => void;
 }
 
+/** Landing page combining the hero section and features overview. */
 function HomeView({ onNavigate }: HomeViewProps) {
   return (
     <>

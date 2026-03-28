@@ -15,6 +15,7 @@ interface HeroSectionProps {
   onNavigate: (view: View) => void;
 }
 
+/** Landing page hero with 3D globe background, headline, CTAs, and stats. */
 export function HeroSection({ onNavigate }: HeroSectionProps) {
   const [showContent, setShowContent] = useState(false);
 

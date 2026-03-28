@@ -53,6 +53,7 @@ const NAV_ITEMS_CONFIG = [
   },
 ];
 
+/** Shared navigation logic for both desktop and mobile nav components. */
 function useNavigation(
   isExternal: boolean,
   onNavigate?: (view: View) => void,
@@ -202,6 +203,7 @@ interface MobileNavigationProps extends NavigationProps {
   onToggle: () => void;
 }
 
+/** Responsive hamburger menu navigation for mobile devices. */
 export function MobileNavigation({
   currentView = "home",
   onNavigate,

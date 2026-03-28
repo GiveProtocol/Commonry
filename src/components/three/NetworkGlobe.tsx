@@ -1,7 +1,23 @@
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
+import {
+  BufferGeometry,
+  Color,
+  Float32BufferAttribute,
+  FogExp2,
+  Group,
+  LineBasicMaterial,
+  LineSegments,
+  Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Scene,
+  SphereGeometry,
+  Vector3,
+  WebGLRenderer,
+} from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+/** Interactive 3D network globe rendered with Three.js WebGL. */
 export function NetworkGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -14,12 +30,12 @@ export function NetworkGlobe() {
     ).matches;
 
     // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050505);
-    scene.fog = new THREE.FogExp2(0x050505, 0.06);
+    const scene = new Scene();
+    scene.background = new Color(0x050505);
+    scene.fog = new FogExp2(0x050505, 0.06);
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(
+    const camera = new PerspectiveCamera(
       60,
       container.clientWidth / container.clientHeight,
       0.1,
@@ -28,7 +44,7 @@ export function NetworkGlobe() {
     camera.position.z = 14;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({
+    const renderer = new WebGLRenderer({
       antialias: true,
       alpha: false,
     });
@@ -37,26 +53,26 @@ export function NetworkGlobe() {
     container.appendChild(renderer.domElement);
 
     // Globe group
-    const globeGroup = new THREE.Group();
+    const globeGroup = new Group();
     globeGroup.rotation.x = 0.3;
     globeGroup.rotation.z = 0.1;
     scene.add(globeGroup);
 
     // Wireframe sphere
-    const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
-    const sphereMaterial = new THREE.MeshBasicMaterial({
+    const sphereGeometry = new SphereGeometry(5, 32, 32);
+    const sphereMaterial = new MeshBasicMaterial({
       color: 0x440000,
       wireframe: true,
       transparent: true,
       opacity: 0.25,
     });
-    const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    const sphereMesh = new Mesh(sphereGeometry, sphereMaterial);
     globeGroup.add(sphereMesh);
 
     // Fibonacci-distributed nodes
     const nodeCount = 120;
     const nodeRadius = 5.1;
-    const nodePositions: THREE.Vector3[] = [];
+    const nodePositions: Vector3[] = [];
     const nodeColors = [
       { color: 0x00f0ff, weight: 40 },
       { color: 0xffaa00, weight: 25 },
@@ -71,8 +87,8 @@ export function NetworkGlobe() {
       }
     }
 
-    const nodeGeometries: THREE.BufferGeometry[] = [];
-    const nodeMaterials: THREE.MeshBasicMaterial[] = [];
+    const nodeGeometries: BufferGeometry[] = [];
+    const nodeMaterials: MeshBasicMaterial[] = [];
 
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
@@ -84,19 +100,19 @@ export function NetworkGlobe() {
       const x = Math.cos(theta) * radiusAtY;
       const z = Math.sin(theta) * radiusAtY;
 
-      const pos = new THREE.Vector3(
+      const nodePosition = new Vector3(
         x * nodeRadius,
         y * nodeRadius,
         z * nodeRadius,
       );
-      nodePositions.push(pos);
+      nodePositions.push(nodePosition);
 
-      const nodeGeo = new THREE.SphereGeometry(0.06, 8, 8);
+      const nodeGeo = new SphereGeometry(0.06, 8, 8);
       const pickedColor =
         colorPool[Math.floor(Math.random() * colorPool.length)];
-      const nodeMat = new THREE.MeshBasicMaterial({ color: pickedColor });
-      const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat);
-      nodeMesh.position.copy(pos);
+      const nodeMat = new MeshBasicMaterial({ color: pickedColor });
+      const nodeMesh = new Mesh(nodeGeo, nodeMat);
+      nodeMesh.position.copy(nodePosition);
       globeGroup.add(nodeMesh);
 
       nodeGeometries.push(nodeGeo);
@@ -122,17 +138,17 @@ export function NetworkGlobe() {
       }
     }
 
-    const lineGeometry = new THREE.BufferGeometry();
+    const lineGeometry = new BufferGeometry();
     lineGeometry.setAttribute(
       "position",
-      new THREE.Float32BufferAttribute(linePoints, 3),
+      new Float32BufferAttribute(linePoints, 3),
     );
-    const lineMaterial = new THREE.LineBasicMaterial({
+    const lineMaterial = new LineBasicMaterial({
       color: 0x00f0ff,
       transparent: true,
       opacity: 0.15,
     });
-    const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
+    const lineSegments = new LineSegments(lineGeometry, lineMaterial);
     globeGroup.add(lineSegments);
 
     // Controls

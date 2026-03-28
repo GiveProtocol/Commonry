@@ -11,6 +11,7 @@ interface NavigationProps {
   onSignIn?: () => void;
 }
 
+/** Top navigation bar with logo, external links, and sign-in button. */
 export function Navigation({ onNavigate, onSignIn }: NavigationProps) {
   const handleNavigateHome = useCallback(() => {
     onNavigate?.("home");
