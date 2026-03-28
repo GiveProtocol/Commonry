@@ -19,7 +19,9 @@ function getStreakMessage(streak: number): string {
   return `${streak}-day streak! Incredible!`;
 }
 
-function getTrendMessage(trend: "accelerating" | "stable" | "decelerating" | null): string | null {
+function getTrendMessage(
+  trend: "accelerating" | "stable" | "decelerating" | null,
+): string | null {
   switch (trend) {
     case "accelerating":
       return "Your pace is picking up!";

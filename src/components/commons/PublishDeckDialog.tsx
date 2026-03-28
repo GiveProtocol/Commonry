@@ -93,7 +93,9 @@ export function PublishDeckDialog({
     onClose();
   };
 
-  const selectedCategoryData = categories.find((c) => c.id === selectedCategory);
+  const selectedCategoryData = categories.find(
+    (c) => c.id === selectedCategory,
+  );
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && handleClose()}>
@@ -173,7 +175,10 @@ export function PublishDeckDialog({
 
               {/* Tags input */}
               <div className="mt-6">
-                <label htmlFor="tag-input" className="block font-mono text-sm text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="tag-input"
+                  className="block font-mono text-sm text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Tags (optional)
                 </label>
                 <p className="font-mono text-xs text-terminal-muted dark:text-text-muted mb-3">
