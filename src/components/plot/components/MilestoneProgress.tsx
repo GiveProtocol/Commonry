@@ -51,6 +51,7 @@ function findClosestMilestone(
   };
 }
 
+/** Displays progress toward the nearest achievement milestone. */
 export function MilestoneProgress({
   achievements,
   isLoading = false,

@@ -16,6 +16,7 @@ interface PersonalInsightProps {
   isLoading?: boolean;
 }
 
+/** Displays a rotating daily insight based on the user's study patterns. */
 export function PersonalInsight({
   weeklyMastered,
   preferredHour,
