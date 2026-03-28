@@ -95,9 +95,16 @@ export function SharedNavigation({
           className="flex items-center gap-3 hover:opacity-80 transition-opacity mb-4 group"
           aria-label="Go to Commonry home"
         >
-          <div className="text-4xl" role="img" aria-label="Commonry logo">
-            🏛️
-          </div>
+          <img
+            src="/mono-light-transparent.svg"
+            alt="Commonry logo"
+            className="w-10 h-10 block dark:hidden"
+          />
+          <img
+            src="/mono-dark-transparent.svg"
+            alt="Commonry logo"
+            className="w-10 h-10 hidden dark:block"
+          />
           <div className="font-mono">
             <div
               className="text-terminal-muted dark:text-text-muted text-xs"
@@ -187,7 +194,16 @@ export function MobileNavigation({
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             aria-label="Go to Commonry home"
           >
-            <div className="text-2xl">🏛️</div>
+            <img
+              src="/mono-light-transparent.svg"
+              alt="Commonry logo"
+              className="w-8 h-8 block dark:hidden"
+            />
+            <img
+              src="/mono-dark-transparent.svg"
+              alt="Commonry logo"
+              className="w-8 h-8 hidden dark:block"
+            />
             <div className="font-mono terminal-primary dark:text-cyan text-xl font-bold">
               COMMONRY
             </div>

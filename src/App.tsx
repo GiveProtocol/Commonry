@@ -1,18 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { StudyView } from "./components/StudyView";
-import { DeckBrowser } from "./components/DeckBrowser";
-import { StatsView } from "./components/StatsView";
-import { PlotView } from "./components/plot";
-import { ProfileView } from "./components/ProfileView";
-import { SquareView } from "./components/SquareView";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/sections/HeroSection";
 import { FeaturesSection } from "./components/sections/FeaturesSection";
 import { SharedNavigation } from "./components/layout/SharedNavigation";
 import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
 import { SkipToMain } from "./components/ui/SkipToMain";
-import { CommonsView, CategoryDecksView } from "./components/commons";
+
+// Lazy-loaded view components — each becomes its own chunk
+const StudyView = lazy(() => import("./components/StudyView").then(m => ({ default: m.StudyView })));
+const DeckBrowser = lazy(() => import("./components/DeckBrowser").then(m => ({ default: m.DeckBrowser })));
+const StatsView = lazy(() => import("./components/StatsView").then(m => ({ default: m.StatsView })));
+const PlotView = lazy(() => import("./components/plot").then(m => ({ default: m.PlotView })));
+const ProfileView = lazy(() => import("./components/ProfileView").then(m => ({ default: m.ProfileView })));
+const SquareView = lazy(() => import("./components/SquareView").then(m => ({ default: m.SquareView })));
+const CommonsView = lazy(() => import("./components/commons").then(m => ({ default: m.CommonsView })));
+const CategoryDecksView = lazy(() => import("./components/commons").then(m => ({ default: m.CategoryDecksView })));
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { DeckId } from "./types/ids";
@@ -248,7 +251,24 @@ function App() {
       </button>
 
       <main id="main-content" className="flex-1 flex flex-col">
-        {renderView()}
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center min-h-screen bg-terminal-base">
+              <div className="font-mono terminal-primary text-lg">
+                <span className="text-terminal-muted">$ loading</span>
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  className="ml-1"
+                >
+                  _
+                </motion.span>
+              </div>
+            </div>
+          }
+        >
+          {renderView()}
+        </Suspense>
       </main>
 
       <Footer onNavigate={navigate} />

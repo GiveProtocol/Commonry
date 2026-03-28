@@ -25,7 +25,11 @@ export function Navigation({ onNavigate, onSignIn }: NavigationProps) {
             onClick={handleNavigateHome}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity group"
           >
-            <div className="text-4xl">🏛️</div>
+            <img
+              src="/mono-dark-transparent.svg"
+              alt="Commonry logo"
+              className="w-10 h-10"
+            />
             <div className="font-mono">
               <div className="text-text-muted text-xs">$ whoami</div>
               <div className="text-cyan text-2xl font-bold flex items-center group-hover:[text-shadow:0_0_10px_#00d9ff] transition-all">
