@@ -105,7 +105,7 @@ export class ResearchExportService {
         JSON.stringify(options.filters || {}),
         format,
         options.createdBy,
-      ]
+      ],
     );
 
     console.log(`[ResearchExportService] Created export job: ${exportId}`);
@@ -127,7 +127,7 @@ export class ResearchExportService {
 
     if (exportRecord.status !== "processing") {
       throw new Error(
-        `Export ${exportId} is not in processing state: ${exportRecord.status}`
+        `Export ${exportId} is not in processing state: ${exportRecord.status}`,
       );
     }
 
@@ -140,14 +140,14 @@ export class ResearchExportService {
         case "sessions":
           data = await this.extractSessions(
             exportRecord.watermarkFrom,
-            exportRecord.watermarkTo
+            exportRecord.watermarkTo,
           );
           break;
 
         case "reviews":
           data = await this.extractReviews(
             exportRecord.watermarkFrom,
-            exportRecord.watermarkTo
+            exportRecord.watermarkTo,
           );
           break;
 
@@ -158,14 +158,14 @@ export class ResearchExportService {
         case "card_analysis":
           data = await this.extractCardAnalysis(
             exportRecord.watermarkFrom,
-            exportRecord.watermarkTo
+            exportRecord.watermarkTo,
           );
           break;
 
         case "full":
           data = await this.extractFullExport(
             exportRecord.watermarkFrom,
-            exportRecord.watermarkTo
+            exportRecord.watermarkTo,
           );
           break;
 
@@ -180,25 +180,25 @@ export class ResearchExportService {
       const { fileSize, checksum } = await this.writeJSONL(
         data,
         outputPath,
-        exportRecord
+        exportRecord,
       );
 
       // Mark as completed
       await this.pool.query(
         "SELECT complete_export_job($1, $2, $3, $4, $5, $6, $7)",
-        [exportId, true, outputPath, recordCount, fileSize, checksum, null]
+        [exportId, true, outputPath, recordCount, fileSize, checksum, null],
       );
 
       // Update watermark for incremental exports
       if (exportRecord.watermarkTo) {
         await this.updateWatermark(
           exportRecord.exportType,
-          exportRecord.watermarkTo
+          exportRecord.watermarkTo,
         );
       }
 
       console.log(
-        `[ResearchExportService] Completed export ${exportId}: ${recordCount} records`
+        `[ResearchExportService] Completed export ${exportId}: ${recordCount} records`,
       );
 
       return await this.getExportStatus(exportId);
@@ -206,12 +206,12 @@ export class ResearchExportService {
       // Mark as failed
       await this.pool.query(
         "SELECT complete_export_job($1, $2, $3, $4, $5, $6, $7)",
-        [exportId, false, null, 0, 0, null, error.message]
+        [exportId, false, null, 0, 0, null, error.message],
       );
 
       console.error(
         `[ResearchExportService] Export ${exportId} failed:`,
-        error.message
+        error.message,
       );
       throw error;
     }
@@ -226,7 +226,7 @@ export class ResearchExportService {
   async getExportStatus(exportId) {
     const result = await this.pool.query(
       "SELECT * FROM research_exports WHERE export_id = $1",
-      [exportId]
+      [exportId],
     );
 
     return result.rows.length > 0
@@ -265,7 +265,7 @@ export class ResearchExportService {
     // Get total count
     const countResult = await this.pool.query(
       `SELECT COUNT(*) FROM research_exports ${whereClause}`,
-      params
+      params,
     );
     const total = parseInt(countResult.rows[0].count, 10);
 
@@ -277,7 +277,7 @@ export class ResearchExportService {
       `SELECT * FROM research_exports ${whereClause}
        ORDER BY created_at DESC
        LIMIT $${paramIndex++} OFFSET $${paramIndex}`,
-      [...params, limit, offset]
+      [...params, limit, offset],
     );
 
     return {
@@ -308,7 +308,7 @@ export class ResearchExportService {
          AND st.started_at >= $1
          AND st.started_at < $2
        ORDER BY st.started_at ASC`,
-      [watermarkFrom, watermarkTo]
+      [watermarkFrom, watermarkTo],
     );
 
     return this.anonymizer.anonymizeBatch(result.rows, "session");
@@ -331,7 +331,7 @@ export class ResearchExportService {
        WHERE ps.research_consent = true
          AND re.created_at >= $1
          AND re.created_at < $2`,
-      [watermarkFrom, watermarkTo]
+      [watermarkFrom, watermarkTo],
     );
 
     const sessionStarts = {};
@@ -348,7 +348,7 @@ export class ResearchExportService {
          AND re.created_at >= $1
          AND re.created_at < $2
        ORDER BY re.created_at ASC`,
-      [watermarkFrom, watermarkTo]
+      [watermarkFrom, watermarkTo],
     );
 
     return this.anonymizer.anonymizeBatch(result.rows, "review", {
@@ -366,7 +366,7 @@ export class ResearchExportService {
       `SELECT us.*
        FROM user_statistics us
        INNER JOIN privacy_settings ps ON us.user_id = ps.user_id
-       WHERE ps.research_consent = true`
+       WHERE ps.research_consent = true`,
     );
 
     return this.anonymizer.anonymizeBatch(result.rows, "statistics");
@@ -392,7 +392,7 @@ export class ResearchExportService {
          AND ca.analyzed_at >= $1
          AND ca.analyzed_at < $2
        ORDER BY ca.analyzed_at ASC`,
-      [watermarkFrom, watermarkTo]
+      [watermarkFrom, watermarkTo],
     );
 
     return this.anonymizer.anonymizeBatch(result.rows, "card_analysis");
@@ -451,7 +451,9 @@ export class ResearchExportService {
         exported_at: new Date().toISOString(),
         watermark_from: exportRecord.watermarkFrom,
         watermark_to: exportRecord.watermarkTo,
-        record_count: Array.isArray(data) ? data.length : data.totalRecords || 0,
+        record_count: Array.isArray(data)
+          ? data.length
+          : data.totalRecords || 0,
       });
       writeStream.write(header + "\n");
       hash.update(header + "\n");
@@ -515,7 +517,7 @@ export class ResearchExportService {
     const result = await this.pool.query(
       `SELECT version FROM export_schema_versions
        WHERE export_type = $1 AND is_current = true`,
-      [exportType]
+      [exportType],
     );
 
     return result.rows.length > 0
@@ -539,7 +541,7 @@ export class ResearchExportService {
        WHERE export_type = $1 AND status = 'completed'
        ORDER BY watermark_to DESC
        LIMIT 1`,
-      [exportType]
+      [exportType],
     );
 
     if (result.rows.length > 0) {
@@ -595,7 +597,7 @@ export class ResearchExportService {
           ? Math.round(
               (parseInt(stats.consented_users, 10) /
                 parseInt(stats.total_users, 10)) *
-                100
+                100,
             )
           : 0,
     };
