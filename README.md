@@ -25,9 +25,8 @@ While commercial learning apps prioritize "engagement" for revenue, Commonry is 
 * **Errors as Diagnostic Data:** Traditional SRS asks "when should you see this card again?" Commonry treats every "forgotten" card not as a failure, but as a diagnostic signal. We ask: *"What does this mistake tell us about your underlying knowledge graph?"*
 * **ADHD-Friendly & Shame-Free:** The interface is built for focus. We emphasize:
     * **Zero Modal Interruptions:** No pop-ups to break your flow.
-    * **No "Streaks":** We value consistency, but we reject the "streak" mechanic that leverages shame to drive engagement.
     * **Generous Whitespace:** A high-contrast, low-stimulation environment to reduce cognitive load.
-* **Community over Competition:** Progress is celebrated, not ranked. The commons grows stronger when everyone contributes to the quality of shared decks.
+* **Community and friendly Competition:** Ranking contextualized with individual self-referenced progress and collective rates of growth. 
 
 ---
 
