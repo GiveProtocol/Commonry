@@ -260,7 +260,7 @@ export function createResearchConsentRoutes(pool, authenticateToken) {
   // GET /research-consent/info
   // ============================================================
 
-  router.get("/research-consent/info", async (req, res) => {
+  router.get("/research-consent/info", (req, res) => {
     // This endpoint doesn't require authentication
     // Anyone can view information about the research program
     res.json({

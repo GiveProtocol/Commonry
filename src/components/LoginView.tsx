@@ -15,6 +15,7 @@ interface LoginViewProps {
   onSwitchToSignup: () => void;
 }
 
+/** Login form with SSO support and email verification resend. */
 export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
   const { login } = useAuth();
   const [username, setUsername] = useState("");

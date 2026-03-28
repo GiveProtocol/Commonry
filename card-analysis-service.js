@@ -543,13 +543,13 @@ export class CardAnalysisService {
    * Run LLM analysis for ambiguous cases
    * Returns placeholder - implement with actual LLM integration
    */
-  async runLLMAnalysis(_frontText, _backText) {
+  runLLMAnalysis(_frontText, _backText) {
     // TODO: Implement LLM integration
     // This would call an LLM API (e.g., Claude) for more sophisticated analysis
-    return {
+    return Promise.resolve({
       status: "not_implemented",
       message: "LLM analysis not yet implemented",
-    };
+    });
   }
 
   /**

@@ -438,7 +438,7 @@ export class ResearchExportService {
    * @param {Object} exportRecord - Export metadata for header
    * @returns {Promise<{fileSize: number, checksum: string}>}
    */
-  async writeJSONL(data, outputPath, exportRecord) {
+  writeJSONL(data, outputPath, exportRecord) {
     const writeStream = fs.createWriteStream(outputPath);
     const hash = crypto.createHash("sha256");
 
