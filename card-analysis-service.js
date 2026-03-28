@@ -543,7 +543,7 @@ export class CardAnalysisService {
    * Run LLM analysis for ambiguous cases
    * Returns placeholder - implement with actual LLM integration
    */
-  runLLMAnalysis(_frontText, _backText) {
+  static runLLMAnalysis(_frontText, _backText) {
     // TODO: Implement LLM integration
     // This would call an LLM API (e.g., Claude) for more sophisticated analysis
     return Promise.resolve({
