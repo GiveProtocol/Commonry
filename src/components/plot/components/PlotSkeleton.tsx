@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+/** Full-page loading skeleton for the Plot dashboard. */
 export function PlotSkeleton() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -23,8 +24,8 @@ export function PlotSkeleton() {
           <div className="skeleton h-5 w-24 rounded" />
           <div className="skeleton h-12 w-20 rounded" />
           <div className="flex gap-2 justify-center">
-            {[...Array(7)].map((_, i) => (
-              <div key={i} className="skeleton w-4 h-4 rounded-full" />
+            {["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((day) => (
+              <div key={day} className="skeleton w-4 h-4 rounded-full" />
             ))}
           </div>
         </div>
@@ -38,6 +39,7 @@ export function PlotSkeleton() {
   );
 }
 
+/** Loading skeleton for the greeting section. */
 export function PlotGreetingSkeleton() {
   return (
     <motion.div
@@ -51,6 +53,7 @@ export function PlotGreetingSkeleton() {
   );
 }
 
+/** Loading skeleton for a single Plot dashboard card. */
 export function PlotCardSkeleton() {
   return (
     <div className="border-2 border-cyan/20 rounded-lg p-6 space-y-4">

@@ -10,6 +10,7 @@ interface MomentumCardProps {
   isLoading?: boolean;
 }
 
+/** Returns a motivational message based on the current study streak length. */
 function getStreakMessage(streak: number): string {
   if (streak === 0) return "Start your streak today!";
   if (streak === 1) return "1-day streak!";
@@ -19,7 +20,10 @@ function getStreakMessage(streak: number): string {
   return `${streak}-day streak! Incredible!`;
 }
 
-function getTrendMessage(trend: "accelerating" | "stable" | "decelerating" | null): string | null {
+/** Returns a positive trend message, or null to avoid guilt-inducing feedback. */
+function getTrendMessage(
+  trend: "accelerating" | "stable" | "decelerating" | null,
+): string | null {
   switch (trend) {
     case "accelerating":
       return "Your pace is picking up!";
@@ -33,6 +37,7 @@ function getTrendMessage(trend: "accelerating" | "stable" | "decelerating" | nul
   }
 }
 
+/** Builds an array of the last 7 days with study activity markers. */
 function getWeekDays(lastStudyDate: string | null): WeekDay[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -62,6 +67,7 @@ function getWeekDays(lastStudyDate: string | null): WeekDay[] {
   return days;
 }
 
+/** Renders a single day indicator dot — pulsing, filled, or empty. */
 function ConsistencyDot({ day }: { day: WeekDay }) {
   const baseClasses = "w-4 h-4 rounded-full transition-all";
 
@@ -96,6 +102,7 @@ function ConsistencyDot({ day }: { day: WeekDay }) {
   );
 }
 
+/** Displays the user's study streak and weekly consistency visualization. */
 export function MomentumCard({
   currentStreak,
   lastStudyDate,
@@ -138,8 +145,8 @@ export function MomentumCard({
 
         {/* Weekly consistency dots */}
         <div className="flex gap-2 items-center justify-center pt-2">
-          {weekDays.map((day, i) => (
-            <ConsistencyDot key={i} day={day} />
+          {weekDays.map((day) => (
+            <ConsistencyDot key={day.date.toISOString()} day={day} />
           ))}
         </div>
 
