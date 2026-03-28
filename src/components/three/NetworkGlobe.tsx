@@ -10,7 +10,7 @@ export function NetworkGlobe() {
     if (!container) return;
 
     const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
+      "(prefers-reduced-motion: reduce)",
     ).matches;
 
     // Scene
@@ -23,7 +23,7 @@ export function NetworkGlobe() {
       60,
       container.clientWidth / container.clientHeight,
       0.1,
-      100
+      100,
     );
     camera.position.z = 14;
 
@@ -87,12 +87,13 @@ export function NetworkGlobe() {
       const pos = new THREE.Vector3(
         x * nodeRadius,
         y * nodeRadius,
-        z * nodeRadius
+        z * nodeRadius,
       );
       nodePositions.push(pos);
 
       const nodeGeo = new THREE.SphereGeometry(0.06, 8, 8);
-      const pickedColor = colorPool[Math.floor(Math.random() * colorPool.length)];
+      const pickedColor =
+        colorPool[Math.floor(Math.random() * colorPool.length)];
       const nodeMat = new THREE.MeshBasicMaterial({ color: pickedColor });
       const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat);
       nodeMesh.position.copy(pos);
@@ -110,8 +111,12 @@ export function NetworkGlobe() {
       for (let j = i + 1; j < nodeCount; j++) {
         if (nodePositions[i].distanceTo(nodePositions[j]) < lineThreshold) {
           linePoints.push(
-            nodePositions[i].x, nodePositions[i].y, nodePositions[i].z,
-            nodePositions[j].x, nodePositions[j].y, nodePositions[j].z
+            nodePositions[i].x,
+            nodePositions[i].y,
+            nodePositions[i].z,
+            nodePositions[j].x,
+            nodePositions[j].y,
+            nodePositions[j].z,
           );
         }
       }
@@ -120,7 +125,7 @@ export function NetworkGlobe() {
     const lineGeometry = new THREE.BufferGeometry();
     lineGeometry.setAttribute(
       "position",
-      new THREE.Float32BufferAttribute(linePoints, 3)
+      new THREE.Float32BufferAttribute(linePoints, 3),
     );
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x00f0ff,

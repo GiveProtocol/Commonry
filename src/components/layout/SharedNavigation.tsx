@@ -2,7 +2,16 @@ import { motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import { SyncStatusIndicator } from "../SyncStatusIndicator";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "plot"
+  | "stats"
+  | "square"
+  | "profile";
 
 interface NavigationProps {
   currentView?: View;
@@ -12,11 +21,36 @@ interface NavigationProps {
 }
 
 const NAV_ITEMS_CONFIG = [
-  { view: "plot" as View, label: "Your Plot", url: "https://commonry.app/plot", ariaLabel: "Navigate to Your Plot - Personal dashboard" },
-  { view: "browse" as View, label: "My Decks", url: "https://commonry.app/browse", ariaLabel: "Navigate to My Decks - Manage your personal decks" },
-  { view: "commons" as View, label: "The Commons", url: "https://commonry.app/commons", ariaLabel: "Navigate to The Commons - Browse public decks" },
-  { view: "square" as View, label: "The Square", url: "https://forum.commonry.app/session/sso", ariaLabel: "Navigate to The Square - Community forum" },
-  { view: "profile" as View, label: "Profile", url: "https://commonry.app/profile", ariaLabel: "Navigate to your profile" },
+  {
+    view: "plot" as View,
+    label: "Your Plot",
+    url: "https://commonry.app/plot",
+    ariaLabel: "Navigate to Your Plot - Personal dashboard",
+  },
+  {
+    view: "browse" as View,
+    label: "My Decks",
+    url: "https://commonry.app/browse",
+    ariaLabel: "Navigate to My Decks - Manage your personal decks",
+  },
+  {
+    view: "commons" as View,
+    label: "The Commons",
+    url: "https://commonry.app/commons",
+    ariaLabel: "Navigate to The Commons - Browse public decks",
+  },
+  {
+    view: "square" as View,
+    label: "The Square",
+    url: "https://forum.commonry.app/session/sso",
+    ariaLabel: "Navigate to The Square - Community forum",
+  },
+  {
+    view: "profile" as View,
+    label: "Profile",
+    url: "https://commonry.app/profile",
+    ariaLabel: "Navigate to your profile",
+  },
 ];
 
 function useNavigation(
@@ -47,10 +81,7 @@ function useNavigation(
       NAV_ITEMS_CONFIG.map((item) => ({
         ...item,
         onClick: () =>
-          handleNavigate(
-            item.view,
-            isExternal ? item.url : undefined,
-          ),
+          handleNavigate(item.view, isExternal ? item.url : undefined),
       })),
     [handleNavigate, isExternal],
   );
@@ -178,7 +209,11 @@ export function MobileNavigation({
   isOpen,
   onToggle,
 }: MobileNavigationProps) {
-  const { handleHomeClick, navItems } = useNavigation(isExternal, onNavigate, onToggle);
+  const { handleHomeClick, navItems } = useNavigation(
+    isExternal,
+    onNavigate,
+    onToggle,
+  );
 
   return (
     <nav

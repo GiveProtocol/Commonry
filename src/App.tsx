@@ -8,21 +8,48 @@ import { ScanlineOverlay } from "./components/ui/ScanlineOverlay";
 import { SkipToMain } from "./components/ui/SkipToMain";
 
 // Lazy-loaded view components — each becomes its own chunk
-const StudyView = lazy(() => import("./components/StudyView").then(m => ({ default: m.StudyView })));
-const DeckBrowser = lazy(() => import("./components/DeckBrowser").then(m => ({ default: m.DeckBrowser })));
-const StatsView = lazy(() => import("./components/StatsView").then(m => ({ default: m.StatsView })));
-const PlotView = lazy(() => import("./components/plot").then(m => ({ default: m.PlotView })));
-const ProfileView = lazy(() => import("./components/ProfileView").then(m => ({ default: m.ProfileView })));
-const SquareView = lazy(() => import("./components/SquareView").then(m => ({ default: m.SquareView })));
-const CommonsView = lazy(() => import("./components/commons").then(m => ({ default: m.CommonsView })));
-const CategoryDecksView = lazy(() => import("./components/commons").then(m => ({ default: m.CategoryDecksView })));
+const StudyView = lazy(() =>
+  import("./components/StudyView").then((m) => ({ default: m.StudyView })),
+);
+const DeckBrowser = lazy(() =>
+  import("./components/DeckBrowser").then((m) => ({ default: m.DeckBrowser })),
+);
+const StatsView = lazy(() =>
+  import("./components/StatsView").then((m) => ({ default: m.StatsView })),
+);
+const PlotView = lazy(() =>
+  import("./components/plot").then((m) => ({ default: m.PlotView })),
+);
+const ProfileView = lazy(() =>
+  import("./components/ProfileView").then((m) => ({ default: m.ProfileView })),
+);
+const SquareView = lazy(() =>
+  import("./components/SquareView").then((m) => ({ default: m.SquareView })),
+);
+const CommonsView = lazy(() =>
+  import("./components/commons").then((m) => ({ default: m.CommonsView })),
+);
+const CategoryDecksView = lazy(() =>
+  import("./components/commons").then((m) => ({
+    default: m.CategoryDecksView,
+  })),
+);
 import { db } from "./storage/database";
 import { useTheme } from "./contexts/ThemeContext";
 import { DeckId } from "./types/ids";
 import ProtectedView from "./components/ProtectedView";
 import { syncService } from "./services/sync-service";
 
-type View = "home" | "study" | "browse" | "commons" | "commons-category" | "plot" | "stats" | "square" | "profile";
+type View =
+  | "home"
+  | "study"
+  | "browse"
+  | "commons"
+  | "commons-category"
+  | "plot"
+  | "stats"
+  | "square"
+  | "profile";
 
 /**
  * Get the initial view from the URL path
@@ -62,9 +89,9 @@ function App() {
   const [selectedDeckId, setSelectedDeckId] = useState<DeckId | undefined>(
     undefined,
   );
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | undefined>(
-    initialState.categorySlug,
-  );
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<
+    string | undefined
+  >(initialState.categorySlug);
   const [isInitialized, setIsInitialized] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
@@ -84,7 +111,10 @@ function App() {
   const navigateToHome = useCallback(() => navigate("home"), [navigate]);
   const navigateToBrowse = useCallback(() => navigate("browse"), [navigate]);
   const navigateToCommons = useCallback(() => navigate("commons"), [navigate]);
-  const navigateToCategory = useCallback((slug: string) => navigate("commons-category", slug), [navigate]);
+  const navigateToCategory = useCallback(
+    (slug: string) => navigate("commons-category", slug),
+    [navigate],
+  );
 
   useEffect(() => {
     const initializeApp = async () => {

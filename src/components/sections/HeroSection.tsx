@@ -6,7 +6,7 @@ import { StatDisplay } from "../ui/StatDisplay";
 import { TypingText } from "../ui/TypingText";
 
 const NetworkGlobe = lazy(() =>
-  import("../three/NetworkGlobe").then((m) => ({ default: m.NetworkGlobe }))
+  import("../three/NetworkGlobe").then((m) => ({ default: m.NetworkGlobe })),
 );
 
 type View = "home" | "study" | "browse" | "stats" | "square" | "profile";
@@ -69,9 +69,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <h1 className="text-6xl md:text-8xl font-mono font-bold mb-6 leading-tight animate-[fadeIn_0.5s_ease-in_0.3s] opacity-0 [animation-fill-mode:forwards]">
                 <GlowText color="amber">A COMMONS</GlowText>
                 <br />
-                <span className="text-text-primary">
-                  FOR
-                </span>
+                <span className="text-text-primary">FOR</span>
                 <br />
                 <GlowText color="cyan">LIFELONG LEARNING</GlowText>
               </h1>
