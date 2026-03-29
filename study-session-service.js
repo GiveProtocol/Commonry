@@ -404,9 +404,22 @@ export class StudySessionService {
    * @returns {object|null} Trend data or null if insufficient data
    */
   calculateTrend(responseTimes) {
-    if (!responseTimes || responseTimes.length < 3) return null;
+    // Validate that responseTimes is a reasonable numeric array before using .length
+    const MAX_RESPONSE_TIMES = 1000;
 
-    const n = responseTimes.length;
+    if (!Array.isArray(responseTimes)) {
+      return null;
+    }
+
+    // Ensure we only work with numeric, finite values and bound the length
+    const times = responseTimes
+      .slice(0, MAX_RESPONSE_TIMES)
+      .map((v) => Number(v))
+      .filter((v) => Number.isFinite(v));
+
+    if (times.length < 3) return null;
+
+    const n = times.length;
     let sumX = 0;
     let sumY = 0;
     let sumXY = 0;
@@ -414,8 +427,8 @@ export class StudySessionService {
 
     for (let i = 0; i < n; i++) {
       sumX += i;
-      sumY += responseTimes[i];
-      sumXY += i * responseTimes[i];
+      sumY += times[i];
+      sumXY += i * times[i];
       sumX2 += i * i;
     }
 
@@ -432,8 +445,8 @@ export class StudySessionService {
 
     for (let i = 0; i < n; i++) {
       const predicted = slope * i + intercept;
-      ssTotal += Math.pow(responseTimes[i] - meanY, 2);
-      ssResidual += Math.pow(responseTimes[i] - predicted, 2);
+      ssTotal += Math.pow(times[i] - meanY, 2);
+      ssResidual += Math.pow(times[i] - predicted, 2);
     }
 
     const rSquared = ssTotal === 0 ? 0 : 1 - ssResidual / ssTotal;
