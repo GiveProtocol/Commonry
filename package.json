@@ -32,7 +32,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "date-fns": "^4.1.0",
-    "dexie": "^4.3.0",
+    "dexie": "^4.4.2",
     "dompurify": "^3.3.3",
     "dotenv": "^17.3.1",
     "express-rate-limit": "^8.3.2",
